@@ -6,8 +6,15 @@ import androidx.lifecycle.ViewModel
 
 class PlayersViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
+    private val _players = MutableLiveData<List<Player>>().apply {
+        loadPlayers()
     }
-    val text: LiveData<String> = _text
+
+    fun getPlayers(): LiveData<List<Player>> {
+        return _players
+    }
+
+    private fun loadPlayers() {
+
+    }
 }
