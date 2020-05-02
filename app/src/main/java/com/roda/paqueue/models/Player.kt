@@ -1,17 +1,21 @@
+package com.roda.paqueue.models
+
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
 import java.util.*
 
-open class PlayerModel (
+open class Player (
     @PrimaryKey
     var id: String = UUID.randomUUID().toString(),
-    var created_at: Date = Date(),
     @Required
     var name: String = "",
     @Required
     var level: String = "",
-    var num_games: Int = 0
+    var num_games: Int = 0,
+    var created_at: Date = Date(),
+    var queues: RealmList<Queue> = RealmList()
 ): RealmObject() {
     fun isValidName(name: String): Boolean {
         val regex = "/^[A-Za-z]+\$/".toRegex()
