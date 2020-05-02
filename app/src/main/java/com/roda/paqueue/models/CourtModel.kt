@@ -1,5 +1,3 @@
-package com.roda.paqueue
-
 import io.realm.RealmObject
 import io.realm.kotlin.*
 
