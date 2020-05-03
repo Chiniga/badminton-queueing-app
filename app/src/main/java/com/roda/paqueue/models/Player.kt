@@ -15,7 +15,7 @@ open class Player (
     var level: String = "",
     var num_games: Int = 0,
     var created_at: Date = Date(),
-    var queues: RealmList<Queue> = RealmList()
+    var queues: RealmList<Queue>? = RealmList()
 ): RealmObject() {
     fun isValidName(name: String): Boolean {
         val regex = "/^[A-Za-z]+\$/".toRegex()

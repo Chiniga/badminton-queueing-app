@@ -4,28 +4,32 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import PlayerModel
+import com.roda.paqueue.models.LiveRealmData
+import com.roda.paqueue.models.Player
 import io.realm.Realm
+import io.realm.RealmConfiguration
+import io.realm.RealmResults
 import io.realm.Sort
 import io.realm.kotlin.*
 import java.lang.Exception
 
 class PlayersViewModel : ViewModel() {
 
-    private val _players = MutableLiveData<List<PlayerModel>>().apply {
-        loadPlayers()
+    val realm: Realm by lazy {
+        Realm.getDefaultInstance()
     }
 
-    fun getPlayers(): LiveData<List<PlayerModel>> {
-        return _players
-    }
-
-    private fun loadPlayers() {
-        try {
-            val realm = Realm.getDefaultInstance()
-            realm.where<PlayerModel>().findAll().sort("created_at", Sort.ASCENDING)
-        } catch (error: Exception) {
-            Log.e("Load Player Error", error.message)
+    fun getPlayers(): LiveData<RealmResults<Player>> {
+        return object: LiveRealmData<Player>(RealmConfiguration.Builder().build())  {
+            override fun runQuery(realm: Realm): RealmResults<Player> {
+                // Called on UI thread
+                return realm.where<Player>().sort("created_at").findAllAsync()
+            }
         }
+    }
+
+    override fun onCleared() {
+        realm.close()
+        super.onCleared()
     }
 }
