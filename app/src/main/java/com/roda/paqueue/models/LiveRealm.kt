@@ -15,7 +15,7 @@ abstract class LiveRealmData<T: RealmModel>(val config: RealmConfiguration) : Li
 
     final override fun onActive() {
         realm = Realm.getInstance(config)
-        results = runQuery(realm);
+        results = runQuery(realm)
         results!!.addChangeListener(listener)
         value = results;
     }

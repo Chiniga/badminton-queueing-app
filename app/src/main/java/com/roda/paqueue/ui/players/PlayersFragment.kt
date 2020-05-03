@@ -9,9 +9,13 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SortedList
+import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import io.realm.Realm
+import io.realm.Sort
 
 class PlayersFragment : Fragment() {
 
@@ -25,7 +29,7 @@ class PlayersFragment : Fragment() {
         playersViewModel =
                 ViewModelProviders.of(this).get(PlayersViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_players, container, false)
-        val textView: TextView = root.findViewById(R.id.text_dashboard)
+        val recyclerView: RecyclerView = root.findViewById(R.id.playerListView)
         playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer {
             // display players
             val players: List<Player> = it
@@ -34,6 +38,9 @@ class PlayersFragment : Fragment() {
                 for(player in players) {
                     Log.d("Player log name", player.name)
                     Log.d("Player log level", player.level)
+                    //val list: SortedList<Player> = SortedList()
+                    recyclerView.adapter = SortedListAdapterCallback<Player>
+
                 }
             }
         })
