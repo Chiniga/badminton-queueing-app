@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -46,12 +47,27 @@ class PlayersFragment : Fragment() {
                 adapter.addPlayers(players)
             }
         })
+
+        val btnAddPlayer: Button = root.findViewById(R.id.button)
+        btnAddPlayer.setOnClickListener {
+            Realm.getDefaultInstance().use { realm ->
+                val player = Player()
+                player.name = "Roma hernandez"
+                player.level = "advanced"
+                // supply player name and level
+                realm.executeTransaction { realm ->
+                    realm.insert(player)
+                }
+            }
+        }
         return root
     }
 
     fun addPlayer() {
         Realm.getDefaultInstance().use { realm ->
             val player = Player()
+            player.name = "Roma hernandez"
+            player.level = "advanced"
             // supply player name and level
             realm.executeTransaction { realm ->
                 realm.insert(player)

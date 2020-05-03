@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
@@ -52,13 +53,23 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
-        var textViewPlayerLevel: TextView = itemView.findViewById(R.id.textViewPlayerLevel)
-        var imgBtnPlayerDelete: ImageButton = itemView.findViewById(R.id.imgBtnPlayerDelete)
+        var layout: LinearLayout = itemView.findViewById(R.id.listView)
+        var textViewPlayerName: TextView = TextView(itemView.context)
+        var textViewPlayerLevel: TextView = TextView(itemView.context)
+        var imgBtnPlayerDelete: ImageButton = ImageButton(itemView.context)
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
             textViewPlayerLevel.text = player.level
+            setupViews()
+            layout.addView(textViewPlayerName)
+            layout.addView(textViewPlayerLevel)
+            layout.addView(imgBtnPlayerDelete)
+        }
+
+        private fun setupViews() {
+            imgBtnPlayerDelete.contentDescription = itemView.context.getString(R.string.delete_player)
+            imgBtnPlayerDelete.setImageResource(R.drawable.ic_home_black_24dp)
         }
     }
 }
