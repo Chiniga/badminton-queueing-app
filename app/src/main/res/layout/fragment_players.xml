@@ -7,7 +7,7 @@
     tools:context=".ui.players.PlayersFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playerListView"
+        android:id="@+id/rvPlayers"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

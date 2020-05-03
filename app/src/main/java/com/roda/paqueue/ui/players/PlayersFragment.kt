@@ -1,5 +1,6 @@
 package com.roda.paqueue.ui.players
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,17 +10,22 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SortedList
-import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
+import com.roda.paqueue.SortedListAdapter
 import io.realm.Realm
-import io.realm.Sort
+
+fun RecyclerView.setup(fragment: Fragment) {
+    this.layoutManager = LinearLayoutManager(fragment.context)
+}
 
 class PlayersFragment : Fragment() {
 
     private lateinit var playersViewModel: PlayersViewModel
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: SortedListAdapter
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -29,19 +35,15 @@ class PlayersFragment : Fragment() {
         playersViewModel =
                 ViewModelProviders.of(this).get(PlayersViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_players, container, false)
-        val recyclerView: RecyclerView = root.findViewById(R.id.playerListView)
+        adapter = SortedListAdapter()
+        recyclerView = root.findViewById<RecyclerView>(R.id.rvPlayers).also { it.setup(this) }
+        recyclerView.adapter = adapter
         playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer {
             // display players
             val players: List<Player> = it
             Log.d("Player log david", players.toString())
             if(players.isNotEmpty()) {
-                for(player in players) {
-                    Log.d("Player log name", player.name)
-                    Log.d("Player log level", player.level)
-                    //val list: SortedList<Player> = SortedList()
-                    recyclerView.adapter = SortedListAdapterCallback<Player>
-
-                }
+                adapter.addPlayers(players)
             }
         })
         return root
