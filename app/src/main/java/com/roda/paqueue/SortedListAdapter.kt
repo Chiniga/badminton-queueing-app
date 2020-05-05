@@ -36,12 +36,12 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
 
     override fun getItemCount() = playerSortedList.size()
 
-    fun addPlayer(user: Player) {
-        playerSortedList.add(user)
+    fun addPlayer(player: Player) {
+        playerSortedList.add(player)
     }
 
-    fun addPlayers(users: List<Player>) {
-        playerSortedList.addAll(users)
+    fun addPlayers(player: List<Player>) {
+        playerSortedList.addAll(player)
     }
 
     fun removePlayer(index: Int) {
@@ -53,23 +53,12 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        var layout: LinearLayout = itemView.findViewById(R.id.listView)
-        var textViewPlayerName: TextView = TextView(itemView.context)
-        var textViewPlayerLevel: TextView = TextView(itemView.context)
-        var imgBtnPlayerDelete: ImageButton = ImageButton(itemView.context)
+        var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
+        var textViewPlayerLevel: TextView = itemView.findViewById(R.id.textViewPlayerLevel)
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
             textViewPlayerLevel.text = player.level
-            setupViews()
-            layout.addView(textViewPlayerName)
-            layout.addView(textViewPlayerLevel)
-            layout.addView(imgBtnPlayerDelete)
-        }
-
-        private fun setupViews() {
-            imgBtnPlayerDelete.contentDescription = itemView.context.getString(R.string.delete_player)
-            imgBtnPlayerDelete.setImageResource(R.drawable.ic_home_black_24dp)
         }
     }
 }

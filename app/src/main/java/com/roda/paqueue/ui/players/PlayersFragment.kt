@@ -50,13 +50,13 @@ class PlayersFragment : Fragment() {
 
         val btnAddPlayer: Button = root.findViewById(R.id.button)
         btnAddPlayer.setOnClickListener {
+            val player = Player()
             Realm.getDefaultInstance().use { realm ->
-                val player = Player()
-                player.name = "Roma hernandez"
+                player.name = "hans lastima"
                 player.level = "advanced"
                 // supply player name and level
-                realm.executeTransaction { realm ->
-                    realm.insert(player)
+                realm.executeTransaction { r ->
+                    r.insert(player)
                 }
             }
         }
@@ -69,8 +69,8 @@ class PlayersFragment : Fragment() {
             player.name = "Roma hernandez"
             player.level = "advanced"
             // supply player name and level
-            realm.executeTransaction { realm ->
-                realm.insert(player)
+            realm.executeTransaction { r ->
+                r.insert(player)
             }
         }
     }
