@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import com.roda.paqueue.SortedListAdapter
@@ -48,25 +49,17 @@ class PlayersFragment : Fragment() {
             }
         })
 
-        val btnAddPlayer: Button = root.findViewById(R.id.button)
+        val btnAddPlayer: FloatingActionButton = root.findViewById(R.id.floatingActionButton)
         btnAddPlayer.setOnClickListener {
-            val player = Player()
-            Realm.getDefaultInstance().use { realm ->
-                player.name = "hans lastima"
-                player.level = "advanced"
-                // supply player name and level
-                realm.executeTransaction { r ->
-                    r.insert(player)
-                }
-            }
+            addPlayer()
         }
         return root
     }
 
-    fun addPlayer() {
+    private fun addPlayer() {
         Realm.getDefaultInstance().use { realm ->
             val player = Player()
-            player.name = "Roma hernandez"
+            player.name = "Alvin Esguerra":q
             player.level = "advanced"
             // supply player name and level
             realm.executeTransaction { r ->

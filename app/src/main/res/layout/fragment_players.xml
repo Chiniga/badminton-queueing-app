@@ -8,23 +8,26 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPlayers"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
+        android:layout_width="400dp"
+        android:layout_height="530dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="1dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
-        android:text="@string/add_player"
+        android:focusable="auto"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="@android:color/holo_red_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvPlayers"
+        app:layout_constraintVertical_bias="0.29000002"
+        app:maxImageSize="@android:dimen/app_icon_size" />
 </androidx.constraintlayout.widget.ConstraintLayout>
