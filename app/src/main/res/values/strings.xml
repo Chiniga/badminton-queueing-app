@@ -3,6 +3,7 @@
     <string name="title_queue">Queues</string>
     <string name="title_players">Players</string>
     <string name="title_courts">Number of Courts</string>
+    <string name="player_name">Name</string>
 
     <string name="add_player">Add Player</string>
     <string name="delete_player">Delete Player</string>
