@@ -12,13 +12,13 @@ open class Player (
     @Required
     var name: String = "",
     @Required
-    var level: String = "",
+    var level: Int = 1,
     var num_games: Int = 0,
     var created_at: Date = Date(),
     var queues: RealmList<Queue>? = RealmList()
 ): RealmObject() {
     fun isValidName(name: String): Boolean {
-        val regex = "/^[A-Za-z]+\$/".toRegex()
+        val regex = "^[A-Za-z]+\$".toRegex()
         if(!regex.matches(name)) {
             return false;
         }

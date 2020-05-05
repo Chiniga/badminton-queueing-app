@@ -59,11 +59,13 @@ class PlayersFragment : Fragment() {
     private fun addPlayer() {
         Realm.getDefaultInstance().use { realm ->
             val player = Player()
-            player.name = "Alvin Esguerra":q
-            player.level = "advanced"
-            // supply player name and level
-            realm.executeTransaction { r ->
-                r.insert(player)
+            if(player.isValidName("Alvin Esguerra")) {
+                player.name = "Alvin Esguerra"
+                player.level = 3
+                // supply player name and level
+                realm.executeTransaction { r ->
+                    r.insert(player)
+                }
             }
         }
     }
