@@ -1,12 +1,15 @@
 package com.roda.paqueue.ui.players
 
 import android.content.Context
+import android.media.Rating
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -52,21 +55,23 @@ class PlayersFragment : Fragment() {
         val btnAddPlayer: FloatingActionButton = root.findViewById(R.id.floatingActionButton)
         btnAddPlayer.setOnClickListener {
             addPlayer()
+            val playerName = root.findViewById<EditText>(R.id.editTextPLayerName)
+            val playerLevel = root.findViewById<RatingBar>(R.id.ratingBar)
+            Realm.getDefaultInstance().use { realm ->
+                val player = Player()
+                if(player.isValidName("Alvin Esguerra")) {
+                    player.name = playerName.text.toString()
+                    player.level = playerLevel.rating.toInt()
+                    // supply player name and level
+                    realm.executeTransaction { r ->
+                        r.insert(player)
+                    }
+                }
+            }
         }
         return root
     }
 
     private fun addPlayer() {
-        Realm.getDefaultInstance().use { realm ->
-            val player = Player()
-            if(player.isValidName("Alvin Esguerra")) {
-                player.name = "Alvin Esguerra"
-                player.level = 3
-                // supply player name and level
-                realm.executeTransaction { r ->
-                    r.insert(player)
-                }
-            }
-        }
     }
 }

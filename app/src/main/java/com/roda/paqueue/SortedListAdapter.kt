@@ -58,7 +58,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
-            textViewPlayerLevel.text = player.level
+            textViewPlayerLevel.text = player.level.toString()
         }
     }
 }
