@@ -46,7 +46,6 @@ class PlayersFragment : Fragment() {
         playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer {
             // display players
             val players: List<Player> = it
-            Log.d("Player log david", players.toString())
             if(players.isNotEmpty()) {
                 adapter.addPlayers(players)
             }
@@ -54,12 +53,11 @@ class PlayersFragment : Fragment() {
 
         val btnAddPlayer: FloatingActionButton = root.findViewById(R.id.floatingActionButton)
         btnAddPlayer.setOnClickListener {
-            addPlayer()
             val playerName = root.findViewById<EditText>(R.id.editTextPLayerName)
             val playerLevel = root.findViewById<RatingBar>(R.id.ratingBar)
             Realm.getDefaultInstance().use { realm ->
                 val player = Player()
-                if(player.isValidName("Alvin Esguerra")) {
+                if(player.isValidName(playerName.text.toString())) {
                     player.name = playerName.text.toString()
                     player.level = playerLevel.rating.toInt()
                     // supply player name and level
@@ -70,8 +68,5 @@ class PlayersFragment : Fragment() {
             }
         }
         return root
-    }
-
-    private fun addPlayer() {
     }
 }

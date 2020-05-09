@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
@@ -54,11 +55,13 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
-        var textViewPlayerLevel: TextView = itemView.findViewById(R.id.textViewPlayerLevel)
+        var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
 
         fun setPlayer(player: Player) {
+            ratingBarLevel.numStars = 3
+            ratingBarLevel.stepSize = 1.0f
             textViewPlayerName.text = player.name
-            textViewPlayerLevel.text = player.level.toString()
+            ratingBarLevel.rating = player.level.toFloat()
         }
     }
 }
