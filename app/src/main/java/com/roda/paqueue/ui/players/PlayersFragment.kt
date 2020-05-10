@@ -57,7 +57,6 @@ class PlayersFragment : Fragment() {
                 if(player.isValidName(playerName.text.toString()) && playerLevel.rating != 0.0f) {
                     player.name = playerName.text.toString()
                     player.level = playerLevel.rating
-                    // supply player name and level
                     realm.executeTransaction { r ->
                         r.insert(player)
                     }

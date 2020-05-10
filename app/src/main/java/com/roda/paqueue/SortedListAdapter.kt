@@ -59,7 +59,6 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
 
         fun setPlayer(player: Player) {
-            Log.d("Player rating", player.level.toString())
             textViewPlayerName.text = player.name
             ratingBarLevel.rating = player.level
         }

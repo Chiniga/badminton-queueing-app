@@ -16,17 +16,13 @@
         android:paddingEnd="0dp"
         android:textSize="18sp" />
 
-    <RatingBar
+    <me.zhanghai.android.materialratingbar.MaterialRatingBar
         android:id="@+id/ratingBarLevel"
-        style="@style/Widget.AppCompat.RatingBar.Small"
-        android:layout_width="30dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
         android:isIndicator="true"
-        android:max="3"
-        android:rating="2"
-        android:stepSize="1.0" />
+        android:numStars="3"
+        android:stepSize="1.0"/>
 
     <ImageView
         android:id="@+id/imgBtnPlayerDelete"
