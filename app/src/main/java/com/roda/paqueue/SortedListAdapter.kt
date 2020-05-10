@@ -1,5 +1,6 @@
 package com.roda.paqueue
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,10 +59,9 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
 
         fun setPlayer(player: Player) {
-            ratingBarLevel.numStars = 3
-            ratingBarLevel.stepSize = 1.0f
+            Log.d("Player rating", player.level.toString())
             textViewPlayerName.text = player.name
-            ratingBarLevel.rating = player.level.toFloat()
+            ratingBarLevel.rating = player.level
         }
     }
 }

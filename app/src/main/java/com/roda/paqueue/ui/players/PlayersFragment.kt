@@ -57,9 +57,9 @@ class PlayersFragment : Fragment() {
             val playerLevel = root.findViewById<RatingBar>(R.id.ratingBar)
             Realm.getDefaultInstance().use { realm ->
                 val player = Player()
-                if(player.isValidName(playerName.text.toString())) {
+                if(player.isValidName(playerName.text.toString()) && playerLevel.rating != 0.0f) {
                     player.name = playerName.text.toString()
-                    player.level = playerLevel.rating.toInt()
+                    player.level = playerLevel.rating
                     // supply player name and level
                     realm.executeTransaction { r ->
                         r.insert(player)

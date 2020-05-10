@@ -11,7 +11,7 @@ open class Player (
     var id: String = UUID.randomUUID().toString(),
     @Required
     var name: String = "",
-    var level: Int = 1,
+    var level: Float = 1.0f,
     var num_games: Int = 0,
     var created_at: Date = Date(),
     var queues: RealmList<Queue>? = RealmList()
