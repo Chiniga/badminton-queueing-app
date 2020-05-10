@@ -7,19 +7,21 @@
     tools:context=".ui.players.PlayersFragment"
     android:fillViewport="true">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/floatingActionButton">
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextPLayerName"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:hint="@string/player_name" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPlayerName"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/player_name" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <RatingBar
         android:id="@+id/ratingBar"
@@ -29,35 +31,34 @@
         android:max="3"
         android:numStars="3"
         android:stepSize="1.0"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/textInputLayout" />
+
+    <ImageButton
+        android:id="@+id/imgBtnAddPlayer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        android:elevation="1dp"
+        android:src="@android:drawable/ic_input_add"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:focusable="auto"
-            android:src="@android:drawable/ic_input_add"
-            app:backgroundTint="@android:color/holo_red_light"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:maxImageSize="@android:dimen/app_icon_size" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPlayers"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:paddingStart="0dp"
         android:paddingEnd="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnAddPlayer"
         app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

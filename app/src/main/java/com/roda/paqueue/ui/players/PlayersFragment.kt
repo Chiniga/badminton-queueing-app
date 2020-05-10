@@ -7,10 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -51,9 +48,9 @@ class PlayersFragment : Fragment() {
             }
         })
 
-        val btnAddPlayer: FloatingActionButton = root.findViewById(R.id.floatingActionButton)
+        val btnAddPlayer: ImageButton = root.findViewById(R.id.imgBtnAddPlayer)
         btnAddPlayer.setOnClickListener {
-            val playerName = root.findViewById<EditText>(R.id.editTextPLayerName)
+            val playerName = root.findViewById<EditText>(R.id.editTextPlayerName)
             val playerLevel = root.findViewById<RatingBar>(R.id.ratingBar)
             Realm.getDefaultInstance().use { realm ->
                 val player = Player()

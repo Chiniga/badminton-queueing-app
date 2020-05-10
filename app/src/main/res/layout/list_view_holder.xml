@@ -18,15 +18,14 @@
 
     <RatingBar
         android:id="@+id/ratingBarLevel"
+        style="@style/Widget.AppCompat.RatingBar.Small"
         android:layout_width="30dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:isIndicator="true"
         android:max="3"
-        android:numStars="3"
-        android:scaleX="0.5"
-        android:scaleY="0.5"
+        android:rating="2"
         android:stepSize="1.0" />
 
     <ImageView
