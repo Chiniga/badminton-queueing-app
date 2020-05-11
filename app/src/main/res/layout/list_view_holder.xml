@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/listView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,7 +7,7 @@
 
     <TextView
         android:id="@+id/textViewPlayerName"
-        android:layout_width="50dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
@@ -23,15 +22,4 @@
         android:isIndicator="true"
         android:numStars="3"
         android:stepSize="1.0"/>
-
-    <ImageView
-        android:id="@+id/imgBtnPlayerDelete"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:contentDescription="@string/delete_player"
-        android:scaleType="center"
-        android:textAlignment="center"
-        app:srcCompat="@android:drawable/ic_delete" />
 </LinearLayout>
