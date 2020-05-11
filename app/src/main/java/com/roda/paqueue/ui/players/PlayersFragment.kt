@@ -1,7 +1,5 @@
 package com.roda.paqueue.ui.players
 
-import android.content.Context
-import android.media.Rating
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,9 +9,10 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import com.roda.paqueue.SortedListAdapter
@@ -28,6 +27,37 @@ class PlayersFragment : Fragment() {
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SortedListAdapter
+
+    private val itemTouchHelper by lazy {
+        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(START, 0) {
+
+            override fun onMove(recyclerView: RecyclerView,
+                                viewHolder: RecyclerView.ViewHolder,
+                                target: RecyclerView.ViewHolder): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // show edit and delete buttons
+            }
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+
+                if (actionState == ACTION_STATE_DRAG) {
+                    viewHolder?.itemView?.alpha = 0.5f
+                }
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+
+                viewHolder.itemView.alpha = 1.0f
+            }
+        }
+
+        ItemTouchHelper(simpleItemTouchCallback)
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -47,6 +77,8 @@ class PlayersFragment : Fragment() {
                 adapter.addPlayers(players)
             }
         })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         val btnAddPlayer: ImageButton = root.findViewById(R.id.imgBtnAddPlayer)
         btnAddPlayer.setOnClickListener {
