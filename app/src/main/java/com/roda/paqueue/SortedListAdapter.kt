@@ -3,12 +3,16 @@ package com.roda.paqueue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
+import androidx.transition.Visibility
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.models.Player
 import io.realm.Realm
 import io.realm.RealmResults
@@ -46,13 +50,35 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
                 }
             }
         }
+
+        holder.btnEditPlayer.setOnClickListener {
+            val player: Player = playerSortedList.get(holder.adapterPosition)
+            holder.textViewPlayerName.visibility = View.GONE
+            holder.btnDoneEdit.visibility = View.VISIBLE
+            holder.textInputLayout.visibility = View.VISIBLE
+            holder.ratingBarLevel.setIsIndicator(false)
+            holder.editTextEditPlayerName.setText(player.name)
+        }
+
+        holder.btnDoneEdit.setOnClickListener {
+            val currPos: Int = holder.adapterPosition
+            val player: Player = playerSortedList.get(currPos)
+            val newPlayerName = holder.editTextEditPlayerName.text
+            val newPlayerLevel = holder.ratingBarLevel.rating
+            if(player.isValidName(newPlayerName.toString()) && newPlayerLevel != 0.0f) {
+                playerSortedList.clear()
+                Realm.getDefaultInstance().use { realm ->
+                    realm.executeTransaction { r ->
+                        player.name = newPlayerName.toString()
+                        player.level = newPlayerLevel
+                        r.insertOrUpdate(player)
+                    }
+                }
+            }
+        }
     }
 
     override fun getItemCount() = playerSortedList.size()
-
-    fun addPlayer(player: Player) {
-        playerSortedList.add(player)
-    }
 
     fun addPlayers(player: List<Player>) {
         playerSortedList.addAll(player)
@@ -70,6 +96,10 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
         var btnDeletePlayer: ImageButton = itemView.findViewById(R.id.btnDeletePlayer)
+        var btnEditPlayer: ImageButton = itemView.findViewById(R.id.btnEditPlayer)
+        var textInputLayout: TextInputLayout = itemView.findViewById(R.id.textInputLayout)
+        var editTextEditPlayerName: TextInputEditText = itemView.findViewById(R.id.editTextEditPlayerName)
+        var btnDoneEdit: ImageButton = itemView.findViewById(R.id.btnDoneEditing)
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
