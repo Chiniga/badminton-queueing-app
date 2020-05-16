@@ -1,17 +1,18 @@
 package com.roda.paqueue
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.roda.paqueue.models.Player
+import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.kotlin.where
 
 class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>() {
 
@@ -34,6 +35,17 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         holder.setPlayer(playerSortedList.get(position))
+
+        holder.btnDeletePlayer.setOnClickListener {
+            val player: Player = playerSortedList.get(holder.adapterPosition)
+            removePlayer(holder.adapterPosition)
+            Realm.getDefaultInstance().use { realm ->
+                realm.executeTransaction { r ->
+                    val playerDelete: RealmResults<Player> = r.where<Player>().equalTo("id", player.id).findAllAsync()
+                    playerDelete.deleteAllFromRealm()
+                }
+            }
+        }
     }
 
     override fun getItemCount() = playerSortedList.size()
@@ -46,7 +58,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         playerSortedList.addAll(player)
     }
 
-    fun removePlayer(index: Int) {
+    private fun removePlayer(index: Int) {
         if (playerSortedList.size() == 0) {
             return
         }
@@ -57,6 +69,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
+        var btnDeletePlayer: ImageButton = itemView.findViewById(R.id.btnDeletePlayer)
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
