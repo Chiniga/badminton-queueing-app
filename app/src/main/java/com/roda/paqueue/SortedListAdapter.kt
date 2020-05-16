@@ -28,7 +28,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_view_holder, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.horizontal_menu_layout, parent, false)
         return UserViewHolder(view)
     }
 

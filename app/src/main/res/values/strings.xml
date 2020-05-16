@@ -7,4 +7,5 @@
 
     <string name="add_player">Add Player</string>
     <string name="delete_player">Delete Player</string>
+    <string name="edit_player">Edit Player</string>
 </resources>
