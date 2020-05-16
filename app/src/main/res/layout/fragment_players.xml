@@ -45,9 +45,8 @@
         android:layout_height="wrap_content"
         android:numStars="3"
         android:stepSize="1.0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textInputLayout"
-        app:layout_constraintBottom_toTopOf="@id/imgBtnAddPlayer"/>
+        app:layout_constraintBottom_toTopOf="@id/imgBtnAddPlayer"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
         android:id="@+id/imgBtnAddPlayer"
