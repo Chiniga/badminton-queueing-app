@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.roda.paqueue.models.Player
 import io.realm.Realm
-import io.realm.RealmResults
 import io.realm.kotlin.where
 
 class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>() {
@@ -40,9 +39,9 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
             val player: Player = playerSortedList.get(holder.adapterPosition)
             removePlayer(holder.adapterPosition)
             Realm.getDefaultInstance().use { realm ->
-                realm.executeTransaction { r ->
-                    val playerDelete: RealmResults<Player> = r.where<Player>().equalTo("id", player.id).findAllAsync()
-                    playerDelete.deleteAllFromRealm()
+                val playerDelete = realm.where<Player>().equalTo("id", player.id).findFirst()
+                realm.executeTransaction {
+                    playerDelete?.deleteFromRealm()
                 }
             }
         }
