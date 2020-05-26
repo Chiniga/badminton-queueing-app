@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
-import com.roda.paqueue.SortedListAdapter
 import io.realm.Realm
 
 fun RecyclerView.setup(fragment: Fragment) {

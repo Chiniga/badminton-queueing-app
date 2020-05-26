@@ -1,4 +1,4 @@
-package com.roda.paqueue
+package com.roda.paqueue.ui.players
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
+import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -36,7 +37,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         holder.setPlayer(playerSortedList.get(position))
 
         holder.btnDeletePlayer.setOnClickListener {
-            val player: Player = playerSortedList.get(holder.adapterPosition)
+            val player = playerSortedList.get(holder.adapterPosition)
             removePlayer(holder.adapterPosition)
             Realm.getDefaultInstance().use { realm ->
                 val playerDelete = realm.where<Player>().equalTo("id", player.id).findFirst()

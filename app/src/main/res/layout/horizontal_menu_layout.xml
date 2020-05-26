@@ -8,7 +8,7 @@
     sml:sml_auto_open_percent="0.2"
     sml:sml_scroller_duration="250">
 
-    <include android:id="@id/smContentView" layout="@layout/list_view_holder"/>
-    <include android:id="@id/smMenuViewRight" layout="@layout/player_swipe_menu_layout"/>
+    <include android:id="@id/smContentView" layout="@layout/player_row"/>
+    <include android:id="@id/smMenuViewRight" layout="@layout/player_swipe_menu"/>
 
 </com.tubb.smrv.SwipeHorizontalMenuLayout>
