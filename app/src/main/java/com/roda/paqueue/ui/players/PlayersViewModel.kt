@@ -23,7 +23,7 @@ class PlayersViewModel : ViewModel() {
         return object: LiveRealmData<Player>(RealmConfiguration.Builder().build())  {
             override fun runQuery(realm: Realm): RealmResults<Player> {
                 // Called on UI thread
-                return realm.where<Player>().sort("created_at").findAllAsync()
+                return realm.where<Player>().findAllAsync()
             }
         }
     }
