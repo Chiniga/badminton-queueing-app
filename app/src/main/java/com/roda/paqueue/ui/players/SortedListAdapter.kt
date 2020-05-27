@@ -1,11 +1,10 @@
 package com.roda.paqueue.ui.players
 
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
@@ -46,6 +45,21 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
                 }
             }
         }
+
+        holder.textViewOptions.setOnClickListener {
+            val popup = PopupMenu(holder.textViewPlayerName.context, holder.itemView)
+            popup.inflate(R.menu.player_row_menu)
+
+            popup.setOnMenuItemClickListener { item ->
+                when(item.itemId) {
+                    R.id.itmEditPlayer ->
+                        Toast.makeText(holder.itemView.context, "EDIT", Toast.LENGTH_LONG).show()
+                }
+                true
+            }
+
+            popup.show()
+        }
     }
 
     override fun getItemCount() = playerSortedList.size()
@@ -70,6 +84,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
         var btnDeletePlayer: ImageButton = itemView.findViewById(R.id.btnDeletePlayer)
+        var textViewOptions: TextView = itemView.findViewById(R.id.textViewOptions)
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
