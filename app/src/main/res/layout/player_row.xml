@@ -14,7 +14,8 @@
         android:layout_weight="1"
         android:paddingStart="10dp"
         android:paddingEnd="0dp"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
@@ -38,7 +39,7 @@
         android:layout_height="wrap_content"
         android:isIndicator="true"
         android:numStars="3"
-        android:stepSize="1.0"/>
+        android:stepSize="1.0" />
 
     <ImageButton
         android:id="@+id/btnDoneEditing"
@@ -49,4 +50,15 @@
         android:contentDescription="@string/done_edit_player"
         android:visibility="gone"
         app:srcCompat="@android:drawable/ic_input_add" />
+
+    <TextView
+        android:id="@+id/textViewOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="15dp"
+        android:paddingEnd="20dp"
+        android:text="@string/options_icon"
+        android:textAppearance="?android:textAppearanceLarge" />
+
 </LinearLayout>
