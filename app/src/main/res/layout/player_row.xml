@@ -21,16 +21,17 @@
         android:id="@+id/textInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:paddingStart="10dp"
+        android:paddingEnd="0dp"
         android:visibility="gone">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextEditPlayerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:hint="@string/player_name"
-            android:paddingStart="10dp"
-            android:paddingEnd="0dp" />
+            android:hint="@string/player_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <me.zhanghai.android.materialratingbar.MaterialRatingBar
