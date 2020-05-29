@@ -44,9 +44,8 @@
 
     <ImageButton
         android:id="@+id/btnDoneEditing"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/done_edit_player"
         android:visibility="gone"
