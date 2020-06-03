@@ -1,8 +1,8 @@
 package com.roda.paqueue.ui.players
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -16,9 +16,11 @@ import com.roda.paqueue.models.Player
 import io.realm.Realm
 import io.realm.kotlin.where
 
-class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>() {
+class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>() {
 
     private val playerSortedList: SortedList<Player>
+    private var listener: OnClickListener
+    private var mContext: Context? = null
 
     init {
         playerSortedList = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
@@ -28,15 +30,19 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
 
             override fun areItemsTheSame(item1: Player, item2: Player): Boolean = item1 == item2
         })
+        listener = onClickListener
+        mContext = context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.horizontal_menu_layout, parent, false)
-        return UserViewHolder(view)
+        return UserViewHolder(mContext, view, listener)
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         holder.setPlayer(playerSortedList.get(position))
+
+        holder.bind()
 
         holder.btnDeletePlayer.setOnClickListener {
             val player = playerSortedList.get(holder.adapterPosition)
@@ -84,7 +90,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
                     }
                 }
 
-                val softKeyboard: InputMethodManager = holder.itemView.rootView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val softKeyboard: InputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 if(softKeyboard.isActive) {
                     softKeyboard.hideSoftInputFromWindow(holder.itemView.rootView.windowToken, 0)
                 }
@@ -109,7 +115,7 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         playerSortedList.remove(playerSortedList.get(index))
     }
 
-    class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
@@ -118,6 +124,22 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
         var imgBtnDoneEditing: ImageButton = itemView.findViewById(R.id.btnDoneEditing)
         var textInputLayout: TextInputLayout = itemView.findViewById(R.id.textInputLayout)
         var editTextEditPlayer: EditText = itemView.findViewById(R.id.editTextEditPlayerName)
+
+        private var mContext: Context? = context
+
+        fun bind() {
+            itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            onClickListener.onItemClick(adapterPosition)
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            onClickListener.onItemLongClick(adapterPosition)
+            return true
+        }
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
@@ -133,8 +155,13 @@ class SortedListAdapter : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>
             editTextEditPlayer.setText(player.name)
             editTextEditPlayer.requestFocus()
 
-            val softKeyboard: InputMethodManager = itemView.rootView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val softKeyboard: InputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             softKeyboard.showSoftInput(itemView.rootView, InputMethodManager.SHOW_FORCED)
         }
+    }
+
+    interface OnClickListener {
+        fun onItemClick(position: Int)
+        fun onItemLongClick(position: Int)
     }
 }

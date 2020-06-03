@@ -19,11 +19,12 @@ fun RecyclerView.setup(fragment: Fragment) {
     this.layoutManager = LinearLayoutManager(fragment.context)
 }
 
-class PlayersFragment : Fragment() {
+class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
 
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SortedListAdapter
+    private val TAG = "david check"
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -33,7 +34,7 @@ class PlayersFragment : Fragment() {
         playersViewModel =
                 ViewModelProviders.of(this).get(PlayersViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_players, container, false)
-        adapter = SortedListAdapter()
+        adapter = SortedListAdapter(this.context,this)
         recyclerView = root.findViewById<RecyclerView>(R.id.rvPlayers).also { it.setup(this) }
         recyclerView.adapter = adapter
         playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer {
@@ -60,5 +61,13 @@ class PlayersFragment : Fragment() {
             }
         }
         return root
+    }
+
+    override fun onItemClick(position: Int) {
+        Log.d(TAG, "onItemClick: $position")
+    }
+
+    override fun onItemLongClick(position: Int) {
+        Log.d(TAG, "onItemLongClick: $position")
     }
 }
