@@ -1,11 +1,15 @@
 package com.roda.paqueue.ui.players
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -24,6 +28,8 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SortedListAdapter
+    private var itemViewArrayList: ArrayList<View?> = ArrayList()
+    private var isDeleteActive: Boolean = false
     private val TAG = "david check"
 
     override fun onCreateView(
@@ -63,11 +69,35 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
         return root
     }
 
-    override fun onItemClick(position: Int) {
-        Log.d(TAG, "onItemClick: $position")
+    override fun onItemClick(position: Int, itemView: View?) {
+        if(isDeleteActive) {
+            val color: Int? = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
+            if(color == 0) {
+                itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
+                itemViewArrayList.add(itemView)
+            } else {
+                itemView?.setBackgroundColor(Color.TRANSPARENT)
+                itemViewArrayList.remove(itemView)
+            }
+            if(itemViewArrayList.isEmpty()) {
+                // deactivate delete mode
+                isDeleteActive = false
+            }
+        }
     }
 
-    override fun onItemLongClick(position: Int) {
-        Log.d(TAG, "onItemLongClick: $position")
+    override fun onItemLongClick(position: Int, itemView: View?) {
+        if(!isDeleteActive) {
+            // activate delete mode
+            itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
+            itemViewArrayList.add(itemView)
+        } else {
+            // deactivate delete mode
+            itemViewArrayList.forEach { item ->
+                item?.setBackgroundColor(Color.TRANSPARENT)
+            }
+        }
+
+        isDeleteActive = !isDeleteActive
     }
 }

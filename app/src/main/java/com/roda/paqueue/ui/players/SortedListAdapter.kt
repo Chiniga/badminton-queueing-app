@@ -133,11 +133,11 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         }
 
         override fun onClick(v: View?) {
-            onClickListener.onItemClick(adapterPosition)
+            onClickListener.onItemClick(adapterPosition, v)
         }
 
         override fun onLongClick(v: View?): Boolean {
-            onClickListener.onItemLongClick(adapterPosition)
+            onClickListener.onItemLongClick(adapterPosition, v)
             return true
         }
 
@@ -161,7 +161,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
     }
 
     interface OnClickListener {
-        fun onItemClick(position: Int)
-        fun onItemLongClick(position: Int)
+        fun onItemClick(position: Int, itemView: View?)
+        fun onItemLongClick(position: Int, itemView: View?)
     }
 }
