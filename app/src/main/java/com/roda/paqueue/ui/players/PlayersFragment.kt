@@ -5,9 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import io.realm.Realm
+import io.realm.RealmList
+import io.realm.kotlin.createObject
+import io.realm.kotlin.where
 
 fun RecyclerView.setup(fragment: Fragment) {
     this.layoutManager = LinearLayoutManager(fragment.context)
@@ -28,9 +29,11 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SortedListAdapter
+    private var playerMenu: Menu? = null
+    private var playerDeleteList: ArrayList<Int> = ArrayList()
     private var itemViewArrayList: ArrayList<View?> = ArrayList()
     private var isDeleteActive: Boolean = false
-    private val TAG = "david check"
+    private val TAG = "PlayersFragment"
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -43,9 +46,8 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
         adapter = SortedListAdapter(this.context,this)
         recyclerView = root.findViewById<RecyclerView>(R.id.rvPlayers).also { it.setup(this) }
         recyclerView.adapter = adapter
-        playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer {
+        playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer { players ->
             // display players
-            val players: List<Player> = it
             if(players.isNotEmpty()) {
                 adapter.addPlayers(players)
             }
@@ -69,35 +71,76 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
         return root
     }
 
+    // enable options menu in this fragment
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu, menu)
+
+        playerMenu = menu
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // get item id to handle item clicks
+        val id = item.itemId
+        // handle item clicks
+        if (id == R.id.delete_player) {
+            playerDeleteList.forEach { playerIndex ->
+                adapter.removePlayer(playerIndex)
+            }
+            deactivateDeleteMode()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onItemClick(position: Int, itemView: View?) {
-        if(isDeleteActive) {
+        if (isDeleteActive) {
             val color: Int? = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
-            if(color == 0) {
+            if (color == 0) {
                 itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
                 itemViewArrayList.add(itemView)
+                playerDeleteList.add(position)
             } else {
                 itemView?.setBackgroundColor(Color.TRANSPARENT)
                 itemViewArrayList.remove(itemView)
+                playerDeleteList.remove(position)
             }
-            if(itemViewArrayList.isEmpty()) {
-                // deactivate delete mode
-                isDeleteActive = false
+            if (itemViewArrayList.isEmpty()) {
+                deactivateDeleteMode()
             }
         }
     }
 
     override fun onItemLongClick(position: Int, itemView: View?) {
-        if(!isDeleteActive) {
+        if (!isDeleteActive) {
             // activate delete mode
             itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
             itemViewArrayList.add(itemView)
+            playerDeleteList.add(position)
+            activateDeleteMode()
         } else {
             // deactivate delete mode
             itemViewArrayList.forEach { item ->
                 item?.setBackgroundColor(Color.TRANSPARENT)
             }
+            deactivateDeleteMode()
         }
+    }
 
-        isDeleteActive = !isDeleteActive
+    private fun deactivateDeleteMode() {
+        isDeleteActive = false
+        playerMenu?.findItem(R.id.delete_player)?.isVisible = false
+        playerMenu?.findItem(R.id.search_player)?.isVisible = true
+        playerDeleteList = ArrayList()
+    }
+
+    private fun activateDeleteMode() {
+        isDeleteActive = true
+        playerMenu?.findItem(R.id.delete_player)?.isVisible = true
+        playerMenu?.findItem(R.id.search_player)?.isVisible = false
     }
 }

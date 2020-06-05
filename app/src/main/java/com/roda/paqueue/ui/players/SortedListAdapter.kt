@@ -45,14 +45,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         holder.bind()
 
         holder.btnDeletePlayer.setOnClickListener {
-            val player = playerSortedList.get(holder.adapterPosition)
             removePlayer(holder.adapterPosition)
-            Realm.getDefaultInstance().use { realm ->
-                val playerDelete = realm.where<Player>().equalTo("id", player.id).findFirst()
-                realm.executeTransaction {
-                    playerDelete?.deleteFromRealm()
-                }
-            }
         }
 
         holder.textViewOptions.setOnClickListener {
@@ -75,7 +68,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
             val player = playerSortedList.get(currPos)
             val newPlayerName = holder.editTextEditPlayer.text
             val newPlayerLevel = holder.ratingBarLevel.rating
-            if(player.isValidName(newPlayerName.toString()) && newPlayerLevel != 0.0f) {
+            if (player.isValidName(newPlayerName.toString()) && newPlayerLevel != 0.0f) {
                 holder.textViewPlayerName.visibility = View.VISIBLE
                 holder.textViewOptions.visibility = View.VISIBLE
                 holder.ratingBarLevel.setIsIndicator(true)
@@ -91,7 +84,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
                 }
 
                 val softKeyboard: InputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                if(softKeyboard.isActive) {
+                if (softKeyboard.isActive) {
                     softKeyboard.hideSoftInputFromWindow(holder.itemView.rootView.windowToken, 0)
                 }
             }
@@ -108,11 +101,17 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         playerSortedList.updateItemAt(index, player)
     }
 
-    private fun removePlayer(index: Int) {
+    fun removePlayer(index: Int) {
         if (playerSortedList.size() == 0) {
             return
         }
-        playerSortedList.remove(playerSortedList.get(index))
+        val player = playerSortedList.get(index)
+        playerSortedList.remove(player)
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction {
+                player?.deleteFromRealm()
+            }
+        }
     }
 
     class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
