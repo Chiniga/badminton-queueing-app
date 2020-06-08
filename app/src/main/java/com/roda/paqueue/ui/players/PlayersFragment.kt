@@ -65,6 +65,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
                     realm.executeTransaction { r ->
                         r.insert(player)
                     }
+                    Toast.makeText(this.context, playerName.text.toString() + " has been added", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -93,6 +94,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
                 adapter.removePlayer(playerIndex)
             }
             deactivateDeleteMode()
+            Toast.makeText(this.context, "Players have been deleted", Toast.LENGTH_LONG).show()
         }
         return super.onOptionsItemSelected(item)
     }

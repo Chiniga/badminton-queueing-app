@@ -47,6 +47,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
         holder.btnDeletePlayer.setOnClickListener {
             removePlayer(holder.adapterPosition)
+            Toast.makeText(mContext, "Player has been deleted", Toast.LENGTH_LONG).show()
         }
 
         holder.textViewOptions.setOnClickListener {
@@ -87,6 +88,8 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
                         r.insertOrUpdate(player)
                     }
                 }
+
+                Toast.makeText(mContext, "$newPlayerName has been modified", Toast.LENGTH_LONG).show()
 
                 val softKeyboard: InputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 if (softKeyboard.isActive) {
