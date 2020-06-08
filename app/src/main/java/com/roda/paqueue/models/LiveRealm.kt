@@ -7,7 +7,7 @@ import io.realm.*
  * Class connecting the Realm lifecycle to that of LiveData objects.
  * Realm will remain open for as long as any LiveData objects are being observed.
  */
-abstract class LiveRealmData<T: RealmModel>(val config: RealmConfiguration) : LiveData<RealmResults<T>>() {
+abstract class LiveRealmData<T: RealmModel>(private val config: RealmConfiguration) : LiveData<RealmResults<T>>() {
 
     private val listener = RealmChangeListener<RealmResults<T>> { results -> value = results }
     private lateinit var realm: Realm
@@ -17,12 +17,11 @@ abstract class LiveRealmData<T: RealmModel>(val config: RealmConfiguration) : Li
         realm = Realm.getInstance(config)
         results = runQuery(realm)
         results!!.addChangeListener(listener)
-        value = results;
+        value = results
     }
     final override fun onInactive() {
         results!!.removeAllChangeListeners()
         results = null
-        realm.close()
     }
 
     abstract fun runQuery(realm: Realm): RealmResults<T>

@@ -27,9 +27,4 @@ class PlayersViewModel : ViewModel() {
             }
         }
     }
-
-    override fun onCleared() {
-        realm.close()
-        super.onCleared()
-    }
 }
