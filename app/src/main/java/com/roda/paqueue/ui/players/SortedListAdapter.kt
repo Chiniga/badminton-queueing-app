@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
@@ -54,8 +55,12 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
             popup.setOnMenuItemClickListener { item ->
                 when(item.itemId) {
-                    R.id.itmEditPlayer ->
+                    R.id.itmEditPlayer -> {
                         holder.enableEdit(playerSortedList.get(holder.adapterPosition))
+                        val layoutAddPlayer =
+                            holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
+                        layoutAddPlayer.visibility = View.GONE
+                    }
                 }
                 true
             }
@@ -87,6 +92,11 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
                 if (softKeyboard.isActive) {
                     softKeyboard.hideSoftInputFromWindow(holder.itemView.rootView.windowToken, 0)
                 }
+
+                val layoutAddPlayer =
+                    holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
+                layoutAddPlayer.visibility = View.VISIBLE
+
             }
         }
     }
