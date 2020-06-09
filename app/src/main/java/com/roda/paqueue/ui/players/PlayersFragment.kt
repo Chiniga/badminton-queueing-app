@@ -59,7 +59,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
             val playerLevel = root.findViewById<RatingBar>(R.id.ratingBar)
             Realm.getDefaultInstance().use { realm ->
                 val player = Player()
-                if(player.isValidName(playerName.text.toString()) && playerLevel.rating != 0.0f) {
+                if(player.isValidPlayer(this.context, playerName.text.toString(), playerLevel.rating)) {
                     player.name = playerName.text.toString()
                     player.level = playerLevel.rating
                     realm.executeTransaction { r ->

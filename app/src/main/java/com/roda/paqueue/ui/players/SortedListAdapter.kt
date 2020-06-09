@@ -1,7 +1,6 @@
 package com.roda.paqueue.ui.players
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
 import io.realm.Realm
-import io.realm.kotlin.where
 
 class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>() {
 
@@ -74,7 +72,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
             val player = playerSortedList.get(currPos)
             val newPlayerName = holder.editTextEditPlayer.text
             val newPlayerLevel = holder.ratingBarLevel.rating
-            if (player.isValidName(newPlayerName.toString()) && newPlayerLevel != 0.0f) {
+            if (player.isValidPlayer(mContext, newPlayerName.toString(), newPlayerLevel)) {
                 holder.textViewPlayerName.visibility = View.VISIBLE
                 holder.textViewOptions.visibility = View.VISIBLE
                 holder.ratingBarLevel.setIsIndicator(true)
