@@ -31,7 +31,8 @@
             android:id="@+id/editTextEditPlayerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/player_name" />
+            android:hint="@string/player_name"
+            android:singleLine="true"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <me.zhanghai.android.materialratingbar.MaterialRatingBar
