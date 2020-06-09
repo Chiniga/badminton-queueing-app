@@ -19,7 +19,7 @@ open class Player (
     var created_at: Date = Date(),
     var queues: RealmList<Queue>? = RealmList()
 ): RealmObject() {
-    fun isValidPlayer(context: Context?, name: String, level: Float, id: String? = null): Boolean {
+    fun isValid(context: Context?, name: String, level: Float, id: String? = null): Boolean {
         // check name syntax
         val regex = "^[A-Za-z ]+\$".toRegex()
         if (!regex.matches(name)) {
