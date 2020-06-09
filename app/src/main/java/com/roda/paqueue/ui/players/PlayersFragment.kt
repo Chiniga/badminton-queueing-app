@@ -66,6 +66,8 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
                         r.insert(player)
                     }
                     Toast.makeText(this.context, playerName.text.toString() + " has been added", Toast.LENGTH_LONG).show()
+                    playerName.setText("")
+                    playerLevel.rating = 0.0f
                 }
             }
         }
