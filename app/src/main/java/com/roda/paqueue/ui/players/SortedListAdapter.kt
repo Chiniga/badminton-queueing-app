@@ -14,6 +14,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
 import io.realm.Realm
+import java.util.*
 
 class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>() {
 
@@ -23,7 +24,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
     init {
         playerSortedList = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
-            override fun compare(p1: Player, p2: Player): Int = p1.name.compareTo(p2.name)
+            override fun compare(p1: Player, p2: Player): Int = p1.name.toLowerCase(Locale.ROOT).compareTo(p2.name.toLowerCase(Locale.ROOT))
 
             override fun areContentsTheSame(oldItem: Player, newItem: Player): Boolean = oldItem.id == newItem.id
 

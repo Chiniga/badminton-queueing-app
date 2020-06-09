@@ -3,10 +3,7 @@ package com.roda.paqueue.models
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import io.realm.Realm
-import io.realm.RealmList
-import io.realm.RealmObject
-import io.realm.RealmResults
+import io.realm.*
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
 import io.realm.kotlin.where
@@ -33,7 +30,7 @@ open class Player (
         // check if name already exists
         var playerExists: Player? = null
         Realm.getDefaultInstance().use { realm ->
-            playerExists = realm.where<Player>().equalTo("name", name).findFirst()
+            playerExists = realm.where<Player>().contains("name", name, Case.INSENSITIVE).findFirst()
         }
         if (playerExists != null && playerExists?.id != id) {
             Toast.makeText(context, "$name already exists", Toast.LENGTH_LONG).show()
