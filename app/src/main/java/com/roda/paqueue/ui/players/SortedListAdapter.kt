@@ -72,7 +72,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
             val player = playerSortedList.get(currPos)
             val newPlayerName = holder.editTextEditPlayer.text
             val newPlayerLevel = holder.ratingBarLevel.rating
-            if (player.isValidPlayer(mContext, newPlayerName.toString(), newPlayerLevel)) {
+            if (player.isValidPlayer(mContext, newPlayerName.toString(), newPlayerLevel, player.id)) {
                 holder.textViewPlayerName.visibility = View.VISIBLE
                 holder.textViewOptions.visibility = View.VISIBLE
                 holder.ratingBarLevel.setIsIndicator(true)

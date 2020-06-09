@@ -22,7 +22,7 @@ open class Player (
     var created_at: Date = Date(),
     var queues: RealmList<Queue>? = RealmList()
 ): RealmObject() {
-    fun isValidPlayer(context: Context?, name: String, level: Float): Boolean {
+    fun isValidPlayer(context: Context?, name: String, level: Float, id: String? = null): Boolean {
         // check name syntax
         val regex = "^[A-Za-z ]+\$".toRegex()
         if (!regex.matches(name)) {
@@ -35,13 +35,13 @@ open class Player (
         Realm.getDefaultInstance().use { realm ->
             playerExists = realm.where<Player>().equalTo("name", name).findFirst()
         }
-        if (playerExists != null) {
+        if (playerExists != null && playerExists?.id != id) {
             Toast.makeText(context, "$name already exists", Toast.LENGTH_LONG).show()
             return false
         }
 
         // check level
-        if(level == 0.0f) {
+        if (level == 0.0f) {
             Toast.makeText(context, "Please provide a level", Toast.LENGTH_LONG).show()
             return false
         }
