@@ -2,7 +2,6 @@ package com.roda.paqueue.ui.players
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
 import com.tubb.smrv.SwipeHorizontalMenuLayout
-import com.tubb.smrv.SwipeMenuLayout
 import io.realm.Realm
 import java.util.*
 
@@ -111,6 +109,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
     override fun onViewRecycled(holder: UserViewHolder) {
         super.onViewRecycled(holder)
         holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+        holder.sml.closeEndMenuWithoutAnimation()
     }
 
     override fun getItemCount() = playerSortedList.size()
