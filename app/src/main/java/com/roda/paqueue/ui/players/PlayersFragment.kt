@@ -30,7 +30,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SortedListAdapter
     private var playerMenu: Menu? = null
-    private var playerDeleteList: ArrayList<Int> = ArrayList()
+    private var playerDeleteList: ArrayList<Player> = ArrayList()
     private var itemViewArrayList: ArrayList<View?> = ArrayList()
     private var isDeleteActive: Boolean = false
     private val TAG = "PlayersFragment"
@@ -92,11 +92,11 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
         val id = item.itemId
         // handle item clicks
         if (id == R.id.delete_player) {
-            playerDeleteList.forEach { playerIndex ->
-                adapter.removePlayer(playerIndex)
+            playerDeleteList.forEach { player ->
+                adapter.removePlayer(player)
             }
             deactivateDeleteMode()
-            Toast.makeText(this.context, "Players have been deleted", Toast.LENGTH_LONG).show()
+            Toast.makeText(this.context, "Delete successful", Toast.LENGTH_LONG).show()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -107,11 +107,11 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
             if (color == 0) {
                 itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
                 itemViewArrayList.add(itemView)
-                playerDeleteList.add(position)
+                playerDeleteList.add(adapter.getPlayer(position))
             } else {
                 itemView?.setBackgroundColor(Color.TRANSPARENT)
                 itemViewArrayList.remove(itemView)
-                playerDeleteList.remove(position)
+                playerDeleteList.remove(adapter.getPlayer(position))
             }
             if (itemViewArrayList.isEmpty()) {
                 deactivateDeleteMode()
@@ -124,7 +124,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
             // activate delete mode
             itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
             itemViewArrayList.add(itemView)
-            playerDeleteList.add(position)
+            playerDeleteList.add(adapter.getPlayer(position))
             activateDeleteMode()
         } else {
             // deactivate delete mode
@@ -140,6 +140,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
         playerMenu?.findItem(R.id.delete_player)?.isVisible = false
         playerMenu?.findItem(R.id.search_player)?.isVisible = true
         playerDeleteList = ArrayList()
+        itemViewArrayList = ArrayList()
     }
 
     private fun activateDeleteMode() {

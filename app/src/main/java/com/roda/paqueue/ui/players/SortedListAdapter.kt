@@ -1,6 +1,8 @@
 package com.roda.paqueue.ui.players
 
 import android.content.Context
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,8 @@ import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
+import com.tubb.smrv.SwipeHorizontalMenuLayout
+import com.tubb.smrv.SwipeMenuLayout
 import io.realm.Realm
 import java.util.*
 
@@ -45,8 +49,9 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         holder.bind()
 
         holder.btnDeletePlayer.setOnClickListener {
-            removePlayer(holder.adapterPosition)
-            Toast.makeText(mContext, "Player has been deleted", Toast.LENGTH_LONG).show()
+            val player = playerSortedList.get(holder.adapterPosition)
+            removePlayer(player)
+            Toast.makeText(mContext, "Delete successful", Toast.LENGTH_LONG).show()
         }
 
         holder.textViewOptions.setOnClickListener {
@@ -103,7 +108,14 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         }
     }
 
+    override fun onViewRecycled(holder: UserViewHolder) {
+        super.onViewRecycled(holder)
+        holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+    }
+
     override fun getItemCount() = playerSortedList.size()
+
+    fun getPlayer(position: Int): Player = playerSortedList.get(position)
 
     fun addPlayers(player: List<Player>) {
         playerSortedList.addAll(player)
@@ -113,11 +125,10 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         playerSortedList.updateItemAt(index, player)
     }
 
-    fun removePlayer(index: Int) {
+    fun removePlayer(player: Player?) {
         if (playerSortedList.size() == 0) {
             return
         }
-        val player = playerSortedList.get(index)
         playerSortedList.remove(player)
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
@@ -135,6 +146,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         var imgBtnDoneEditing: ImageButton = itemView.findViewById(R.id.btnDoneEditing)
         var textInputLayout: TextInputLayout = itemView.findViewById(R.id.textInputLayout)
         var editTextEditPlayer: EditText = itemView.findViewById(R.id.editTextEditPlayerName)
+        var sml: SwipeHorizontalMenuLayout = itemView.findViewById(R.id.sml)
 
         private var mContext: Context? = context
 
