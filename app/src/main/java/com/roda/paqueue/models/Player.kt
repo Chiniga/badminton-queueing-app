@@ -30,7 +30,7 @@ open class Player (
         // check if name already exists
         var playerExists: Player? = null
         Realm.getDefaultInstance().use { realm ->
-            playerExists = realm.where<Player>().contains("name", name, Case.INSENSITIVE).findFirst()
+            playerExists = realm.where<Player>().equalTo("name", name, Case.INSENSITIVE).findFirst()
         }
         if (playerExists != null && playerExists?.id != id) {
             Toast.makeText(context, "$name already exists", Toast.LENGTH_LONG).show()
