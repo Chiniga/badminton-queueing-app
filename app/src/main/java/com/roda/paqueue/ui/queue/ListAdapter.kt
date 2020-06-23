@@ -1,23 +1,19 @@
 package com.roda.paqueue.ui.queue
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.R
-import com.roda.paqueue.models.Player
 import com.roda.paqueue.models.Queue
-import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
 import java.util.*
 
 class ListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<ListAdapter.UserViewHolder>() {
 
-    private val queueList: ArrayList<Player> = ArrayList()
+    private val queueList: ArrayList<Queue> = ArrayList()
     private var listener: OnClickListener = onClickListener
     private var mContext: Context? = null
 
@@ -38,11 +34,11 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
 
     override fun getItemCount() = queueList.size
 
-    fun addQueues(queues: List<Player>) {
+    fun addQueues(queues: List<Queue>) {
         queueList.addAll(queues)
     }
 
-    fun removeQueue(queue: Player?) {
+    fun removeQueue(queue: Queue?) {
         if (queueList.size == 0) {
             return
         }
@@ -55,7 +51,11 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
     }
 
     class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-
+        var playerOne: TextView = itemView.findViewById(R.id.playerOne)
+        var playerTwo: TextView = itemView.findViewById(R.id.playerTwo)
+        var playerThree: TextView = itemView.findViewById(R.id.playerThree)
+        var playerFour: TextView = itemView.findViewById(R.id.playerFour)
+        var courtNumber: TextView = itemView.findViewById(R.id.courtNumber)
         private var mContext: Context? = context
 
         fun bind() {
@@ -72,8 +72,12 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
             return true
         }
 
-        fun setQueue(queue: Player) {
-
+        fun setQueue(queue: Queue) {
+            playerOne.text = queue.players[0]?.name
+            playerTwo.text = queue.players[1]?.name
+            playerThree.text = queue.players[2]?.name
+            playerFour.text = queue.players[3]?.name
+            courtNumber.text = queue.court_number.toString()
         }
     }
 

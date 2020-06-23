@@ -17,7 +17,7 @@ open class Player (
     var level: Float = 1.0f,
     var num_games: Int = 0,
     var created_at: Date = Date(),
-    var queues: RealmList<Queue>? = RealmList()
+    var queue: Queue? = null
 ): RealmObject() {
     fun isValid(context: Context?, name: String, level: Float, id: String? = null): Boolean {
         // check name syntax

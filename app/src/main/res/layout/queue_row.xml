@@ -22,7 +22,6 @@
             android:id="@+id/playerOne"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Player One"
             android:textAllCaps="true" />
 
         <TextView
@@ -31,7 +30,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginTop="10dp"
-            android:text="Player Two"
             android:textAllCaps="true" />
 
         <TextView
@@ -39,7 +37,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="Player Three"
             android:textAllCaps="true" />
 
         <TextView
@@ -47,7 +44,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:text="Player Four"
             android:textAllCaps="true" />
 
         <TextView
@@ -55,7 +51,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Court#"
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="bold" />

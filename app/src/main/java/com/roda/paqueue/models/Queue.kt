@@ -8,9 +8,10 @@ import java.util.*
 
 open class Queue (
     @PrimaryKey
-    var id: String = UUID.randomUUID().toString(),
+    var id: String,
     @Required
-    var status: String = "",
+    var status: String = "IDLE",
+    var court_number: Int = 0,
     var created_at: Date = Date(),
     var players: RealmList<Player> = RealmList()
 ): RealmObject()
