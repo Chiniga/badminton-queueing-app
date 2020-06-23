@@ -37,7 +37,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.horizontal_menu_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.player_horizontal_menu_layout, parent, false)
         return UserViewHolder(mContext, view, listener)
     }
 
