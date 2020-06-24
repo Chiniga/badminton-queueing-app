@@ -20,6 +20,7 @@ import com.roda.paqueue.ui.players.setup
 import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmObject
+import io.realm.Sort
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import java.util.*
@@ -66,24 +67,37 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
                 return@setOnClickListener
             }
             val numCourts: Int = Integer.parseInt(textNumCourts)
+            val allowedPlayers: Int = numCourts * playersPerCourt
             Realm.getDefaultInstance().use { realm ->
-                val atLeastFour = realm.where<Player>().limit(playersPerCourt.toLong()).findAll()
-                if(atLeastFour.count() < playersPerCourt) {
-                    Toast.makeText(this.context, "You do not have enough players", Toast.LENGTH_LONG).show()
+                val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
+                if(checkPlayers.size < allowedPlayers) {
+                    Toast.makeText(this.context, "You do not have enough players for $numCourts courts", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
                 for(court in 1..numCourts) {
                     realm.executeTransaction {
-                        // add players to queue
-                        val players = realm.where<Player>().isNull("queue").sort("num_games")
+                        // get all players with less or no queues
+                        val players = realm.where<Player>().sort("queue_games")
                             .limit(playersPerCourt.toLong()).findAll()
 
+                        // check queue for active queue with specific court number
+                        val checkQueue = realm.where<Queue>().equalTo("court_number", court)
+                            .equalTo("status", QUEUE_STATUSES.ACTIVE).findFirst()
+
+                        // add players to queue
                         val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
+                        queue.status = if(checkQueue == null) QUEUE_STATUSES.ACTIVE else QUEUE_STATUSES.IDLE
                         queue.court_number = court
                         queue.players.addAll(players)
 
                         // add queue to players
-                        players.setValue("queue", queue)
+                        players.forEach { player ->
+                            val queueGames = player.queue_games.split('_')
+                            val addQueue = Integer.parseInt(queueGames[0]) + 1
+                            player.queue_count++
+                            player.queue_games = addQueue.toString() + "_" + queueGames[1]
+                            player.queue.add(queue)
+                        }
                     }
                 }
                 Toast.makeText(this.context, "Queues generated", Toast.LENGTH_LONG).show()
