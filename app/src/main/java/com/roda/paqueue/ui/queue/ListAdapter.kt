@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Queue
@@ -30,6 +31,15 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         holder.setQueue(queueList[position])
 
         holder.bind()
+
+        val queue = queueList[position]
+        if(queue.status == "ACTIVE") {
+            mContext?.resources?.getColor(R.color.greenBg)?.let {
+                holder.card.setBackgroundColor(
+                    it
+                )
+            }
+        }
     }
 
     override fun getItemCount() = queueList.size
@@ -56,6 +66,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         var playerThree: TextView = itemView.findViewById(R.id.playerThree)
         var playerFour: TextView = itemView.findViewById(R.id.playerFour)
         var courtNumber: TextView = itemView.findViewById(R.id.courtNumber)
+        var card: CardView = itemView.findViewById(R.id.cvQueueRow)
         private var mContext: Context? = context
 
         fun bind() {
