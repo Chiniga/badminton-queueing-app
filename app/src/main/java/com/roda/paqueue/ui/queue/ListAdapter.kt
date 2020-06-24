@@ -98,7 +98,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
             ratingBarPlayerTwo.rating = queue.players[1]?.level!!
             ratingBarPlayerThree.rating = queue.players[2]?.level!!
             ratingBarPlayerFour.rating = queue.players[3]?.level!!
-            courtNumber.text = queue.court_number.toString()
+            courtNumber.text = if(queue.court_number != 0) queue.court_number.toString() else ""
         }
     }
 

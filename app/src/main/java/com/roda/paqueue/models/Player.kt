@@ -17,7 +17,7 @@ open class Player (
     var level: Float = 1.0f,
     var num_games: Int = 0,
     var queue_count: Int = 0,
-    var queue_games: String = "0_0",
+    var queues_games: String = "0_0",
     var created_at: Date = Date(),
     var queue: RealmList<Queue> = RealmList()
 ): RealmObject() {
