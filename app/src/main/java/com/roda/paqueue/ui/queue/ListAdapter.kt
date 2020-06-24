@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Queue
@@ -36,7 +37,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         val queue = queueList[position]
         if(queue.status == "ACTIVE") {
             mContext?.resources?.getColor(R.color.greenBg)?.let {
-                holder.card.setBackgroundColor(
+                holder.layoutQueueItem.setBackgroundColor(
                     it
                 )
             }
@@ -71,7 +72,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         var ratingBarPlayerThree: RatingBar = itemView.findViewById(R.id.ratingBarPlayerThreeLevel)
         var ratingBarPlayerFour: RatingBar = itemView.findViewById(R.id.ratingBarPlayerFourLevel)
         var courtNumber: TextView = itemView.findViewById(R.id.courtNumber)
-        var card: CardView = itemView.findViewById(R.id.cvQueueRow)
+        var layoutQueueItem: ConstraintLayout = itemView.findViewById(R.id.layoutQueueItem)
         private var mContext: Context? = context
 
         fun bind() {
