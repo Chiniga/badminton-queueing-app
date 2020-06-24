@@ -86,6 +86,7 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
                         players.setValue("queue", queue)
                     }
                 }
+                Toast.makeText(this.context, "Queues generated", Toast.LENGTH_LONG).show()
             }
         }
         return root
