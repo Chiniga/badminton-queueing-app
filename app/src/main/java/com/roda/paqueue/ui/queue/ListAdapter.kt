@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -65,6 +66,10 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         var playerTwo: TextView = itemView.findViewById(R.id.playerTwo)
         var playerThree: TextView = itemView.findViewById(R.id.playerThree)
         var playerFour: TextView = itemView.findViewById(R.id.playerFour)
+        var ratingBarPlayerOne: RatingBar = itemView.findViewById(R.id.ratingBarPlayerOneLevel)
+        var ratingBarPlayerTwo: RatingBar = itemView.findViewById(R.id.ratingBarPlayerTwoLevel)
+        var ratingBarPlayerThree: RatingBar = itemView.findViewById(R.id.ratingBarPlayerThreeLevel)
+        var ratingBarPlayerFour: RatingBar = itemView.findViewById(R.id.ratingBarPlayerFourLevel)
         var courtNumber: TextView = itemView.findViewById(R.id.courtNumber)
         var card: CardView = itemView.findViewById(R.id.cvQueueRow)
         private var mContext: Context? = context
@@ -88,6 +93,10 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
             playerTwo.text = queue.players[1]?.name
             playerThree.text = queue.players[2]?.name
             playerFour.text = queue.players[3]?.name
+            ratingBarPlayerOne.rating = queue.players[0]?.level!!
+            ratingBarPlayerTwo.rating = queue.players[1]?.level!!
+            ratingBarPlayerThree.rating = queue.players[2]?.level!!
+            ratingBarPlayerFour.rating = queue.players[3]?.level!!
             courtNumber.text = queue.court_number.toString()
         }
     }
