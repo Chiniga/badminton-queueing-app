@@ -8,7 +8,7 @@ import java.util.*
 
 open class Queue (
     @PrimaryKey
-    var id: String,
+    var id: String = UUID.randomUUID().toString(),
     @Required
     var status: String = "IDLE",
     var court_number: Int = 0,

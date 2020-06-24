@@ -66,11 +66,10 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
                 return@setOnClickListener
             }
             val numCourts: Int = Integer.parseInt(textNumCourts)
-            val courtLimit: Int = numCourts * playersPerCourt
             Realm.getDefaultInstance().use { realm ->
-                val allPlayers = realm.where<Player>().sort("num_games").limit(courtLimit.toLong()).findAll()
-                if(allPlayers.count() < courtLimit) {
-                    Toast.makeText(this.context, "You do not have enough players for $numCourts courts", Toast.LENGTH_LONG).show()
+                val atLeastFour = realm.where<Player>().limit(playersPerCourt.toLong()).findAll()
+                if(atLeastFour.count() < playersPerCourt) {
+                    Toast.makeText(this.context, "You do not have enough players", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
                 for(court in 1..numCourts) {
