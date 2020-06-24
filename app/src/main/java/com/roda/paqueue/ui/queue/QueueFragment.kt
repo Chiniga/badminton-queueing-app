@@ -15,15 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
-import com.roda.paqueue.models.Queue
 import com.roda.paqueue.ui.players.setup
 import io.realm.Realm
-import io.realm.RealmList
-import io.realm.RealmObject
-import io.realm.Sort
-import io.realm.kotlin.createObject
 import io.realm.kotlin.where
-import java.util.*
 
 fun RecyclerView.setup(fragment: Fragment) {
     this.layoutManager = LinearLayoutManager(fragment.context)
@@ -34,13 +28,7 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
     private lateinit var queueViewModel: QueueViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ListAdapter
-    private val playersPerCourt: Int = 4
     private var TAG = "QueueFragment"
-
-    private val QUEUE_STATUSES = object {
-        var IDLE: String = "IDLE"
-        var ACTIVE: String = "ACTIVE"
-    }
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -67,42 +55,15 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
                 return@setOnClickListener
             }
             val numCourts: Int = Integer.parseInt(textNumCourts)
-            val allowedPlayers: Int = numCourts * playersPerCourt
+            val allowedPlayers: Int = numCourts * QueueConstants.PLAYERS_PER_COURT
             Realm.getDefaultInstance().use { realm ->
                 val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
                 if(checkPlayers.size < allowedPlayers) {
                     Toast.makeText(this.context, "You do not have enough players for $numCourts courts", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                for(court in 1..numCourts) {
-                    realm.executeTransaction {
-                        // get all players with less or no queues
-                        val playerList = ArrayList<Player>()
-                        val players = realm.where<Player>().sort("queue_games")
-                            .limit(playersPerCourt.toLong()).findAll()
-                        playerList.addAll(players)
-                        playerList.shuffle()
-
-                        // check queue for active queue with specific court number
-                        val checkQueue = realm.where<Queue>().equalTo("court_number", court)
-                            .equalTo("status", QUEUE_STATUSES.ACTIVE).findFirst()
-
-                        // add players to queue
-                        val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
-                        queue.status = if(checkQueue == null) QUEUE_STATUSES.ACTIVE else QUEUE_STATUSES.IDLE
-                        queue.court_number = court
-                        queue.players.addAll(playerList)
-
-                        // add queue to players
-                        players.forEach { player ->
-                            val queueGames = player.queue_games.split('_')
-                            val addQueue = Integer.parseInt(queueGames[0]) + 1
-                            player.queue_count++
-                            player.queue_games = addQueue.toString() + "_" + queueGames[1]
-                            player.queue.add(queue)
-                        }
-                    }
-                }
+                val queueManager = QueueManager(realm)
+                queueManager.generate(numCourts)
                 Toast.makeText(this.context, "Queues generated", Toast.LENGTH_LONG).show()
             }
         }
