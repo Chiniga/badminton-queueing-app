@@ -77,8 +77,11 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
                 for(court in 1..numCourts) {
                     realm.executeTransaction {
                         // get all players with less or no queues
+                        val playerList = ArrayList<Player>()
                         val players = realm.where<Player>().sort("queue_games")
                             .limit(playersPerCourt.toLong()).findAll()
+                        playerList.addAll(players)
+                        playerList.shuffle()
 
                         // check queue for active queue with specific court number
                         val checkQueue = realm.where<Queue>().equalTo("court_number", court)
@@ -88,7 +91,7 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
                         val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
                         queue.status = if(checkQueue == null) QUEUE_STATUSES.ACTIVE else QUEUE_STATUSES.IDLE
                         queue.court_number = court
-                        queue.players.addAll(players)
+                        queue.players.addAll(playerList)
 
                         // add queue to players
                         players.forEach { player ->
