@@ -12,6 +12,7 @@
         android:layout_weight="1"
         android:backgroundTint="#3561E5"
         android:contentDescription="@string/done_queue"
+        android:visibility="gone"
         app:srcCompat="@drawable/ic_launcher_foreground" />
 
     <ImageButton

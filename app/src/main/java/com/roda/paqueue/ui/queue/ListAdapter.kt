@@ -39,6 +39,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
                     it
                 )
             }
+            holder.finishQueue.visibility = View.VISIBLE
         }
 
         holder.finishQueue.setOnClickListener {
