@@ -4,8 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +24,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.queue_row, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.queue_horizontal_menu_layout, parent, false)
         return UserViewHolder(mContext, view, listener)
     }
 
@@ -34,13 +33,22 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
 
         holder.bind()
 
-        val queue = queueList[position]
-        if(queue.status == "ACTIVE") {
+        if(queueList[position].status == QueueConstants.STATUS_ACTIVE) {
             mContext?.resources?.getColor(R.color.greenBg)?.let {
                 holder.layoutQueueItem.setBackgroundColor(
                     it
                 )
             }
+        }
+
+        holder.finishQueue.setOnClickListener {
+            finishQueue(queueList[position])
+            Toast.makeText(mContext, "Game finished", Toast.LENGTH_SHORT).show()
+        }
+
+        holder.deleteQueue.setOnClickListener {
+            removeQueue(queueList[position], false)
+            Toast.makeText(mContext, "Game removed", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -50,15 +58,41 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         queueList.addAll(queues)
     }
 
-    fun removeQueue(queue: Queue?) {
+    private fun removeQueue(queue: Queue, isFinished: Boolean) {
         if (queueList.size == 0) {
             return
         }
         queueList.remove(queue)
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
-                queue?.deleteFromRealm()
+                if(!isFinished) {
+                    // subtract queue_count
+                    queue.players.forEach { player ->
+                        val queuesGames = player.queues_games.split('_')
+                        val subQueue = Integer.parseInt(queuesGames[0]) - 1
+                        player.queue_count--
+                        player.queues_games = subQueue.toString() + "_" + queuesGames[1]
+                        player.queue.remove(queue)
+                    }
+                }
+                queue.deleteFromRealm()
             }
+        }
+    }
+
+    private fun finishQueue(queue: Queue) {
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction {
+                // add game to Player
+                queue.players.forEach { player ->
+                    val queuesGames = player.queues_games.split('_')
+                    val addGame = Integer.parseInt(queuesGames[1]) + 1
+                    player.num_games++
+                    player.queues_games = queuesGames[0] + "_" + addGame.toString()
+                    player.queue.remove(queue)
+                }
+            }
+            removeQueue(queue, true)
         }
     }
 
@@ -73,6 +107,8 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         var ratingBarPlayerFour: RatingBar = itemView.findViewById(R.id.ratingBarPlayerFourLevel)
         var courtNumber: TextView = itemView.findViewById(R.id.courtNumber)
         var layoutQueueItem: ConstraintLayout = itemView.findViewById(R.id.layoutQueueItem)
+        var finishQueue: ImageButton = itemView.findViewById(R.id.btnFinishQueue)
+        var deleteQueue: ImageButton = itemView.findViewById(R.id.btnDeleteQueue)
         private var mContext: Context? = context
 
         fun bind() {
