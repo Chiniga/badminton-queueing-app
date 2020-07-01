@@ -15,19 +15,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
-import com.roda.paqueue.ui.players.setup
 import io.realm.Realm
 import io.realm.kotlin.where
 
-fun RecyclerView.setup(fragment: Fragment) {
-    this.layoutManager = LinearLayoutManager(fragment.context)
-}
-
-class QueueFragment : Fragment(), ListAdapter.OnClickListener {
+class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
 
     private lateinit var queueViewModel: QueueViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ListAdapter
+    private lateinit var adapter: QueueAdapter
     private var TAG = "QueueFragment"
 
     override fun onCreateView(
@@ -38,12 +33,14 @@ class QueueFragment : Fragment(), ListAdapter.OnClickListener {
         queueViewModel =
                 ViewModelProviders.of(this).get(QueueViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_queue, container, false)
-        adapter = ListAdapter(this.context,this)
-        recyclerView = root.findViewById<RecyclerView>(R.id.rvQueues).also { it.setup(this) }
+        adapter = QueueAdapter(this.context,this)
+        recyclerView = root.findViewById(R.id.rvQueues)
+        recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
         queueViewModel.getQueues().observe(viewLifecycleOwner, Observer { queues ->
             if(queues.isNotEmpty()) {
-                adapter.addQueues(queues)
+                adapter.submitList(queues)
+                adapter.notifyDataSetChanged()
             }
         })
 

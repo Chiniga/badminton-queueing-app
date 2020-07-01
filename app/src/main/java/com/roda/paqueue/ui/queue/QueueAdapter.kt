@@ -5,22 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Queue
 import io.realm.Realm
-import java.util.*
 
-class ListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<ListAdapter.UserViewHolder>() {
+class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAdapter<Queue, QueueAdapter.UserViewHolder>(QueueListItemCallback()) {
 
-    private val queueList: ArrayList<Queue> = ArrayList()
     private var listener: OnClickListener = onClickListener
     private var mContext: Context? = null
 
     init {
         mContext = context
+    }
+
+    private class QueueListItemCallback : DiffUtil.ItemCallback<Queue>() {
+        override fun areItemsTheSame(oldItem: Queue, newItem: Queue): Boolean {
+            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(oldItem: Queue, newItem: Queue): Boolean {
+            return oldItem.id == newItem.id
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
@@ -29,11 +38,11 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.setQueue(queueList[position])
+        holder.setQueue(getItem(position))
 
         holder.bind()
 
-        if(queueList[position].status == QueueConstants.STATUS_ACTIVE) {
+        if(getItem(position).status == QueueConstants.STATUS_ACTIVE) {
             mContext?.resources?.getColor(R.color.greenBg)?.let {
                 holder.layoutQueueItem.setBackgroundColor(
                     it
@@ -43,27 +52,20 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         }
 
         holder.finishQueue.setOnClickListener {
-            finishQueue(queueList[position])
+            finishQueue(getItem(position))
             Toast.makeText(mContext, "Game finished", Toast.LENGTH_SHORT).show()
         }
 
         holder.deleteQueue.setOnClickListener {
-            removeQueue(queueList[position], false)
+            removeQueue(getItem(position), false)
             Toast.makeText(mContext, "Game removed", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun getItemCount() = queueList.size
-
-    fun addQueues(queues: List<Queue>) {
-        queueList.addAll(queues)
-    }
-
     private fun removeQueue(queue: Queue, isFinished: Boolean) {
-        if (queueList.size == 0) {
+        if (itemCount == 0) {
             return
         }
-        queueList.remove(queue)
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 if(!isFinished) {
@@ -77,6 +79,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
                     }
                 }
                 queue.deleteFromRealm()
+                notifyDataSetChanged()
             }
         }
     }
@@ -97,7 +100,7 @@ class ListAdapter(context: Context?, onClickListener: OnClickListener) : Recycle
         }
     }
 
-    class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
+    inner class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         var playerOne: TextView = itemView.findViewById(R.id.playerOne)
         var playerTwo: TextView = itemView.findViewById(R.id.playerTwo)
         var playerThree: TextView = itemView.findViewById(R.id.playerThree)

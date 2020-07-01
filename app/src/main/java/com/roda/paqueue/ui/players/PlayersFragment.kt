@@ -2,12 +2,9 @@ package com.roda.paqueue.ui.players
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -16,13 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import io.realm.Realm
-import io.realm.RealmList
-import io.realm.kotlin.createObject
-import io.realm.kotlin.where
-
-fun RecyclerView.setup(fragment: Fragment) {
-    this.layoutManager = LinearLayoutManager(fragment.context)
-}
 
 class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
 
@@ -44,7 +34,8 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
                 ViewModelProviders.of(this).get(PlayersViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_players, container, false)
         adapter = SortedListAdapter(this.context,this)
-        recyclerView = root.findViewById<RecyclerView>(R.id.rvPlayers).also { it.setup(this) }
+        recyclerView = root.findViewById(R.id.rvPlayers)
+        recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
         playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer { players ->
             // display players
