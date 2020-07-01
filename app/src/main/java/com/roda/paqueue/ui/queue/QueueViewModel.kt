@@ -19,7 +19,7 @@ class QueueViewModel : ViewModel() {
         return object: LiveRealmData<Queue>(RealmConfiguration.Builder().build())  {
             override fun runQuery(realm: Realm): RealmResults<Queue> {
                 // Called on UI thread
-                return realm.where<Queue>().findAllAsync()
+                return realm.where<Queue>().sort("court_number").findAllAsync()
             }
         }
     }
