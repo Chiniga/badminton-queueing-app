@@ -7,7 +7,7 @@ import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
@@ -31,7 +31,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
             savedInstanceState: Bundle?
     ): View? {
         playersViewModel =
-                ViewModelProviders.of(this).get(PlayersViewModel::class.java)
+                ViewModelProvider(this).get(PlayersViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_players, container, false)
         adapter = SortedListAdapter(this.context,this)
         recyclerView = root.findViewById(R.id.rvPlayers)
