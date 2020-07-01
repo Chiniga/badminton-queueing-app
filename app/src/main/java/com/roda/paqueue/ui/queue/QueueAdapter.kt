@@ -16,6 +16,7 @@ import com.roda.paqueue.models.Queue
 import com.roda.paqueue.ui.players.SortedListAdapter
 import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
+import io.realm.kotlin.where
 
 class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAdapter<Queue, QueueAdapter.UserViewHolder>(QueueListItemCallback()) {
 
@@ -86,10 +87,20 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
                         player.queue.remove(queue)
                     }
                 }
+                if(queue.status == QueueConstants.STATUS_ACTIVE) {
+                    // replace with IDLE queue item
+                    assignNewActive(realm, queue.court_number)
+                }
                 queue.deleteFromRealm()
-                notifyDataSetChanged()
             }
         }
+    }
+
+    private fun assignNewActive(realm: Realm, court_number: Int) {
+        val nextIdle = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
+            .sort("created_at").findFirst()
+        nextIdle?.status = QueueConstants.STATUS_ACTIVE
+        nextIdle?.court_number = court_number
     }
 
     private fun finishQueue(queue: Queue) {
@@ -147,7 +158,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
             ratingBarPlayerTwo.rating = queue.players[1]?.level!!
             ratingBarPlayerThree.rating = queue.players[2]?.level!!
             ratingBarPlayerFour.rating = queue.players[3]?.level!!
-            courtNumber.text = if(queue.court_number != 0) queue.court_number.toString() else ""
+            courtNumber.text = if(queue.court_number != 99) queue.court_number.toString() else ""
         }
     }
 
