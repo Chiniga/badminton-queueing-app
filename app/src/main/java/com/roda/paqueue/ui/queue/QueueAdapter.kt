@@ -1,6 +1,7 @@
 package com.roda.paqueue.ui.queue
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ListAdapter
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Queue
+import com.roda.paqueue.ui.players.SortedListAdapter
+import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
 
 class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAdapter<Queue, QueueAdapter.UserViewHolder>(QueueListItemCallback()) {
@@ -60,6 +63,12 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
             removeQueue(getItem(position), false)
             Toast.makeText(mContext, "Game removed", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onViewRecycled(holder: QueueAdapter.UserViewHolder) {
+        super.onViewRecycled(holder)
+        holder.layoutQueueItem.setBackgroundColor(Color.TRANSPARENT)
+        holder.sml.closeEndMenuWithoutAnimation()
     }
 
     private fun removeQueue(queue: Queue, isFinished: Boolean) {
@@ -113,6 +122,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
         var layoutQueueItem: ConstraintLayout = itemView.findViewById(R.id.layoutQueueItem)
         var finishQueue: ImageButton = itemView.findViewById(R.id.btnFinishQueue)
         var deleteQueue: ImageButton = itemView.findViewById(R.id.btnDeleteQueue)
+        var sml: SwipeHorizontalMenuLayout = itemView.findViewById(R.id.sml)
         private var mContext: Context? = context
 
         fun bind() {
