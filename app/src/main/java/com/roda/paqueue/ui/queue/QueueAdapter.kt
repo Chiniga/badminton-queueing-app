@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ListAdapter
@@ -46,10 +47,8 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
         holder.bind()
 
         if(getItem(position).status == QueueConstants.STATUS_ACTIVE) {
-            mContext?.resources?.getColor(R.color.greenBg)?.let {
-                holder.layoutQueueItem.setBackgroundColor(
-                    it
-                )
+            mContext?.let { context ->
+                holder.layoutQueueItem.setBackgroundColor(ContextCompat.getColor(context, R.color.greenBg))
             }
             holder.finishQueue.visibility = View.VISIBLE
         }
