@@ -21,7 +21,7 @@ class QueueManager(private val realm: Realm) {
     fun generate(courts: Int) {
         val allPlayers = realm.where<Player>().findAll()
         val queueCount = ceil(allPlayers.size.toDouble() / 4.0).toInt()
-        realm.executeTransaction { r ->
+        realm.executeTransaction {
             var court = realm.where<Court>().findFirst()
             if(court == null) {
                 court = realm.createObject()
@@ -135,6 +135,7 @@ class QueueManager(private val realm: Realm) {
                 val findCourt = realm.where<Queue>().equalTo("court_number", court)
                     .equalTo("status", QueueConstants.STATUS_ACTIVE).findFirst()
                 if (findCourt == null) {
+                    // supply idle queue with missing court number
                     realm.executeTransaction {
                         val idleQueue = idleQueues.first()
                         idleQueue!!.status = QueueConstants.STATUS_ACTIVE
