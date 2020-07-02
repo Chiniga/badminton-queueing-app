@@ -1,12 +1,11 @@
 package com.roda.paqueue.ui.queue
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import android.util.Range
+import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.models.Queue
 import io.realm.Realm
 import io.realm.RealmResults
+import io.realm.kotlin.createObject
 import io.realm.kotlin.oneOf
 import io.realm.kotlin.where
 import java.util.*
@@ -22,23 +21,17 @@ class QueueManager(private val realm: Realm) {
     fun generate(courts: Int) {
         val allPlayers = realm.where<Player>().findAll()
         val queueCount = ceil(allPlayers.size.toDouble() / 4.0).toInt()
-        for(count in 1..queueCount) {
-            realm.executeTransaction {
+        realm.executeTransaction { r ->
+            var court = realm.where<Court>().findFirst()
+            if(court == null) {
+                court = realm.createObject()
+            }
+            court.courts = courts
+            for (count in 1..queueCount) {
                 // get all players with less or no queues
                 val playerList = getPlayers()
-
-                // check queue for active queue with specific court number
-                val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE)
-                    .findAll()
-
-                val court = if(activeQueues.isEmpty()) 1 else activeQueues.size + 1
-
-                // add players to queue
                 val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
-                if(court <= courts) {
-                    queue.status = QueueConstants.STATUS_ACTIVE
-                    queue.court_number = court
-                }
+                // add players to queue
                 queue.players.addAll(playerList)
 
                 // add queue to players
@@ -51,6 +44,7 @@ class QueueManager(private val realm: Realm) {
                 }
             }
         }
+        manageCourts()
     }
 
     private fun getPlayers(): ArrayList<Player> {
@@ -68,7 +62,7 @@ class QueueManager(private val realm: Realm) {
         list.addAll(twoPlayers)
         lateinit var twoMorePlayers: RealmResults<Player>
 
-        when(levelTotal) {
+        when (levelTotal) {
             in LOWER_TIER -> {
                 // 1-1 = opponents with 3 or less total level
                 // 1-2 = opponents with 3 or less total level
@@ -113,7 +107,7 @@ class QueueManager(private val realm: Realm) {
                 twoMorePlayers = realm.where<Player>().greaterThanOrEqualTo("level", minLevel)
                     .not().oneOf("id", excludePlayerIds.toTypedArray())
                     .sort("queues_games").findAll()
-                for(player in twoMorePlayers) {
+                for (player in twoMorePlayers) {
                     if((list.size == 2) ||
                         (((otherLevelTotal + player.level.toInt()) <= 6) &&
                                 ((otherLevelTotal + player.level.toInt()) >= minTotal))) {
@@ -128,5 +122,26 @@ class QueueManager(private val realm: Realm) {
 
         list.shuffle()
         return list
+    }
+
+    private fun manageCourts() {
+        val courts = realm.where<Court>().findFirst()
+        val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count()
+        val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
+            .sort("created_at").findAll()
+
+        if (activeQueues < courts!!.courts && idleQueues.isNotEmpty()) {
+            for (court in 1..courts.courts) {
+                val findCourt = realm.where<Queue>().equalTo("court_number", court)
+                    .equalTo("status", QueueConstants.STATUS_ACTIVE).findFirst()
+                if (findCourt == null) {
+                    realm.executeTransaction {
+                        val idleQueue = idleQueues.first()
+                        idleQueue!!.status = QueueConstants.STATUS_ACTIVE
+                        idleQueue.court_number = court
+                    }
+                }
+            }
+        }
     }
 }
