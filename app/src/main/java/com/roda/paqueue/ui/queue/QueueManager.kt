@@ -66,7 +66,7 @@ class QueueManager(private val realm: Realm) {
             excludePlayerIds.add(player.id)
         }
         list.addAll(twoPlayers)
-        val twoMorePlayers: RealmResults<Player>?
+        lateinit var twoMorePlayers: RealmResults<Player>
 
         when(levelTotal) {
             in LOWER_TIER -> {
