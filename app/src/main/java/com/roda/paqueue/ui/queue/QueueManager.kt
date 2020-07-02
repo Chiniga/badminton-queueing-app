@@ -137,8 +137,8 @@ class QueueManager(private val realm: Realm) {
                 if (findCourt == null) {
                     // supply idle queue with missing court number
                     realm.executeTransaction {
-                        val idleQueue = idleQueues.first()
-                        idleQueue!!.status = QueueConstants.STATUS_ACTIVE
+                        val idleQueue = idleQueues.first()!!
+                        idleQueue.status = QueueConstants.STATUS_ACTIVE
                         idleQueue.court_number = court
                     }
                 }

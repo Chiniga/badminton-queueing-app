@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ListAdapter
 import com.roda.paqueue.R
+import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Queue
 import com.roda.paqueue.ui.players.SortedListAdapter
 import com.tubb.smrv.SwipeHorizontalMenuLayout
@@ -77,7 +78,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
         }
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
-                if(!isFinished) {
+                if (!isFinished) {
                     // subtract queue_count
                     queue.players.forEach { player ->
                         val queuesGames = player.queues_games.split('_')
@@ -87,7 +88,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
                         player.queue.remove(queue)
                     }
                 }
-                if(queue.status == QueueConstants.STATUS_ACTIVE) {
+                if (queue.status == QueueConstants.STATUS_ACTIVE) {
                     // replace with IDLE queue item
                     assignNewActive(realm, queue.court_number)
                 }
@@ -97,10 +98,18 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
     }
 
     private fun assignNewActive(realm: Realm, court_number: Int) {
-        val nextIdle = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
-            .sort("created_at").findFirst()
-        nextIdle?.status = QueueConstants.STATUS_ACTIVE
-        nextIdle?.court_number = court_number
+        // check ACTIVE queues VS number of courts
+        val courts = realm.where<Court>().findFirst()!!
+        val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count()
+        // only set IDLE queue to ACTIVE if ACTIVE queues are <= the actual number of courts available
+        if(activeQueues <= courts.courts) {
+            val nextIdle = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
+                .sort("created_at").findFirst()
+            // check players of idle queue
+            // if player is in-game, find next IDLE queue
+            nextIdle?.status = QueueConstants.STATUS_ACTIVE
+            nextIdle?.court_number = court_number
+        }
     }
 
     private fun finishQueue(queue: Queue) {
