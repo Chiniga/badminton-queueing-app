@@ -12,12 +12,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ListAdapter
 import com.roda.paqueue.R
-import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Queue
-import com.roda.paqueue.ui.players.SortedListAdapter
 import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
-import io.realm.kotlin.where
 
 class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAdapter<Queue, QueueAdapter.UserViewHolder>(QueueListItemCallback()) {
 
@@ -76,6 +73,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
         if (itemCount == 0) {
             return
         }
+        val queueStatus = queue.status
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 if (!isFinished) {
@@ -85,30 +83,16 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
                         val subQueue = Integer.parseInt(queuesGames[0]) - 1
                         player.queue_count--
                         player.queues_games = subQueue.toString() + "_" + queuesGames[1]
-                        player.queue.remove(queue)
+                        player.queues.remove(queue)
                     }
-                }
-                if (queue.status == QueueConstants.STATUS_ACTIVE) {
-                    // replace with IDLE queue item
-                    assignNewActive(realm, queue.court_number)
                 }
                 queue.deleteFromRealm()
             }
-        }
-    }
-
-    private fun assignNewActive(realm: Realm, court_number: Int) {
-        // check ACTIVE queues VS number of courts
-        val courts = realm.where<Court>().findFirst()!!
-        val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count()
-        // only set IDLE queue to ACTIVE if ACTIVE queues are <= the actual number of courts available
-        if(activeQueues <= courts.courts) {
-            val nextIdle = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
-                .sort("created_at").findFirst()
-            // check players of idle queue
-            // if player is in-game, find next IDLE queue
-            nextIdle?.status = QueueConstants.STATUS_ACTIVE
-            nextIdle?.court_number = court_number
+            if (queueStatus == QueueConstants.STATUS_ACTIVE) {
+                // replace with IDLE queue item
+                val queueManager = QueueManager(realm)
+                queueManager.manageCourts()
+            }
         }
     }
 
@@ -121,7 +105,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
                     val addGame = Integer.parseInt(queuesGames[1]) + 1
                     player.num_games++
                     player.queues_games = queuesGames[0] + "_" + addGame.toString()
-                    player.queue.remove(queue)
+                    player.queues.remove(queue)
                 }
             }
             removeQueue(queue, true)
