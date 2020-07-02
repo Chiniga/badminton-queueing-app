@@ -139,6 +139,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
     class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
+        var textViewPlayerGames: TextView = itemView.findViewById(R.id.textViewPlayerGames)
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
         var btnDeletePlayer: ImageButton = itemView.findViewById(R.id.btnDeletePlayer)
         var textViewOptions: TextView = itemView.findViewById(R.id.textViewOptions)
@@ -165,6 +166,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
+            textViewPlayerGames.text = player.num_games.toString()
             ratingBarLevel.rating = player.level
         }
 
