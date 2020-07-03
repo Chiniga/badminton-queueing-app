@@ -59,9 +59,8 @@ class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
                     Toast.makeText(this.context, "You do not have enough players for $numCourts courts", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                val queueManager = QueueManager(realm)
+                val queueManager = QueueManager(realm, this.context)
                 queueManager.generate(numCourts)
-                Toast.makeText(this.context, "Queues generated", Toast.LENGTH_LONG).show()
             }
         }
         return root

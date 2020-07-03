@@ -19,7 +19,7 @@ import io.realm.Realm
 class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAdapter<Queue, QueueAdapter.UserViewHolder>(QueueListItemCallback()) {
 
     private var listener: OnClickListener = onClickListener
-    private var mContext: Context? = null
+    var mContext: Context? = null
 
     init {
         mContext = context
@@ -90,7 +90,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
             }
             if (queueStatus == QueueConstants.STATUS_ACTIVE) {
                 // replace with IDLE queue item
-                val queueManager = QueueManager(realm)
+                val queueManager = QueueManager(realm, mContext)
                 queueManager.manageCourts()
             }
         }
