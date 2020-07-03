@@ -24,6 +24,7 @@ class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
     private lateinit var queueViewModel: QueueViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: QueueAdapter
+    private val realmInstance = Realm.getDefaultInstance()
     private var TAG = "QueueFragment"
 
     override fun onCreateView(
@@ -46,7 +47,7 @@ class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
         })
         val editTextNumCourts = root.findViewById<EditText>(R.id.editTextNumCourts)
 
-        Realm.getDefaultInstance().use { realm ->
+        realmInstance.use { realm ->
             val court = realm.where<Court>().findFirst()
             if(court != null) {
                 editTextNumCourts.setText(court.courts.toString())
@@ -61,7 +62,7 @@ class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
             }
             val numCourts: Int = Integer.parseInt(editTextNumCourts.text.toString())
             val allowedPlayers: Int = numCourts * QueueConstants.PLAYERS_PER_COURT
-            Realm.getDefaultInstance().use { realm ->
+            realmInstance.use { realm ->
                 val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
                 if(checkPlayers.size < allowedPlayers) {
                     Toast.makeText(this.context, "You do not have enough players for $numCourts courts", Toast.LENGTH_LONG).show()
