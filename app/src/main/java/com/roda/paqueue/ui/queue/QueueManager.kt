@@ -101,20 +101,16 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         when (levelTotal) {
             in LOWER_TIER -> {
                 // 1-1 = opponents with 3 or less total level or opponents have same level
-                // 1-2 = opponents with 3 or less total level
+                // 1-2 = opponents with 3 or less total level or 5 total level
                 var otherLevelTotal = 0
-                val maxLevel = 2.0f
                 val maxTotal = 3
-                val twoMorePlayersQ = realm.where<Player>()
-                if(!isSameLevel) {
-                    twoMorePlayersQ.lessThanOrEqualTo("level", maxLevel)
-                }
-                val twoMorePlayers = twoMorePlayersQ.not().oneOf("id", excludePlayerIds.toTypedArray())
+                val twoMorePlayers = realm.where<Player>().not().oneOf("id", excludePlayerIds.toTypedArray())
                     .sort("queues_games").findAll()
                 for(player in twoMorePlayers) {
                     val lvlAdd = otherLevelTotal + player.level.toInt()
                     val cond = lvlAdd <= maxTotal
-                    val specialCond = isSameLevel && otherLevelTotal == player.level.toInt()
+                    val specialCond = isSameLevel && otherLevelTotal == player.level.toInt() ||
+                            !isSameLevel && lvlAdd == 5
 
                     if(cond || specialCond) {
                         otherLevelTotal += player.level.toInt()
@@ -145,21 +141,17 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
                 }
             }
             in UPPER_TIER -> {
-                // 2-3 = opponents with 5-6 total level
+                // 2-3 = opponents with 5-6 total level or 3 total level
                 // 3-3 = opponents with 5-6 total level or opponents have same level
                 var otherLevelTotal = 0
-                val minLevel = 2.0f
                 val totalRange = 5..6
-                val twoMorePlayersQ = realm.where<Player>()
-                if(!isSameLevel) {
-                    twoMorePlayersQ.greaterThanOrEqualTo("level", minLevel)
-                }
-                val twoMorePlayers = twoMorePlayersQ.not().oneOf("id", excludePlayerIds.toTypedArray())
+                val twoMorePlayers = realm.where<Player>().not().oneOf("id", excludePlayerIds.toTypedArray())
                     .sort("queues_games").findAll()
                 for (player in twoMorePlayers) {
                     val lvlAdd = otherLevelTotal + player.level.toInt()
                     val cond = lvlAdd in totalRange
-                    val specialCond = isSameLevel && otherLevelTotal == player.level.toInt()
+                    val specialCond = isSameLevel && otherLevelTotal == player.level.toInt() ||
+                            !isSameLevel && lvlAdd == 3
 
                     if((list.size == 2) || cond || specialCond) {
                         otherLevelTotal += player.level.toInt()
