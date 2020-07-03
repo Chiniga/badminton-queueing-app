@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.R
+import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -43,15 +44,22 @@ class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
                 adapter.notifyDataSetChanged()
             }
         })
+        val editTextNumCourts = root.findViewById<EditText>(R.id.editTextNumCourts)
+
+        Realm.getDefaultInstance().use { realm ->
+            val court = realm.where<Court>().findFirst()
+            if(court != null) {
+                editTextNumCourts.setText(court.courts.toString())
+            }
+        }
 
         val btnGenQueue = root.findViewById<Button>(R.id.btnGenQueue)
         btnGenQueue.setOnClickListener {
-            val textNumCourts = root.findViewById<EditText>(R.id.editTextNumCourts).text.toString()
-            if(textNumCourts.isEmpty()) {
+            if(editTextNumCourts.text.toString().isEmpty()) {
                 Toast.makeText(this.context, "Please provide number of courts", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val numCourts: Int = Integer.parseInt(textNumCourts)
+            val numCourts: Int = Integer.parseInt(editTextNumCourts.text.toString())
             val allowedPlayers: Int = numCourts * QueueConstants.PLAYERS_PER_COURT
             Realm.getDefaultInstance().use { realm ->
                 val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
