@@ -19,11 +19,11 @@ import com.roda.paqueue.models.Player
 import io.realm.Realm
 import io.realm.kotlin.where
 
-class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
+class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
     private lateinit var queueViewModel: QueueViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: QueueAdapter
+    private lateinit var adapter: QueueListAdapter
     private var TAG = "QueueFragment"
 
     override fun onCreateView(
@@ -34,15 +34,13 @@ class QueueFragment : Fragment(), QueueAdapter.OnClickListener {
         queueViewModel =
             ViewModelProvider(this).get(QueueViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_queue, container, false)
-        adapter = QueueAdapter(this.context,this)
+        adapter = QueueListAdapter(this.context,this)
         recyclerView = root.findViewById(R.id.rvQueues)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
         queueViewModel.getQueues().observe(viewLifecycleOwner, Observer { queues ->
-            if(queues.isNotEmpty()) {
-                adapter.submitList(queues)
-                adapter.notifyDataSetChanged()
-            }
+            Log.d(TAG, "onCreateView: check")
+            adapter.addQueues(queues)
         })
         val editTextNumCourts = root.findViewById<EditText>(R.id.editTextNumCourts)
 

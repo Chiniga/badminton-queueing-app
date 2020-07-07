@@ -1,51 +1,49 @@
 package com.roda.paqueue.ui.queue
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.*
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Queue
 import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
 
-class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAdapter<Queue, QueueAdapter.UserViewHolder>(QueueListItemCallback()) {
+class QueueListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<QueueListAdapter.QueueViewHolder>() {
 
+    private val queueSortedList: SortedList<Queue>
     private var listener: OnClickListener = onClickListener
     var mContext: Context? = null
 
     init {
+        queueSortedList = SortedList(Queue::class.java, object : SortedListAdapterCallback<Queue>(this) {
+            override fun compare(q1: Queue, q2: Queue): Int = q1.court_number.compareTo(q2.court_number)
+
+            override fun areContentsTheSame(oldItem: Queue, newItem: Queue): Boolean = oldItem.hasSameContents(newItem)
+
+            override fun areItemsTheSame(item1: Queue, item2: Queue): Boolean = item1 == item2
+        })
         mContext = context
     }
 
-    private class QueueListItemCallback : DiffUtil.ItemCallback<Queue>() {
-        override fun areItemsTheSame(oldItem: Queue, newItem: Queue): Boolean {
-            return oldItem == newItem
-        }
-
-        override fun areContentsTheSame(oldItem: Queue, newItem: Queue): Boolean {
-            return oldItem.id == newItem.id
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QueueViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.queue_horizontal_menu_layout, parent, false)
-        return UserViewHolder(mContext, view, listener)
+        return QueueViewHolder(mContext, view, listener)
     }
 
-    override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.setQueue(getItem(position))
+    override fun onBindViewHolder(holder: QueueViewHolder, position: Int) {
+        holder.setQueue(queueSortedList.get(position))
 
         holder.bind()
 
-        if(getItem(position).status == QueueConstants.STATUS_ACTIVE) {
+        if(queueSortedList.get(holder.adapterPosition).status == QueueConstants.STATUS_ACTIVE) {
             mContext?.let { context ->
                 holder.layoutQueueItem.setBackgroundColor(ContextCompat.getColor(context, R.color.greenBg))
             }
@@ -53,26 +51,33 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
         }
 
         holder.finishQueue.setOnClickListener {
-            finishQueue(getItem(position))
+            finishQueue(queueSortedList.get(holder.adapterPosition))
             Toast.makeText(mContext, "Game finished", Toast.LENGTH_SHORT).show()
         }
 
         holder.deleteQueue.setOnClickListener {
-            removeQueue(getItem(position), false)
+            removeQueue(queueSortedList.get(holder.adapterPosition), false)
             Toast.makeText(mContext, "Game removed", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onViewRecycled(holder: QueueAdapter.UserViewHolder) {
+    override fun onViewRecycled(holder: QueueViewHolder) {
         super.onViewRecycled(holder)
         holder.layoutQueueItem.setBackgroundColor(Color.TRANSPARENT)
         holder.sml.closeEndMenuWithoutAnimation()
+    }
+
+    override fun getItemCount(): Int = queueSortedList.size()
+
+    fun addQueues(queues: List<Queue>) {
+        queueSortedList.addAll(queues)
     }
 
     private fun removeQueue(queue: Queue, isFinished: Boolean) {
         if (itemCount == 0) {
             return
         }
+        queueSortedList.remove(queue)
         val queueStatus = queue.status
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
@@ -91,7 +96,13 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
             if (queueStatus == QueueConstants.STATUS_ACTIVE) {
                 // replace with IDLE queue item
                 val queueManager = QueueManager(realm, mContext)
-                queueManager.manageCourts()
+                val queues = queueManager.manageCourts()
+                /*queues.forEach { q ->
+                    Log.d(TAG, "removeQueue: $q")
+                    val index = queueSortedList.indexOf(q)
+                    Log.d(TAG, "removeQueue: $index")
+                    queueSortedList.updateItemAt(index, q)
+                }*/
             }
         }
     }
@@ -112,7 +123,7 @@ class QueueAdapter(context: Context?, onClickListener: OnClickListener) : ListAd
         }
     }
 
-    inner class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
+    class QueueViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         var playerOne: TextView = itemView.findViewById(R.id.playerOne)
         var playerTwo: TextView = itemView.findViewById(R.id.playerTwo)
         var playerThree: TextView = itemView.findViewById(R.id.playerThree)

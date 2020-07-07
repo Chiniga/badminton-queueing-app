@@ -15,4 +15,32 @@ open class Queue (
     var court_number: Int = 99,
     var created_at: Date = Date(),
     var players: RealmList<Player> = RealmList()
-): RealmObject()
+): RealmObject() {
+    fun hasSameContents(newItem: Queue?): Boolean {
+        if (javaClass != newItem?.javaClass) {
+            return false
+        }
+
+        if (id != newItem.id) {
+            return false
+        }
+
+        if (status != newItem.status) {
+            return false
+        }
+
+        if (court_number != newItem.court_number) {
+            return false
+        }
+
+        if (created_at != newItem.created_at) {
+            return false
+        }
+
+        if (players != newItem.players) {
+            return false
+        }
+
+        return true
+    }
+}

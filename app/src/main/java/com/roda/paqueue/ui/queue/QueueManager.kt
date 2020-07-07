@@ -58,28 +58,30 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         manageCourts()
     }
 
-    fun manageCourts() {
+    fun manageCourts(): ArrayList<Queue> {
         val courts = realm.where<Court>().findFirst()
         val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count()
         val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
             .not()
             .equalTo("players.queues.status", QueueConstants.STATUS_ACTIVE)
             .sort("created_at").findAll()
+        val queues = ArrayList<Queue>()
 
         if (activeQueues < courts!!.courts && idleQueues.isNotEmpty()) {
             for (court in 1..courts.courts) {
-                val findCourt = realm.where<Queue>().equalTo("court_number", court)
-                    .equalTo("status", QueueConstants.STATUS_ACTIVE).findFirst()
+                val findCourt = realm.where<Queue>().equalTo("court_number", court).findFirst()
                 if (findCourt == null) {
                     // supply idle queue with missing court number
                     realm.executeTransaction {
                         val idleQueue = idleQueues.first()!!
                         idleQueue.status = QueueConstants.STATUS_ACTIVE
                         idleQueue.court_number = court
+                        queues.add(idleQueue)
                     }
                 }
             }
         }
+        return queues
     }
 
     private fun getPlayers(): ArrayList<Player> {
