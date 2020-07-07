@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +16,7 @@ import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.models.Queue
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 
 class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
@@ -34,31 +35,63 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
         recyclerView = root.findViewById(R.id.rvQueues)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
-        val editTextNumCourts = root.findViewById<EditText>(R.id.editTextNumCourts)
+        val textViewTextNumCourts = root.findViewById<TextView>(R.id.textViewNumCourts)
+        val btnSubNumCourts = root.findViewById<Button>(R.id.btnSubNumCourts)
+        val btnAddNumCourts = root.findViewById<Button>(R.id.btnAddNumCourts)
+
+        btnSubNumCourts.setOnClickListener {
+            Realm.getDefaultInstance().use { realm ->
+                realm.executeTransaction {
+                    val court = realm.where<Court>().findFirst()
+
+                    if (court != null && court.courts > 0) {
+                        court.courts--
+                        textViewTextNumCourts.text = court.courts.toString()
+                    }
+                }
+            }
+        }
+
+        btnAddNumCourts.setOnClickListener {
+            Realm.getDefaultInstance().use { realm ->
+                realm.executeTransaction {
+                    var court = realm.where<Court>().findFirst()
+                    if (court == null) {
+                        court = realm.createObject()
+                    }
+
+                    if (court.courts < 20) {
+                        court.courts++
+                        textViewTextNumCourts.text = court.courts.toString()
+                    }
+                }
+            }
+        }
 
         Realm.getDefaultInstance().use { realm ->
             val court = realm.where<Court>().findFirst()
             if(court != null) {
-                editTextNumCourts.setText(court.courts.toString())
+                textViewTextNumCourts.text = court.courts.toString()
             }
         }
 
         val btnGenQueue = root.findViewById<Button>(R.id.btnGenQueue)
         btnGenQueue.setOnClickListener {
-            if(editTextNumCourts.text.toString().isEmpty()) {
-                Toast.makeText(this.context, "Please provide number of courts", Toast.LENGTH_SHORT).show()
+            if(textViewTextNumCourts.text.toString() == "0") {
+                Toast.makeText(this.context, "No courts available", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val numCourts: Int = Integer.parseInt(editTextNumCourts.text.toString())
+            val numCourts: Int = Integer.parseInt(textViewTextNumCourts.text.toString())
             val allowedPlayers: Int = numCourts * QueueConstants.PLAYERS_PER_COURT
             Realm.getDefaultInstance().use { realm ->
                 val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
                 if(checkPlayers.size < allowedPlayers) {
-                    Toast.makeText(this.context, "You do not have enough players for $numCourts courts", Toast.LENGTH_LONG).show()
+                    val courtsMsg = if(numCourts == 1) "$numCourts court" else "$numCourts courts"
+                    Toast.makeText(this.context, "You do not have enough players for $courtsMsg", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
                 val queueManager = QueueManager(realm, this.context)
-                queueManager.generate(numCourts)
+                queueManager.generate()
             }
         }
         return root

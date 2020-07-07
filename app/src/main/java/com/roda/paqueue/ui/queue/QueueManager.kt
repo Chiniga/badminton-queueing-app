@@ -21,16 +21,11 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
     private val MIDDLE_TIER: Int = 4
     private val UPPER_TIER: IntRange = 5..6
 
-    fun generate(courts: Int) {
+    fun generate() {
         val allPlayers = realm.where<Player>().findAll()
         val queueCount = ceil(allPlayers.size.toDouble() / QueueConstants.PLAYERS_PER_COURT.toDouble()).toInt()
         var success = true
         realm.executeTransaction {
-            var court = realm.where<Court>().findFirst()
-            if(court == null) {
-                court = realm.createObject()
-            }
-            court.courts = courts
             for (count in 1..queueCount) {
                 // get all players with less or no queues
                 val playerList = getPlayers()

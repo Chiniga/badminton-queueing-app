@@ -12,6 +12,9 @@
     <string name="search_player">Search Player</string>
 
     <string name="options_icon">&#8942;</string>
+    <string name="sub_icon">-</string>
+    <string name="add_icon">+</string>
+    <string name="zero">0</string>
 
     <string name="num_courts">Number of courts</string>
     <string name="generate_queues">Generate Queues</string>
