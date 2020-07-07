@@ -9,19 +9,17 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
+import com.roda.paqueue.models.Queue
 import io.realm.Realm
 import io.realm.kotlin.where
 
 class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
-    private lateinit var queueViewModel: QueueViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: QueueListAdapter
     private var TAG = "QueueFragment"
@@ -31,17 +29,11 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        queueViewModel =
-            ViewModelProvider(this).get(QueueViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_queue, container, false)
-        adapter = QueueListAdapter(this.context,this)
+        adapter = QueueListAdapter(this.context,this, Realm.getDefaultInstance().where<Queue>().sort("court_number").findAllAsync())
         recyclerView = root.findViewById(R.id.rvQueues)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
-        queueViewModel.getQueues().observe(viewLifecycleOwner, Observer { queues ->
-            Log.d(TAG, "onCreateView: check")
-            adapter.addQueues(queues)
-        })
         val editTextNumCourts = root.findViewById<EditText>(R.id.editTextNumCourts)
 
         Realm.getDefaultInstance().use { realm ->

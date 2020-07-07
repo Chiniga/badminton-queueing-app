@@ -1,9 +1,7 @@
 package com.roda.paqueue.ui.queue
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,21 +13,15 @@ import com.roda.paqueue.R
 import com.roda.paqueue.models.Queue
 import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
+import io.realm.RealmRecyclerViewAdapter
+import io.realm.RealmResults
 
-class QueueListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<QueueListAdapter.QueueViewHolder>() {
+class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
 
-    private val queueSortedList: SortedList<Queue>
     private var listener: OnClickListener = onClickListener
     var mContext: Context? = null
 
     init {
-        queueSortedList = SortedList(Queue::class.java, object : SortedListAdapterCallback<Queue>(this) {
-            override fun compare(q1: Queue, q2: Queue): Int = q1.court_number.compareTo(q2.court_number)
-
-            override fun areContentsTheSame(oldItem: Queue, newItem: Queue): Boolean = oldItem.hasSameContents(newItem)
-
-            override fun areItemsTheSame(item1: Queue, item2: Queue): Boolean = item1 == item2
-        })
         mContext = context
     }
 
@@ -39,11 +31,11 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener) : Re
     }
 
     override fun onBindViewHolder(holder: QueueViewHolder, position: Int) {
-        holder.setQueue(queueSortedList.get(position))
+        getItem(position)?.let { holder.setQueue(it) }
 
         holder.bind()
 
-        if(queueSortedList.get(holder.adapterPosition).status == QueueConstants.STATUS_ACTIVE) {
+        if(getItem(holder.adapterPosition)?.status == QueueConstants.STATUS_ACTIVE) {
             mContext?.let { context ->
                 holder.layoutQueueItem.setBackgroundColor(ContextCompat.getColor(context, R.color.greenBg))
             }
@@ -51,12 +43,12 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener) : Re
         }
 
         holder.finishQueue.setOnClickListener {
-            finishQueue(queueSortedList.get(holder.adapterPosition))
+            finishQueue(getItem(holder.adapterPosition))
             Toast.makeText(mContext, "Game finished", Toast.LENGTH_SHORT).show()
         }
 
         holder.deleteQueue.setOnClickListener {
-            removeQueue(queueSortedList.get(holder.adapterPosition), false)
+            removeQueue(getItem(holder.adapterPosition), false)
             Toast.makeText(mContext, "Game removed", Toast.LENGTH_SHORT).show()
         }
     }
@@ -67,23 +59,18 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener) : Re
         holder.sml.closeEndMenuWithoutAnimation()
     }
 
-    override fun getItemCount(): Int = queueSortedList.size()
+    override fun getItemId(position: Int): Long = getItemId(position)
 
-    fun addQueues(queues: List<Queue>) {
-        queueSortedList.addAll(queues)
-    }
-
-    private fun removeQueue(queue: Queue, isFinished: Boolean) {
+    private fun removeQueue(queue: Queue?, isFinished: Boolean) {
         if (itemCount == 0) {
             return
         }
-        queueSortedList.remove(queue)
-        val queueStatus = queue.status
+        val queueStatus = queue?.status
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 if (!isFinished) {
                     // subtract queue_count
-                    queue.players.forEach { player ->
+                    queue?.players?.forEach { player ->
                         val queuesGames = player.queues_games.split('_')
                         val subQueue = Integer.parseInt(queuesGames[0]) - 1
                         player.queue_count--
@@ -91,27 +78,21 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener) : Re
                         player.queues.remove(queue)
                     }
                 }
-                queue.deleteFromRealm()
+                queue?.deleteFromRealm()
             }
             if (queueStatus == QueueConstants.STATUS_ACTIVE) {
                 // replace with IDLE queue item
                 val queueManager = QueueManager(realm, mContext)
-                val queues = queueManager.manageCourts()
-                /*queues.forEach { q ->
-                    Log.d(TAG, "removeQueue: $q")
-                    val index = queueSortedList.indexOf(q)
-                    Log.d(TAG, "removeQueue: $index")
-                    queueSortedList.updateItemAt(index, q)
-                }*/
+                queueManager.manageCourts()
             }
         }
     }
 
-    private fun finishQueue(queue: Queue) {
+    private fun finishQueue(queue: Queue?) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 // add game to Player
-                queue.players.forEach { player ->
+                queue?.players?.forEach { player ->
                     val queuesGames = player.queues_games.split('_')
                     val addGame = Integer.parseInt(queuesGames[1]) + 1
                     player.num_games++
