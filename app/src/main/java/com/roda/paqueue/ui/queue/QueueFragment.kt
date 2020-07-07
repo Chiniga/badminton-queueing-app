@@ -54,16 +54,28 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
         btnAddNumCourts.setOnClickListener {
             Realm.getDefaultInstance().use { realm ->
+                var success = false
                 realm.executeTransaction {
                     var court = realm.where<Court>().findFirst()
                     if (court == null) {
                         court = realm.createObject()
                     }
 
-                    if (court.courts < 20) {
+                    val addCourt = court.courts + 1
+                    val allowedPlayers: Int = addCourt * QueueConstants.PLAYERS_PER_COURT
+                    val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
+                    if(checkPlayers.size < allowedPlayers) {
+                        val courtsMsg = if(addCourt == 1) "$addCourt court" else "$addCourt courts"
+                        Toast.makeText(this.context, "You do not have enough players for $courtsMsg", Toast.LENGTH_LONG).show()
+                    } else {
                         court.courts++
                         textViewTextNumCourts.text = court.courts.toString()
+                        success = true
                     }
+                }
+                if (success) {
+                    val queueManager = QueueManager(realm, this.context)
+                    queueManager.manageCourts()
                 }
             }
         }
