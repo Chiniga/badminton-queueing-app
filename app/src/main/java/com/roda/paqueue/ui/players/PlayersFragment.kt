@@ -14,11 +14,11 @@ import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import io.realm.Realm
 
-class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
+class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
 
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: SortedListAdapter
+    private lateinit var adapter: PlayerListAdapter
     private var playerMenu: Menu? = null
     private var playerDeleteList: ArrayList<Player> = ArrayList()
     private var itemViewArrayList: ArrayList<View?> = ArrayList()
@@ -33,7 +33,7 @@ class PlayersFragment : Fragment(), SortedListAdapter.OnClickListener {
         playersViewModel =
                 ViewModelProvider(this).get(PlayersViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_players, container, false)
-        adapter = SortedListAdapter(this.context,this)
+        adapter = PlayerListAdapter(this.context,this)
         recyclerView = root.findViewById(R.id.rvPlayers)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter

@@ -18,7 +18,7 @@ import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
 import java.util.*
 
-class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<SortedListAdapter.UserViewHolder>() {
+class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder>() {
 
     private val playerSortedList: SortedList<Player>
     private var listener: OnClickListener
@@ -36,12 +36,12 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         mContext = context
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.player_horizontal_menu_layout, parent, false)
-        return UserViewHolder(mContext, view, listener)
+        return PlayerViewHolder(mContext, view, listener)
     }
 
-    override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
         holder.setPlayer(playerSortedList.get(position))
 
         holder.bind()
@@ -106,7 +106,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         }
     }
 
-    override fun onViewRecycled(holder: UserViewHolder) {
+    override fun onViewRecycled(holder: PlayerViewHolder) {
         super.onViewRecycled(holder)
         holder.itemView.setBackgroundColor(Color.TRANSPARENT)
         holder.sml.closeEndMenuWithoutAnimation()
@@ -125,7 +125,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
     }
 
     fun removePlayer(player: Player?) {
-        if (playerSortedList.size() == 0) {
+        if (itemCount == 0) {
             return
         }
         playerSortedList.remove(player)
@@ -136,7 +136,7 @@ class SortedListAdapter(context: Context?, onClickListener: OnClickListener) : R
         }
     }
 
-    class UserViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
+    class PlayerViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var textViewPlayerGames: TextView = itemView.findViewById(R.id.textViewPlayerGames)
