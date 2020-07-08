@@ -1,7 +1,6 @@
 package com.roda.paqueue.models
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import io.realm.*
 import io.realm.annotations.PrimaryKey
@@ -17,7 +16,7 @@ open class Player (
     var level: Float = 1.0f,
     var num_games: Int = 0,
     var queue_count: Int = 0,
-    var queues_games: String = "0_0",
+    var queues_games: Float = 0.0f,
     var created_at: Date = Date(),
     var queues: RealmList<Queue> = RealmList()
 ): RealmObject() {

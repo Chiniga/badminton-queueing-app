@@ -39,10 +39,8 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
 
                 // add queue to players
                 playerList.forEach { player ->
-                    val queuesGames = player.queues_games.split('_')
-                    val addQueue = Integer.parseInt(queuesGames[0]) + 1
                     player.queue_count++
-                    player.queues_games = addQueue.toString() + "_" + queuesGames[1]
+                    player.queues_games = player.queues_games + 1
                     player.queues.add(queue)
                 }
             }

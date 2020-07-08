@@ -81,10 +81,8 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
                 if (!isFinished) {
                     // subtract queue_count
                     queue?.players?.forEach { player ->
-                        val queuesGames = player.queues_games.split('_')
-                        val subQueue = Integer.parseInt(queuesGames[0]) - 1
                         player.queue_count--
-                        player.queues_games = subQueue.toString() + "_" + queuesGames[1]
+                        player.queues_games = player.queues_games - 1
                         player.queues.remove(queue)
                     }
                 }
@@ -103,10 +101,8 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
             realm.executeTransaction {
                 // add game to Player
                 queue?.players?.forEach { player ->
-                    val queuesGames = player.queues_games.split('_')
-                    val addGame = Integer.parseInt(queuesGames[1]) + 1
                     player.num_games++
-                    player.queues_games = queuesGames[0] + "_" + addGame.toString()
+                    player.queues_games = player.queues_games + 0.01f
                     player.queues.remove(queue)
                 }
             }
