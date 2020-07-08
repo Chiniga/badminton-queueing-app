@@ -79,6 +79,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
             if (player.isValid(mContext, newPlayerName.toString(), newPlayerLevel, player.id)) {
                 holder.textViewPlayerName.visibility = View.VISIBLE
                 holder.textViewOptions.visibility = View.VISIBLE
+                holder.textViewPlayerGames.visibility = View.VISIBLE
                 holder.ratingBarLevel.setIsIndicator(true)
                 holder.textInputLayout.visibility = View.GONE
                 holder.imgBtnDoneEditing.visibility = View.GONE
@@ -93,15 +94,9 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
                 Toast.makeText(mContext, "$newPlayerName has been modified", Toast.LENGTH_LONG).show()
 
-                val softKeyboard: InputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                if (softKeyboard.isActive) {
-                    softKeyboard.hideSoftInputFromWindow(holder.itemView.rootView.windowToken, 0)
-                }
-
                 val layoutAddPlayer =
                     holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
                 layoutAddPlayer.visibility = View.VISIBLE
-
             }
         }
     }
@@ -173,14 +168,11 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         fun enableEdit(player: Player) {
             textViewPlayerName.visibility = View.GONE
             textViewOptions.visibility = View.GONE
+            textViewPlayerGames.visibility = View.GONE
             ratingBarLevel.setIsIndicator(false)
             textInputLayout.visibility = View.VISIBLE
             imgBtnDoneEditing.visibility = View.VISIBLE
             editTextEditPlayer.setText(player.name)
-            editTextEditPlayer.requestFocus()
-
-            val softKeyboard: InputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            softKeyboard.showSoftInput(itemView.rootView, InputMethodManager.SHOW_FORCED)
         }
     }
 
