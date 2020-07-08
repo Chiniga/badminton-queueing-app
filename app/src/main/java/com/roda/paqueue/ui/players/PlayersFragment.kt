@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import io.realm.Realm
+import io.realm.kotlin.where
 
 class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
 
@@ -51,6 +52,12 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             Realm.getDefaultInstance().use { realm ->
                 val player = Player()
                 if(player.isValid(this.context, playerName.text.toString(), playerLevel.rating)) {
+                    // get lowest queue count and add to newly added player to balance things out
+                    val lowestQueueCount = realm.where<Player>().sort("queue_count").findFirst()
+                    lowestQueueCount?.let {
+                        player.queue_count = it.queue_count
+                        player.queues_games = player.queues_games + it.queue_count
+                    }
                     player.name = playerName.text.toString()
                     player.level = playerLevel.rating
                     realm.executeTransaction { r ->

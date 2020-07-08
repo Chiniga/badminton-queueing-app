@@ -1,14 +1,11 @@
 package com.roda.paqueue.ui.queue
 
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.models.Queue
 import io.realm.Realm
-import io.realm.kotlin.createObject
 import io.realm.kotlin.oneOf
 import io.realm.kotlin.where
 import java.util.*
@@ -52,14 +49,14 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
     }
 
     fun manageCourts() {
-        val courts = realm.where<Court>().findFirst()
+        val courts = realm.where<Court>().findFirst()!!
         val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count()
         val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
             .not()
             .equalTo("players.queues.status", QueueConstants.STATUS_ACTIVE)
             .sort("created_at").findAll()
 
-        if (activeQueues < courts!!.courts && idleQueues.isNotEmpty()) {
+        if (activeQueues < courts.courts && idleQueues.isNotEmpty()) {
             for (court in 1..courts.courts) {
                 val findCourt = realm.where<Queue>().equalTo("court_number", court).findFirst()
                 if (findCourt == null && idleQueues.isNotEmpty()) {

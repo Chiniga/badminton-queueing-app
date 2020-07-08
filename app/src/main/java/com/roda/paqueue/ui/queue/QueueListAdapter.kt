@@ -36,7 +36,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
 
         holder.bind()
 
-        if(getItem(holder.adapterPosition)?.status == QueueConstants.STATUS_ACTIVE) {
+        if(getItem(position)?.status == QueueConstants.STATUS_ACTIVE) {
             mContext?.let { context ->
                 holder.layoutQueueItem.setBackgroundColor(ContextCompat.getColor(context, R.color.greenBg))
             }
@@ -59,8 +59,6 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
         holder.layoutQueueItem.setBackgroundColor(Color.TRANSPARENT)
         holder.sml.closeEndMenuWithoutAnimation()
     }
-
-    override fun getItemId(position: Int): Long = getItemId(position)
 
     fun clearList() {
         Realm.getDefaultInstance().use { realm ->
