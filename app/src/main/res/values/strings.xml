@@ -20,4 +20,5 @@
     <string name="generate_queues">Generate Queues</string>
     <string name="delete_queue">Delete Queue</string>
     <string name="done_queue">Done Queue</string>
+    <string name="clear_queue">CLEAR QUEUE</string>
 </resources>

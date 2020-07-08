@@ -75,6 +75,9 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
 
+        menu.findItem(R.id.clear_queue).isVisible = false
+        menu.findItem(R.id.delete_player).isVisible = false
+
         playerMenu = menu
     }
 

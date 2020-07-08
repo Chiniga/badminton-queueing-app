@@ -15,6 +15,7 @@ import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
+import io.realm.kotlin.where
 
 class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
 
@@ -60,6 +61,15 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
     }
 
     override fun getItemId(position: Int): Long = getItemId(position)
+
+    fun clearList() {
+        Realm.getDefaultInstance().use { realm ->
+            val queues = realm.where<Queue>().findAll()
+            queues.forEach { queue ->
+                removeQueue(queue, false)
+            }
+        }
+    }
 
     private fun removeQueue(queue: Queue?, isFinished: Boolean) {
         if (itemCount == 0) {

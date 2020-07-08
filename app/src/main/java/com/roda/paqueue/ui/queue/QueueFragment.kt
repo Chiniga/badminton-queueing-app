@@ -1,10 +1,10 @@
 package com.roda.paqueue.ui.queue
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -23,6 +23,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: QueueListAdapter
+    private var queueMenu: Menu? = null
     private var TAG = "QueueFragment"
 
     override fun onCreateView(
@@ -82,7 +83,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
         Realm.getDefaultInstance().use { realm ->
             val court = realm.where<Court>().findFirst()
-            if(court != null) {
+            if (court != null) {
                 textViewTextNumCourts.text = court.courts.toString()
             }
         }
@@ -104,9 +105,42 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                 }
                 val queueManager = QueueManager(realm, this.context)
                 queueManager.generate()
+                queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
             }
         }
         return root
+    }
+
+    // enable options menu in this fragment
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu, menu)
+
+        Realm.getDefaultInstance().use { realm ->
+            val hasQueue = realm.where<Queue>().count()
+            if (hasQueue > 0) {
+                menu.findItem(R.id.clear_queue)?.isVisible = true
+            }
+        }
+
+        menu.setGroupVisible(R.id.menuGroupPlayer, false)
+
+        queueMenu = menu
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // get item id to handle item clicks
+        val id = item.itemId
+        // handle item clicks
+        if (id == R.id.clear_queue) {
+            showDialog()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onItemClick(position: Int, itemView: View?) {
@@ -115,5 +149,28 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
     override fun onItemLongClick(position: Int, itemView: View?) {
         Log.d("test", "onItemLongClick: clicked")
+    }
+
+    private fun showDialog() {
+        lateinit var dialog: AlertDialog
+        val builder = AlertDialog.Builder(this.context)
+
+        builder.setTitle("Clear Queue List")
+        builder.setMessage("Are you sure you want to clear the queue list?")
+
+        val dialogClickListener = DialogInterface.OnClickListener{ _, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    adapter.clearList()
+                    queueMenu?.findItem(R.id.clear_queue)?.isVisible = false
+                }
+            }
+        }
+
+        builder.setPositiveButton("YES", dialogClickListener)
+        builder.setNeutralButton("CANCEL", dialogClickListener)
+
+        dialog = builder.create()
+        dialog.show()
     }
 }
