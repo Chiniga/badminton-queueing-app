@@ -12,8 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
+import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Queue
+import com.roda.paqueue.ui.queue.QueueManager
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import java.util.*
 import kotlin.collections.ArrayList
@@ -115,7 +118,16 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                         player.queues_games = player.queues_games + 1
                         player.queues.add(queue)
                     }
+
+                    // add court if no available courts yet
+                    var court = realm.where<Court>().findFirst()
+                    if (court == null) {
+                        court = realm.createObject()
+                        court.courts++
+                    }
                 }
+                val queueManager = QueueManager(realm, this.context)
+                queueManager.manageCourts()
             }
             itemViewArrayList.forEach { itemView ->
                 itemView?.setBackgroundColor(Color.TRANSPARENT)
