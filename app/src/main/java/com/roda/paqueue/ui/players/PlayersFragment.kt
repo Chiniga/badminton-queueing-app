@@ -12,8 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
+import com.roda.paqueue.models.Queue
 import io.realm.Realm
 import io.realm.kotlin.where
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
 
@@ -83,6 +86,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         inflater.inflate(R.menu.main_menu, menu)
 
         menu.findItem(R.id.clear_queue).isVisible = false
+        menu.findItem(R.id.create_queue).isVisible = false
         menu.findItem(R.id.delete_player).isVisible = false
 
         playerMenu = menu
@@ -98,6 +102,26 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             }
             deactivateDeleteMode()
             Toast.makeText(this.context, "Delete successful", Toast.LENGTH_LONG).show()
+        } else if (id == R.id.create_queue) {
+            Realm.getDefaultInstance().use { realm ->
+                realm.executeTransaction {
+                    val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
+                    // add players to queue
+                    queue.players.addAll(playerDeleteList)
+
+                    // add queue to players
+                    playerDeleteList.forEach { player ->
+                        player.queue_count++
+                        player.queues_games = player.queues_games + 1
+                        player.queues.add(queue)
+                    }
+                }
+            }
+            itemViewArrayList.forEach { itemView ->
+                itemView?.setBackgroundColor(Color.TRANSPARENT)
+            }
+            deactivateDeleteMode()
+            Toast.makeText(this.context, "Queue created", Toast.LENGTH_LONG).show()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -116,6 +140,11 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             }
             if (itemViewArrayList.isEmpty()) {
                 deactivateDeleteMode()
+            }
+            playerMenu?.findItem(R.id.create_queue)?.isVisible = false
+            if (playerDeleteList.size == 4) {
+                // activate manual queue generation option
+                playerMenu?.findItem(R.id.create_queue)?.isVisible = true
             }
         }
     }
@@ -139,6 +168,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     private fun deactivateDeleteMode() {
         isDeleteActive = false
         playerMenu?.findItem(R.id.delete_player)?.isVisible = false
+        playerMenu?.findItem(R.id.create_queue)?.isVisible = false
         playerMenu?.findItem(R.id.search_player)?.isVisible = true
         playerDeleteList = ArrayList()
         itemViewArrayList = ArrayList()
