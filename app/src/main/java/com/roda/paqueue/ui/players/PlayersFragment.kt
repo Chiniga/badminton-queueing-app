@@ -69,7 +69,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     realm.executeTransaction { r ->
                         r.insert(player)
                     }
-                    Toast.makeText(this.context, playerName.text.toString() + " has been added", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this.context, playerName.text.toString() + " has been added", Toast.LENGTH_SHORT).show()
                     playerName.setText("")
                     playerLevel.rating = 0.0f
                 }
@@ -104,7 +104,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                 adapter.removePlayer(player)
             }
             deactivateDeleteMode()
-            Toast.makeText(this.context, "Delete successful", Toast.LENGTH_LONG).show()
+            Toast.makeText(this.context, "Delete successful", Toast.LENGTH_SHORT).show()
         } else if (id == R.id.create_queue) {
             Realm.getDefaultInstance().use { realm ->
                 realm.executeTransaction {
@@ -133,7 +133,10 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                 itemView?.setBackgroundColor(Color.TRANSPARENT)
             }
             deactivateDeleteMode()
-            Toast.makeText(this.context, "Queue created", Toast.LENGTH_LONG).show()
+            Toast.makeText(this.context, "Queue created", Toast.LENGTH_SHORT).show()
+        } else if (id == R.id.reset_games) {
+            adapter.resetGames()
+            Toast.makeText(this.context, "Games cleared", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
     }

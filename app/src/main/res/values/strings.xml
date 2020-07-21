@@ -11,6 +11,7 @@
     <string name="done_edit_player">Done Editing Player</string>
     <string name="search_player">Search Player</string>
     <string name="create_queue">Create Queue</string>
+    <string name="reset_games">Clear Games</string>
 
     <string name="options_icon">&#8942;</string>
     <string name="sub_icon">-</string>

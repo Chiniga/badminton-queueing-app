@@ -1,7 +1,9 @@
 package com.roda.paqueue.ui.players
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +18,7 @@ import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
 import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
+import io.realm.kotlin.where
 import java.util.*
 
 class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder>() {
@@ -49,7 +52,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         holder.btnDeletePlayer.setOnClickListener {
             val player = playerSortedList.get(holder.adapterPosition)
             removePlayer(player)
-            Toast.makeText(mContext, "Delete successful", Toast.LENGTH_LONG).show()
+            Toast.makeText(mContext, "Delete successful", Toast.LENGTH_SHORT).show()
         }
 
         holder.textViewOptions.setOnClickListener {
@@ -92,7 +95,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
                     }
                 }
 
-                Toast.makeText(mContext, "$newPlayerName has been modified", Toast.LENGTH_LONG).show()
+                Toast.makeText(mContext, "$newPlayerName has been modified", Toast.LENGTH_SHORT).show()
 
                 val layoutAddPlayer =
                     holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
@@ -115,8 +118,20 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         playerSortedList.addAll(player)
     }
 
-    private fun editPlayer(player: Player, index: Int) {
-        playerSortedList.updateItemAt(index, player)
+    fun resetGames() {
+        Realm.getDefaultInstance().use { realm ->
+            val players = realm.where<Player>().findAll()
+            players.forEach { player ->
+                // val index = playerSortedList.indexOf(player)
+                realm.executeTransaction {
+                    player.num_games = 0
+                    player.queues_games = player.queue_count.toFloat()
+                    // editPlayer(player, index)
+                }
+            }
+            playerSortedList.clear()
+            addPlayers(players)
+        }
     }
 
     fun removePlayer(player: Player?) {
@@ -129,6 +144,10 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
                 player?.deleteFromRealm()
             }
         }
+    }
+
+    private fun editPlayer(player: Player, index: Int) {
+        playerSortedList.updateItemAt(index, player)
     }
 
     class PlayerViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {

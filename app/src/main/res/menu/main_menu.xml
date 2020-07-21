@@ -25,6 +25,10 @@
             android:icon="@drawable/ic_notifications_black_24dp"
             android:title="@string/search_player"
             app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/reset_games"
+            android:title="@string/reset_games"
+            app:showAsAction="ifRoom" />
     </group>
 
 </menu>
