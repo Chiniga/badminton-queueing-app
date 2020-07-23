@@ -62,7 +62,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     val lowestQueueCount = realm.where<Player>().sort("queue_count").findFirst()
                     lowestQueueCount?.let {
                         player.queue_count = it.queue_count
-                        player.queues_games = player.queues_games + it.queue_count
+                        player.queues_games = it.queue_count.toFloat()
                     }
                     player.name = playerName.text.toString()
                     player.level = playerLevel.rating
@@ -72,6 +72,9 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     Toast.makeText(this.context, playerName.text.toString() + " has been added", Toast.LENGTH_SHORT).show()
                     playerName.setText("")
                     playerLevel.rating = 0.0f
+
+                    val queueManager = QueueManager(realm, this.context)
+                    queueManager.clearIdle()
                 }
             }
         }
