@@ -74,7 +74,8 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                         success = true
                     }
                 }
-                if (success) {
+                val queues = realm.where<Queue>().count().toInt()
+                if (queues > 0 && success) {
                     val queueManager = QueueManager(realm, this.context)
                     queueManager.manageCourts()
                 }

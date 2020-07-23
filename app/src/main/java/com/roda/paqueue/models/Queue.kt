@@ -12,7 +12,7 @@ open class Queue (
     var id: String = UUID.randomUUID().toString(),
     @Required
     var status: String = QueueConstants.STATUS_IDLE,
-    var court_number: Int = 99,
+    var court_number: Int = 0,
     var created_at: Date = Date(),
     var players: RealmList<Player> = RealmList()
 ): RealmObject() {
