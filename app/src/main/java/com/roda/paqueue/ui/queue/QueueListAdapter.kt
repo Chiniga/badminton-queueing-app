@@ -73,7 +73,6 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
         if (itemCount == 0) {
             return
         }
-        val queueStatus = queue?.status
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 if (!isFinished) {
@@ -86,7 +85,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
                 }
                 queue?.deleteFromRealm()
             }
-            if (queueStatus == QueueConstants.STATUS_ACTIVE) {
+            if (isFinished) {
                 // replace with IDLE queue item
                 val queueManager = QueueManager(realm, mContext)
                 queueManager.manageCourts()
@@ -139,15 +138,15 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
         }
 
         fun setQueue(queue: Queue) {
-            playerOne.text = queue.players[0]?.name
-            playerTwo.text = queue.players[1]?.name
-            playerThree.text = queue.players[2]?.name
-            playerFour.text = queue.players[3]?.name
-            ratingBarPlayerOne.rating = queue.players[0]?.level!!
-            ratingBarPlayerTwo.rating = queue.players[1]?.level!!
-            ratingBarPlayerThree.rating = queue.players[2]?.level!!
-            ratingBarPlayerFour.rating = queue.players[3]?.level!!
-            courtNumber.text = if(queue.court_number != 99) queue.court_number.toString() else ""
+            playerOne.text = queue.players[0]!!.name
+            playerTwo.text = queue.players[1]!!.name
+            playerThree.text = queue.players[2]!!.name
+            playerFour.text = queue.players[3]!!.name
+            ratingBarPlayerOne.rating = queue.players[0]!!.level
+            ratingBarPlayerTwo.rating = queue.players[1]!!.level
+            ratingBarPlayerThree.rating = queue.players[2]!!.level
+            ratingBarPlayerFour.rating = queue.players[3]!!.level
+            courtNumber.text = if(queue.status == QueueConstants.STATUS_ACTIVE) queue.court_number.toString() else ""
         }
     }
 
