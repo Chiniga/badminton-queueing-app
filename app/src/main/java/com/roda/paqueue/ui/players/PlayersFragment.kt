@@ -13,12 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Court
-import com.roda.paqueue.models.Queue
+import com.roda.paqueue.ui.queue.QueueConstants
 import com.roda.paqueue.ui.queue.QueueManager
 import io.realm.Realm
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
-import java.util.*
 import kotlin.collections.ArrayList
 
 class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
@@ -27,7 +26,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PlayerListAdapter
     private var playerMenu: Menu? = null
-    private var playerDeleteList: ArrayList<Player> = ArrayList()
+    private var playerList: ArrayList<Player> = ArrayList()
     private var itemViewArrayList: ArrayList<View?> = ArrayList()
     private var isDeleteActive: Boolean = false
     private val TAG = "PlayersFragment"
@@ -99,47 +98,39 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // get item id to handle item clicks
-        val id = item.itemId
-        // handle item clicks
-        if (id == R.id.delete_player) {
-            playerDeleteList.forEach { player ->
-                adapter.removePlayer(player)
-            }
-            deactivateDeleteMode()
-            Toast.makeText(this.context, "Delete successful", Toast.LENGTH_SHORT).show()
-        } else if (id == R.id.create_queue) {
-            Realm.getDefaultInstance().use { realm ->
-                realm.executeTransaction {
-                    val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
-                    // add players to queue
-                    queue.players.addAll(playerDeleteList)
-
-                    // add queue to players
-                    playerDeleteList.forEach { player ->
-                        player.queue_count++
-                        player.queues_games = player.queues_games + 1
-                        player.queues.add(queue)
-                    }
-
-                    // add court if no available courts yet
-                    var court = realm.where<Court>().findFirst()
-                    if (court == null) {
-                        court = realm.createObject()
-                        court.courts++
-                    }
+        // handle menu item clicks
+        when (item.itemId) {
+            R.id.delete_player -> {
+                playerList.forEach { player ->
+                    adapter.removePlayer(player)
                 }
-                val queueManager = QueueManager(realm, this.context)
-                queueManager.manageCourts()
+                deactivateDeleteMode()
+                Toast.makeText(this.context, "Delete successful", Toast.LENGTH_SHORT).show()
             }
-            itemViewArrayList.forEach { itemView ->
-                itemView?.setBackgroundColor(Color.TRANSPARENT)
+            R.id.create_queue -> {
+                Realm.getDefaultInstance().use { realm ->
+                    val court = realm.where<Court>().findFirst()
+                    if (court == null) {
+                        realm.executeTransaction {
+                            // add court if no available courts yet
+                            val newCourt: Court = realm.createObject()
+                            newCourt.courts++
+                        }
+                    }
+                    val queueManager = QueueManager(realm, this.context)
+                    queueManager.create(playerList)
+                    queueManager.manageCourts()
+                }
+                itemViewArrayList.forEach { itemView ->
+                    itemView?.setBackgroundColor(Color.TRANSPARENT)
+                }
+                deactivateDeleteMode()
+                Toast.makeText(this.context, "Queue created", Toast.LENGTH_SHORT).show()
             }
-            deactivateDeleteMode()
-            Toast.makeText(this.context, "Queue created", Toast.LENGTH_SHORT).show()
-        } else if (id == R.id.reset_games) {
-            adapter.resetGames()
-            Toast.makeText(this.context, "Games cleared", Toast.LENGTH_SHORT).show()
+            R.id.reset_games -> {
+                adapter.resetGames()
+                Toast.makeText(this.context, "Games cleared", Toast.LENGTH_SHORT).show()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -150,17 +141,17 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             if (color == 0) {
                 itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
                 itemViewArrayList.add(itemView)
-                playerDeleteList.add(adapter.getPlayer(position))
+                playerList.add(adapter.getPlayer(position))
             } else {
                 itemView?.setBackgroundColor(Color.TRANSPARENT)
                 itemViewArrayList.remove(itemView)
-                playerDeleteList.remove(adapter.getPlayer(position))
+                playerList.remove(adapter.getPlayer(position))
             }
             if (itemViewArrayList.isEmpty()) {
                 deactivateDeleteMode()
             }
             playerMenu?.findItem(R.id.create_queue)?.isVisible = false
-            if (playerDeleteList.size == 4) {
+            if (playerList.size == QueueConstants.PLAYERS_PER_COURT) {
                 // activate manual queue generation option
                 playerMenu?.findItem(R.id.create_queue)?.isVisible = true
             }
@@ -172,7 +163,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             // activate delete mode
             itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
             itemViewArrayList.add(itemView)
-            playerDeleteList.add(adapter.getPlayer(position))
+            playerList.add(adapter.getPlayer(position))
             activateDeleteMode()
         } else {
             // deactivate delete mode
@@ -188,7 +179,8 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         playerMenu?.findItem(R.id.delete_player)?.isVisible = false
         playerMenu?.findItem(R.id.create_queue)?.isVisible = false
         playerMenu?.findItem(R.id.search_player)?.isVisible = true
-        playerDeleteList = ArrayList()
+        playerMenu?.findItem(R.id.reset_games)?.isVisible = true
+        playerList = ArrayList()
         itemViewArrayList = ArrayList()
     }
 
@@ -196,5 +188,6 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         isDeleteActive = true
         playerMenu?.findItem(R.id.delete_player)?.isVisible = true
         playerMenu?.findItem(R.id.search_player)?.isVisible = false
+        playerMenu?.findItem(R.id.reset_games)?.isVisible = false
     }
 }
