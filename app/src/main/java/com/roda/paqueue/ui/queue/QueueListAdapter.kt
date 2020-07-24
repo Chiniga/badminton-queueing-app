@@ -64,12 +64,12 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
         Realm.getDefaultInstance().use { realm ->
             val queues = realm.where<Queue>().findAll()
             queues.forEach { queue ->
-                removeQueue(queue, false)
+                removeQueue(queue, false, true)
             }
         }
     }
 
-    private fun removeQueue(queue: Queue?, isFinished: Boolean) {
+    private fun removeQueue(queue: Queue?, isFinished: Boolean, clearAll: Boolean = false) {
         if (itemCount == 0) {
             return
         }
@@ -78,14 +78,17 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
                 if (!isFinished) {
                     // subtract queue_count
                     queue?.players?.forEach { player ->
-                        player.queue_count--
-                        player.queues_games = player.queues_games - 1
+                        // only subtract queue_count if game is IDLE
+                        if (queue.status == QueueConstants.STATUS_IDLE) {
+                            player.queue_count--
+                            player.queues_games--
+                        }
                         player.queues.remove(queue)
                     }
                 }
                 queue?.deleteFromRealm()
             }
-            if (isFinished) {
+            if (!clearAll) {
                 // replace with IDLE queue item
                 val queueManager = QueueManager(realm, mContext)
                 queueManager.manageCourts()
@@ -99,7 +102,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
                 // add game to Player
                 queue?.players?.forEach { player ->
                     player.num_games++
-                    player.queues_games = player.queues_games + 0.01f
+                    player.queues_games += 0.01f
                     player.queues.remove(queue)
                 }
             }
