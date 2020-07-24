@@ -122,11 +122,9 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         Realm.getDefaultInstance().use { realm ->
             val players = realm.where<Player>().findAll()
             players.forEach { player ->
-                // val index = playerSortedList.indexOf(player)
                 realm.executeTransaction {
                     player.num_games = 0
                     player.queues_games = player.queue_count.toFloat()
-                    // editPlayer(player, index)
                 }
             }
             playerSortedList.clear()
