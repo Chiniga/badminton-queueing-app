@@ -16,56 +16,49 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
     private val LOWER_TIER: IntRange = 2..3
     private val MIDDLE_TIER: Int = 4
     private val UPPER_TIER: IntRange = 5..6
-    private val COURT_BUFFER: Int = 80
 
     fun generate() {
-        val courts = realm.where<Court>().findFirst()!!
         val allPlayers = realm.where<Player>().findAll()
         val queueCount = ceil(allPlayers.size.toDouble() / QueueConstants.PLAYERS_PER_COURT.toDouble()).toInt()
         for (count in 1..queueCount) {
             val availablePlayers = realm.where<Player>().isEmpty("queues").count().toInt()
-            if (availablePlayers < 4) break
-
-            realm.beginTransaction()
-            val playerList = getPlayers()
-            if (playerList.size < 4) {
-                // no more balanced players available to complete 1 game
-                realm.cancelTransaction()
-                break
-            }
-            val activeGames = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count().toInt()
-            val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
-            val lastQueue = realm.where<Queue>().count().toInt()
-            // add players to queue
-            queue.court_number = lastQueue + COURT_BUFFER
-            queue.players.addAll(playerList)
-
-            if (activeGames == 0 || activeGames < courts.courts) {
-                // set game as ACTIVE
-                queue.status = QueueConstants.STATUS_ACTIVE
-                queue.court_number = activeGames + 1
-            }
-
-            // add queue to players
-            playerList.forEach { player ->
-                player.queue_count++
-                player.queues_games = player.queues_games + 1
-                player.queues.add(queue)
-            }
-            realm.commitTransaction()
+            if (availablePlayers < QueueConstants.PLAYERS_PER_COURT || !create()) break
         }
+        manageCourts()
+    }
+
+    fun create(players: ArrayList<Player>? = null): Boolean {
+        realm.beginTransaction()
+        val playerList = players?: getPlayers()
+        if (playerList.size < 4) {
+            // no more balanced players available to complete 1 game
+            realm.cancelTransaction()
+            return false
+        }
+        val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
+        val lastQueue = realm.where<Queue>().count().toInt()
+        // add players to queue
+        queue.court_number = lastQueue + QueueConstants.COURT_BUFFER
+        queue.players.addAll(playerList)
+
+        // add queue to players
+        playerList.forEach { player ->
+            player.queue_count++
+            player.queues_games = player.queues_games + 1
+            player.queues.add(queue)
+        }
+        realm.commitTransaction()
+
+        return true
     }
 
     fun manageCourts() {
-        var managedCourts = 0
         val courts = realm.where<Court>().findFirst()!!
         val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count()
         val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
-            .not()
-            .equalTo("players.queues.status", QueueConstants.STATUS_ACTIVE)
             .sort("created_at").findAll()
 
-        if (activeQueues < courts.courts) {
+        if (activeQueues < courts.courts && idleQueues.isNotEmpty()) {
             for (court in 1..courts.courts) {
                 val findCourt = realm.where<Queue>().equalTo("court_number", court).findFirst()
                 if (findCourt == null && idleQueues.isNotEmpty()) {
@@ -75,14 +68,14 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
                         idleQueue.status = QueueConstants.STATUS_ACTIVE
                         idleQueue.court_number = court
                     }
-                    managedCourts++
                 }
             }
-
-            if (idleQueues.isEmpty()) {
-                generate()
-            }
         }
+
+        /*val playersAvailable = realm.where<Player>().isEmpty("queues").count().toInt()
+        if (activeQueues < courts.courts && idleQueues.isEmpty() && playersAvailable >= QueueConstants.PLAYERS_PER_COURT) {
+            generate()
+        }*/
     }
 
     fun clearIdle() {
@@ -93,8 +86,8 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
             realm.executeTransaction {
                 idleQueues.deleteAllFromRealm()
             }
+            generate()
         }
-        generate()
     }
 
     private fun getPlayers(): ArrayList<Player> {
@@ -133,7 +126,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
                         list.add(player)
                     }
 
-                    if(list.size == 4) break
+                    if(list.size == QueueConstants.PLAYERS_PER_COURT) break
                 }
             }
             MIDDLE_TIER -> {
@@ -153,7 +146,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
                         list.add(player)
                     }
 
-                    if(list.size == 4) break
+                    if(list.size == QueueConstants.PLAYERS_PER_COURT) break
                 }
             }
             in UPPER_TIER -> {
@@ -175,7 +168,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
                         list.add(player)
                     }
 
-                    if(list.size == 4) break
+                    if(list.size == QueueConstants.PLAYERS_PER_COURT) break
                 }
             }
         }
