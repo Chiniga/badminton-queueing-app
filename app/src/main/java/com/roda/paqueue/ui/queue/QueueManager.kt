@@ -97,7 +97,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
     private fun getPlayers(): ArrayList<Player> {
         val list = ArrayList<Player>()
         val zeroGames = 0
-        val incompatibleTotal = arrayOf(6, 7, 9)
+        val incompatibleTotal = arrayOf(7, 9)
         val addedLatePlayers = realm.where<Player>().equalTo("num_games", zeroGames).count().toInt()
         val players = realm.where<Player>().isEmpty("queues").sort("queues_games").findAll()
         val playerProxyList = ArrayList<Player>()
