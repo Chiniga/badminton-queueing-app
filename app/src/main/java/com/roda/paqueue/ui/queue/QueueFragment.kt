@@ -76,7 +76,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                 }
                 val queues = realm.where<Queue>().count().toInt()
                 if (queues > 0 && success) {
-                    val queueManager = QueueManager(realm)
+                    val queueManager = QueueManager(realm, this.context)
                     queueManager.manageCourts()
                 }
             }
@@ -104,7 +104,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                     Toast.makeText(this.context, "You do not have enough players for $courtsMsg", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                val queueManager = QueueManager(realm)
+                val queueManager = QueueManager(realm, this.context)
                 queueManager.generate()
                 queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
             }

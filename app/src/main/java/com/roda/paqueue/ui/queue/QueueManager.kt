@@ -1,5 +1,7 @@
 package com.roda.paqueue.ui.queue
 
+import android.content.Context
+import android.widget.Toast
 import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.models.Queue
@@ -9,7 +11,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 
-class QueueManager(private val realm: Realm) {
+class QueueManager(private val realm: Realm, private val mContext: Context?) {
+
+    var stopGenerating = false
 
     fun generate() {
         val allPlayers = realm.where<Player>().findAll()
@@ -26,6 +30,8 @@ class QueueManager(private val realm: Realm) {
         val playerList = players?: getPlayers()
         if (playerList.size < QueueConstants.PLAYERS_PER_COURT) {
             // no more balanced players available to complete 1 game
+            Toast.makeText(mContext, "Idle players are incompatible. Unable to generate anymore games.", Toast.LENGTH_LONG).show()
+            stopGenerating = true
             realm.cancelTransaction()
             return false
         }
@@ -67,7 +73,11 @@ class QueueManager(private val realm: Realm) {
         }
 
         val playersAvailable = realm.where<Player>().isEmpty("queues").count().toInt()
-        if (activeQueues < courts.courts && idleQueues.isEmpty() && playersAvailable >= QueueConstants.PLAYERS_PER_COURT) {
+        if (!stopGenerating &&
+            activeQueues < courts.courts &&
+            idleQueues.isEmpty() &&
+            playersAvailable >= QueueConstants.PLAYERS_PER_COURT
+        ) {
             generate()
         }
     }
@@ -88,14 +98,14 @@ class QueueManager(private val realm: Realm) {
         val list = ArrayList<Player>()
         val zeroGames = 0
         val incompatibleTotal = arrayOf(6, 7, 9)
-        val newlyAddedPlayers = realm.where<Player>().equalTo("num_games", zeroGames).count().toInt()
+        val addedLatePlayers = realm.where<Player>().equalTo("num_games", zeroGames).count().toInt()
         val players = realm.where<Player>().isEmpty("queues").sort("queues_games").findAll()
         val playerProxyList = ArrayList<Player>()
         var levelTotal = 0
         playerProxyList.addAll(players)
 
-        // only shuffle players if no new players have been added
-        if (newlyAddedPlayers == 0 || newlyAddedPlayers == players.size) playerProxyList.shuffle()
+        // only shuffle players if no new players have been added late
+        if (addedLatePlayers == 0 || addedLatePlayers == players.size) playerProxyList.shuffle()
 
         for (player in playerProxyList) {
             if (list.size == QueueConstants.PLAYERS_PER_COURT) break
