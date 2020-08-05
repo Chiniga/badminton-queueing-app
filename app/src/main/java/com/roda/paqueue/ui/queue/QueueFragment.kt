@@ -105,8 +105,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                     return@setOnClickListener
                 }
                 val queueManager = QueueManager(realm, this.context)
-                queueManager.generate()
-                queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
+                if (queueManager.generate()) queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
             }
         }
         return root

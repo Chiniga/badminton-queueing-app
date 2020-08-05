@@ -15,14 +15,17 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
 
     var stopGenerating = false
 
-    fun generate() {
+    fun generate(): Boolean {
         val allPlayers = realm.where<Player>().findAll()
         val queueCount = ceil(allPlayers.size.toDouble() / QueueConstants.PLAYERS_PER_COURT.toDouble()).toInt()
+        var success = false
         for (count in 1..queueCount) {
             val availablePlayers = realm.where<Player>().isEmpty("queues").count().toInt()
             if (availablePlayers < QueueConstants.PLAYERS_PER_COURT || !create()) break
+            success = true
         }
         manageCourts()
+        return success
     }
 
     fun create(players: ArrayList<Player>? = null): Boolean {
@@ -83,8 +86,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
     }
 
     fun clearIdle() {
-        val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
-            .sort("created_at").findAll()
+        val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE).findAll()
 
         if (idleQueues.isNotEmpty()) {
             realm.executeTransaction {
