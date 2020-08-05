@@ -72,7 +72,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     playerName.setText("")
                     playerLevel.rating = 0.0f
 
-                    val queueManager = QueueManager(realm, this.context)
+                    val queueManager = QueueManager(realm)
                     queueManager.clearIdle()
                 }
             }
@@ -117,7 +117,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                             newCourt.courts++
                         }
                     }
-                    val queueManager = QueueManager(realm, this.context)
+                    val queueManager = QueueManager(realm)
                     queueManager.create(playerList)
                     queueManager.manageCourts()
                 }

@@ -90,7 +90,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
             }
             if (!clearAll) {
                 // replace with IDLE queue item
-                val queueManager = QueueManager(realm, mContext)
+                val queueManager = QueueManager(realm)
                 queueManager.manageCourts()
             }
         }
