@@ -104,6 +104,9 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         // ex. 2-3-1-1 | 2-3-2-2 | 3-3-2-1
         val incompatibleTotal = arrayOf(7, 9)
         // numbers 6 and 10 can be accepted with additional conditions
+        // RULES: if total == 6, then game should not have level 3 player
+        // ex. (acceptable) 2-2-1-1 | (unacceptable) 1-1-3-1
+        //        if total == 10, then game should not have level 1 player
         // ex. (acceptable) 2-3-2-3 | (unacceptable) 3-3-3-1
         val specialIncompatibleTotal = arrayOf(6, 10)
         val addedLatePlayers = realm.where<Player>().equalTo("num_games", zeroGames).count().toInt()
@@ -121,8 +124,8 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
             if (list.size == QueueConstants.PLAYERS_PER_COURT) break
 
             val levelAdd = levelTotal + player.level.toInt()
-            val specialCondOne = specialIncompatibleTotal.contains(levelAdd) && !hasLevelThree && player.level.toInt() != 3
-            val specialCondTwo = specialIncompatibleTotal.contains(levelAdd) && !hasLevelOne && player.level.toInt() != 1
+            val specialCondOne = levelAdd == 6 && !hasLevelThree && player.level.toInt() != 3
+            val specialCondTwo = levelAdd == 10 && !hasLevelOne && player.level.toInt() != 1
             if (list.size < 3 ||
                 (!incompatibleTotal.contains(levelAdd) && !specialIncompatibleTotal.contains(levelAdd)) ||
                 specialCondOne || specialCondTwo
