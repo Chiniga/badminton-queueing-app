@@ -99,11 +99,19 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
     private fun getPlayers(): ArrayList<Player> {
         val list = ArrayList<Player>()
         val zeroGames = 0
+        // based on calculations when summing up player levels,
+        // the numbers 7 and 9 are the most incompatible or unideal player level combinations
+        // ex. 2-3-1-1 | 2-3-2-2 | 3-3-2-1
         val incompatibleTotal = arrayOf(7, 9)
+        // numbers 6 and 10 can be accepted with additional conditions
+        // ex. (acceptable) 2-3-2-3 | (unacceptable) 3-3-3-1
+        val specialIncompatibleTotal = arrayOf(6, 10)
         val addedLatePlayers = realm.where<Player>().equalTo("num_games", zeroGames).count().toInt()
         val players = realm.where<Player>().isEmpty("queues").sort("queues_games").findAll()
         val playerProxyList = ArrayList<Player>()
         var levelTotal = 0
+        var hasLevelOne = false
+        var hasLevelThree = false
         playerProxyList.addAll(players)
 
         // only shuffle players if no new players have been added late
@@ -113,9 +121,17 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
             if (list.size == QueueConstants.PLAYERS_PER_COURT) break
 
             val levelAdd = levelTotal + player.level.toInt()
-            if (list.size < 3 || !incompatibleTotal.contains(levelAdd)) {
+            val specialCondOne = specialIncompatibleTotal.contains(levelAdd) && !hasLevelThree && player.level.toInt() != 3
+            val specialCondTwo = specialIncompatibleTotal.contains(levelAdd) && !hasLevelOne && player.level.toInt() != 1
+            if (list.size < 3 ||
+                (!incompatibleTotal.contains(levelAdd) && !specialIncompatibleTotal.contains(levelAdd)) ||
+                specialCondOne || specialCondTwo
+                ) {
                 levelTotal += player.level.toInt()
                 list.add(player)
+
+                if (player.level.toInt() == 3) hasLevelThree = true
+                if (player.level.toInt() == 1) hasLevelOne = true
             }
         }
         list.shuffle()
