@@ -57,6 +57,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
     override fun onViewRecycled(holder: QueueViewHolder) {
         super.onViewRecycled(holder)
         holder.layoutQueueItem.setBackgroundColor(Color.TRANSPARENT)
+        holder.finishQueue.visibility = View.GONE
         holder.sml.closeEndMenuWithoutAnimation()
     }
 
