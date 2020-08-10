@@ -1,13 +1,10 @@
 package com.roda.paqueue.ui.players
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +13,8 @@ import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Player
+import com.roda.paqueue.models.Queue
+import com.roda.paqueue.ui.queue.QueueConstants
 import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -52,7 +51,6 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         holder.btnDeletePlayer.setOnClickListener {
             val player = playerSortedList.get(holder.adapterPosition)
             removePlayer(player)
-            Toast.makeText(mContext, "Delete successful", Toast.LENGTH_SHORT).show()
         }
 
         holder.textViewOptions.setOnClickListener {
@@ -136,11 +134,34 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         if (itemCount == 0) {
             return
         }
-        playerSortedList.remove(player)
         Realm.getDefaultInstance().use { realm ->
+            // check if player is in an active game before deleting
+            val playerQueue = realm.where<Queue>()
+                .equalTo("players.id", player?.id)
+                .findFirst()
+            if (playerQueue != null) {
+                if (playerQueue.status == QueueConstants.STATUS_ACTIVE) {
+                    Toast.makeText(
+                        mContext,
+                        player?.name + " is currently in-game",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return
+                }
+
+                // delete queue object
+                realm.executeTransaction {
+                    playerQueue.deleteFromRealm()
+                }
+            }
+
+            // delete player object
+            playerSortedList.remove(player)
             realm.executeTransaction {
                 player?.deleteFromRealm()
             }
+
+            Toast.makeText(mContext, "Delete successful", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -105,7 +105,6 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     adapter.removePlayer(player)
                 }
                 deactivateDeleteMode()
-                Toast.makeText(this.context, "Delete successful", Toast.LENGTH_SHORT).show()
             }
             R.id.create_queue -> {
                 Realm.getDefaultInstance().use { realm ->
@@ -120,9 +119,6 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     val queueManager = QueueManager(realm, this.context)
                     queueManager.create(playerList)
                     queueManager.manageCourts()
-                }
-                itemViewArrayList.forEach { itemView ->
-                    itemView?.setBackgroundColor(Color.TRANSPARENT)
                 }
                 deactivateDeleteMode()
                 Toast.makeText(this.context, "Queue created", Toast.LENGTH_SHORT).show()
@@ -167,9 +163,6 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             activateDeleteMode()
         } else {
             // deactivate delete mode
-            itemViewArrayList.forEach { item ->
-                item?.setBackgroundColor(Color.TRANSPARENT)
-            }
             deactivateDeleteMode()
         }
     }
@@ -181,6 +174,9 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         playerMenu?.findItem(R.id.search_player)?.isVisible = true
         playerMenu?.findItem(R.id.reset_games)?.isVisible = true
         playerList = ArrayList()
+        itemViewArrayList.forEach { item ->
+            item?.setBackgroundColor(Color.TRANSPARENT)
+        }
         itemViewArrayList = ArrayList()
     }
 
