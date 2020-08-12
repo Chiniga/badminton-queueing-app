@@ -64,7 +64,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
                     val addCourt = court.courts + 1
                     val allowedPlayers: Int = addCourt * QueueConstants.PLAYERS_PER_COURT
-                    val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
+                    val checkPlayers = realm.where<Player>().equalTo("is_resting", false).limit(allowedPlayers.toLong()).findAll()
                     if(checkPlayers.size < allowedPlayers) {
                         val courtsMsg = if(addCourt == 1) "$addCourt court" else "$addCourt courts"
                         Toast.makeText(this.context, "You do not have enough players for $courtsMsg", Toast.LENGTH_LONG).show()
@@ -98,7 +98,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
             val numCourts: Int = Integer.parseInt(textViewTextNumCourts.text.toString())
             val allowedPlayers: Int = numCourts * QueueConstants.PLAYERS_PER_COURT
             Realm.getDefaultInstance().use { realm ->
-                val checkPlayers = realm.where<Player>().limit(allowedPlayers.toLong()).findAll()
+                val checkPlayers = realm.where<Player>().equalTo("is_resting", false).limit(allowedPlayers.toLong()).findAll()
                 if(checkPlayers.size < allowedPlayers) {
                     val courtsMsg = if(numCourts == 1) "$numCourts court" else "$numCourts courts"
                     Toast.makeText(this.context, "You do not have enough players for $courtsMsg", Toast.LENGTH_LONG).show()

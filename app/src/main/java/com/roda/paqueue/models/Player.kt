@@ -14,6 +14,7 @@ open class Player (
     @Required
     var name: String = "",
     var level: Float = 1.0f,
+    var is_resting: Boolean = false,
     var num_games: Int = 0,
     var queue_count: Int = 0,
     var queues_games: Float = 0.0f,

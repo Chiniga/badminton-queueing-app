@@ -8,6 +8,8 @@
     <string name="add_player">Add Player</string>
     <string name="delete_player">Delete Player</string>
     <string name="edit_player">Edit</string>
+    <string name="rest_player">Rest</string>
+    <string name="ready_player">Ready</string>
     <string name="done_edit_player">Done Editing Player</string>
     <string name="search_player">Search Player</string>
     <string name="create_queue">Create Queue</string>

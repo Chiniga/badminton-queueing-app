@@ -4,4 +4,10 @@
     <item
         android:id="@+id/itmEditPlayer"
         android:title="@string/edit_player" />
+    <item
+        android:id="@+id/itmRestPlayer"
+        android:title="@string/rest_player" />
+    <item
+        android:id="@+id/itmReadyPlayer"
+        android:title="@string/ready_player"/>
 </menu>

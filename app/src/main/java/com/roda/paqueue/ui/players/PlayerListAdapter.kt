@@ -48,14 +48,27 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
         holder.bind()
 
+        if(playerSortedList.get(position).is_resting) {
+            mContext?.getColor(R.color.blueBg)?.let { holder.itemView.setBackgroundColor(it) }
+        }
+
         holder.btnDeletePlayer.setOnClickListener {
             val player = playerSortedList.get(holder.adapterPosition)
             removePlayer(player)
         }
 
         holder.textViewOptions.setOnClickListener {
+            val player = playerSortedList.get(holder.adapterPosition)
             val popup = PopupMenu(it.context, it)
             popup.inflate(R.menu.player_row_menu)
+
+            if (player.is_resting) {
+                popup.menu.findItem(R.id.itmReadyPlayer).isVisible = true
+                popup.menu.findItem(R.id.itmRestPlayer).isVisible = false
+            } else {
+                popup.menu.findItem(R.id.itmRestPlayer).isVisible = true
+                popup.menu.findItem(R.id.itmReadyPlayer).isVisible = false
+            }
 
             popup.setOnMenuItemClickListener { item ->
                 when(item.itemId) {
@@ -64,6 +77,24 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
                         val layoutAddPlayer =
                             holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
                         layoutAddPlayer.visibility = View.GONE
+                    }
+                    R.id.itmRestPlayer -> {
+                        Realm.getDefaultInstance().use { realm ->
+                            realm.executeTransaction {
+                                player.is_resting = true
+                            }
+                        }
+                        mContext?.getColor(R.color.blueBg)?.let { blue -> holder.itemView.setBackgroundColor(blue) }
+                        Toast.makeText(mContext, player.name + " is resting", Toast.LENGTH_SHORT).show()
+                    }
+                    R.id.itmReadyPlayer -> {
+                        Realm.getDefaultInstance().use { realm ->
+                            realm.executeTransaction {
+                                player.is_resting = false
+                            }
+                        }
+                        holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+                        Toast.makeText(mContext, player.name + " is ready to play", Toast.LENGTH_SHORT).show()
                     }
                 }
                 true

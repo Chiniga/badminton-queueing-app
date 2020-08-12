@@ -20,7 +20,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         val queueCount = ceil(allPlayers.size.toDouble() / QueueConstants.PLAYERS_PER_COURT.toDouble()).toInt()
         var success = false
         for (count in 1..queueCount) {
-            val availablePlayers = realm.where<Player>().isEmpty("queues").count().toInt()
+            val availablePlayers = realm.where<Player>().equalTo("is_resting", false).isEmpty("queues").count().toInt()
             if (availablePlayers < QueueConstants.PLAYERS_PER_COURT || !create()) break
             success = true
         }
@@ -109,8 +109,8 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         //        if total == 10, then game should not have level 1 player
         // ex. (acceptable) 2-3-2-3 | (unacceptable) 3-3-3-1
         val specialIncompatibleTotal = arrayOf(6, 10)
-        val addedLatePlayers = realm.where<Player>().equalTo("num_games", zeroGames).count().toInt()
-        val players = realm.where<Player>().isEmpty("queues").sort("queues_games").findAll()
+        val addedLatePlayers = realm.where<Player>().equalTo("is_resting", false).equalTo("num_games", zeroGames).count().toInt()
+        val players = realm.where<Player>().equalTo("is_resting", false).isEmpty("queues").sort("queues_games").findAll()
         val playerProxyList = ArrayList<Player>()
         var levelTotal = 0
         var hasLevelOne = false
