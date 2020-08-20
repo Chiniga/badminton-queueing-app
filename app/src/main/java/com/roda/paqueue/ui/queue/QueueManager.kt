@@ -9,17 +9,14 @@ import io.realm.Realm
 import io.realm.kotlin.where
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.ceil
 
 class QueueManager(private val realm: Realm, private val mContext: Context?) {
 
     var stopGenerating = false
 
     fun generate(): Boolean {
-        val allPlayers = realm.where<Player>().findAll()
-        val queueCount = ceil(allPlayers.size.toDouble() / QueueConstants.PLAYERS_PER_COURT.toDouble()).toInt()
         var success = false
-        for (count in 1..queueCount) {
+        while (true) {
             val availablePlayers = realm.where<Player>().equalTo("is_resting", false).isEmpty("queues").count().toInt()
             if (availablePlayers < QueueConstants.PLAYERS_PER_COURT || !create()) break
             success = true
@@ -112,13 +109,15 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         val addedLatePlayers = realm.where<Player>().equalTo("is_resting", false).equalTo("num_games", zeroGames).count().toInt()
         val players = realm.where<Player>().equalTo("is_resting", false).isEmpty("queues").sort("queues_games").findAll()
         val playerProxyList = ArrayList<Player>()
+        val rand = arrayOf(2,3,4,5,7).random()
         var levelTotal = 0
         var hasLevelOne = false
         var hasLevelThree = false
         playerProxyList.addAll(players)
 
         // only shuffle players if no new players have been added late
-        if (addedLatePlayers == 0 || addedLatePlayers == players.size) playerProxyList.shuffle()
+        // also add randomizer to control shuffling of players
+        if ((addedLatePlayers == 0 && rand % 2 == 0) || addedLatePlayers == players.size) playerProxyList.shuffle()
 
         for (player in playerProxyList) {
             if (list.size == QueueConstants.PLAYERS_PER_COURT) break

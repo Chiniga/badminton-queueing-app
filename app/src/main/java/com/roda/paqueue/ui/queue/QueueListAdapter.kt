@@ -20,7 +20,7 @@ import io.realm.kotlin.where
 class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
 
     private var listener: OnClickListener = onClickListener
-    var mContext: Context? = null
+    private var mContext: Context? = null
 
     init {
         mContext = context
