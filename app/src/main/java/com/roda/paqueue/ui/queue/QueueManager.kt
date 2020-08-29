@@ -82,17 +82,6 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         }
     }
 
-    fun clearIdle() {
-        val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE).findAll()
-
-        if (idleQueues.isNotEmpty()) {
-            realm.executeTransaction {
-                idleQueues.deleteAllFromRealm()
-            }
-            generate()
-        }
-    }
-
     private fun getPlayers(): ArrayList<Player> {
         val list = ArrayList<Player>()
         val zeroGames = 0

@@ -71,9 +71,6 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     Toast.makeText(this.context, playerName.text.toString() + " has been added", Toast.LENGTH_SHORT).show()
                     playerName.setText("")
                     playerLevel.rating = 0.0f
-
-                    val queueManager = QueueManager(realm, this.context)
-                    queueManager.clearIdle()
                 }
             }
         }
