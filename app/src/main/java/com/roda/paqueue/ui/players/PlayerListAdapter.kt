@@ -153,7 +153,8 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
             players.forEach { player ->
                 realm.executeTransaction {
                     player.num_games = 0
-                    player.queues_games = player.queue_count.toFloat()
+                    player.queue_count = 0
+                    player.queues_games = 0.0f
                 }
             }
             playerSortedList.clear()
