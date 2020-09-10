@@ -147,21 +147,6 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         playerSortedList.addAll(player)
     }
 
-    fun resetGames() {
-        Realm.getDefaultInstance().use { realm ->
-            val players = realm.where<Player>().findAll()
-            players.forEach { player ->
-                realm.executeTransaction {
-                    player.num_games = 0
-                    player.queue_count = 0
-                    player.queues_games = 0.0f
-                }
-            }
-            playerSortedList.clear()
-            addPlayers(players)
-        }
-    }
-
     fun removePlayer(player: Player?) {
         if (itemCount == 0) {
             return

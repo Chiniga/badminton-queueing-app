@@ -96,10 +96,6 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // handle menu item clicks
         when (item.itemId) {
-            R.id.reset_games -> {
-                adapter.resetGames()
-                Toast.makeText(this.context, "Games cleared", Toast.LENGTH_SHORT).show()
-            }
             R.id.create_queue -> {
                 Realm.getDefaultInstance().use { realm ->
                     val court = realm.where<Court>().findFirst()
