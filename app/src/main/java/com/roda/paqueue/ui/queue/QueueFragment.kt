@@ -119,7 +119,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.main_menu, menu)
+        inflater.inflate(R.menu.queue_menu, menu)
 
         Realm.getDefaultInstance().use { realm ->
             val hasQueue = realm.where<Queue>().count()
@@ -127,8 +127,6 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                 menu.findItem(R.id.clear_queue)?.isVisible = true
             }
         }
-
-        menu.setGroupVisible(R.id.menuGroupPlayer, false)
 
         queueMenu = menu
     }

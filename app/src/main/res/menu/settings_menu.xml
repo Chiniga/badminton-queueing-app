@@ -2,9 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/delete_player"
-        android:icon="@drawable/ic_delete"
-        android:title="@string/delete_player"
+        android:id="@+id/reset_games"
+        android:title="@string/reset_games"
         app:showAsAction="ifRoom" />
-
 </menu>
