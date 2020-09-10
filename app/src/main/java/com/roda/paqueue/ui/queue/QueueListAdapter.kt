@@ -38,7 +38,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
 
         if(getItem(position)?.status == QueueConstants.STATUS_ACTIVE) {
             mContext?.let { context ->
-                holder.layoutQueueItem.setBackgroundColor(ContextCompat.getColor(context, R.color.greenBg))
+                holder.layoutQueueItem.setBackgroundColor(ContextCompat.getColor(context, R.color.lightGreenBg))
             }
             holder.finishQueue.visibility = View.VISIBLE
         }

@@ -13,6 +13,8 @@
     <string name="done_edit_player">Done Editing Player</string>
     <string name="search_player">Search Player</string>
     <string name="create_queue">Create Queue</string>
+    <string name="create_set">Create Set</string>
+
     <string name="reset_games">Reset Games</string>
 
     <string name="options_icon">&#8942;</string>

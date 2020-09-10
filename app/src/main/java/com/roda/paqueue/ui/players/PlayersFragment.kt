@@ -27,10 +27,11 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     private lateinit var adapter: PlayerListAdapter
     private var actionMode: ActionMode? = null
     private var playerMenu: Menu? = null
-    private var playerDeleteMenu: Menu? = null
+    private var createQueueMenu: Menu? = null
     private var playerList: ArrayList<Player> = ArrayList()
     private var itemViewArrayList: ArrayList<View?> = ArrayList()
-    private var isDeleteActive: Boolean = false
+    private var isDeleteModeActive: Boolean = false
+    private var isQueueModeActive: Boolean = false
     private val TAG = "PlayersFragment"
 
     override fun onCreateView(
@@ -97,31 +98,21 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         // handle menu item clicks
         when (item.itemId) {
             R.id.create_queue -> {
-                Realm.getDefaultInstance().use { realm ->
-                    val court = realm.where<Court>().findFirst()
-                    if (court == null) {
-                        realm.executeTransaction {
-                            // add court if no available courts yet
-                            val newCourt: Court = realm.createObject()
-                            newCourt.courts++
-                        }
-                    }
-                    val queueManager = QueueManager(realm, parentFragment?.context)
-                    queueManager.create(playerList)
-                    queueManager.manageCourts()
+                if(actionMode == null) {
+                    isQueueModeActive = true
+                    requireActivity().startActionMode(CreateQueueActionModeCallback())
                 }
-                actionMode?.finish()
-                Toast.makeText(parentFragment?.context, "Queue created", Toast.LENGTH_SHORT).show()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
     override fun onItemClick(position: Int, itemView: View?) {
-        if (isDeleteActive) {
+        if (isDeleteModeActive || isQueueModeActive) {
             val color: Int? = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
             if (color == 0) {
-                itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
+                val newColor = if(isDeleteModeActive) R.color.redBg else R.color.greenBg
+                itemView?.setBackgroundColor(requireActivity().getColor(newColor))
                 itemViewArrayList.add(itemView)
                 playerList.add(adapter.getPlayer(position))
             } else {
@@ -129,32 +120,40 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                 itemViewArrayList.remove(itemView)
                 playerList.remove(adapter.getPlayer(position))
             }
+
+            createQueueMenu?.findItem(R.id.done_create_queue)?.isVisible = false
+            if(isQueueModeActive && (playerList.size == QueueConstants.PLAYERS_PER_COURT)) {
+                createQueueMenu?.findItem(R.id.done_create_queue)?.isVisible = true
+            }
             if (itemViewArrayList.isEmpty()) {
                 actionMode?.finish()
-            }
-            playerDeleteMenu?.findItem(R.id.create_queue)?.isVisible = false
-            if (playerList.size == QueueConstants.PLAYERS_PER_COURT) {
-                // activate manual queue generation option
-                playerDeleteMenu?.findItem(R.id.create_queue)?.isVisible = true
             }
         }
     }
 
     override fun onItemLongClick(position: Int, itemView: View?) {
-        if (!isDeleteActive) {
+        if (isQueueModeActive) return
+
+        if (!isDeleteModeActive) {
             // activate delete mode
             itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
             itemViewArrayList.add(itemView)
             playerList.add(adapter.getPlayer(position))
-            activateDeleteMode()
+            isDeleteModeActive = true
+
+            // activate ActionMode
+            if(actionMode == null) {
+                requireActivity().startActionMode(DeleteActionModeCallback())
+            }
         } else {
             // deactivate delete mode
             actionMode?.finish()
         }
     }
 
-    private fun deactivateDeleteMode() {
-        isDeleteActive = false
+    private fun deactivateActionMode() {
+        isDeleteModeActive = false
+        isQueueModeActive = false
         playerList = ArrayList()
         itemViewArrayList.forEach { item ->
             item?.setBackgroundColor(Color.TRANSPARENT)
@@ -162,22 +161,13 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         itemViewArrayList = ArrayList()
     }
 
-    private fun activateDeleteMode() {
-        isDeleteActive = true
-
-        // activate ActionMode
-        if(actionMode == null) {
-            this.requireActivity().startActionMode(ActionModeCallback())
-        }
-    }
-
-    inner class ActionModeCallback: ActionMode.Callback {
+    inner class DeleteActionModeCallback: ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
             val inflater = mode?.menuInflater
             inflater?.inflate(R.menu.player_delete_menu, menu)
-            playerDeleteMenu = menu
 
             mode?.title = "Delete Mode"
+            mode?.subtitle = ""
             actionMode = mode
 
             return true
@@ -200,7 +190,53 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
-            deactivateDeleteMode()
+            deactivateActionMode()
+            actionMode = null
+        }
+    }
+
+    inner class CreateQueueActionModeCallback: ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            val inflater = mode?.menuInflater
+            inflater?.inflate(R.menu.player_create_queue_menu, menu)
+            createQueueMenu = menu
+
+            mode?.title = "Set Mode"
+            mode?.subtitle = "Create custom game"
+            actionMode = mode
+
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            return true
+        }
+
+        override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+            when(item?.itemId) {
+                R.id.done_create_queue -> {
+                    Realm.getDefaultInstance().use { realm ->
+                        val court = realm.where<Court>().findFirst()
+                        if (court == null) {
+                            realm.executeTransaction {
+                                // add court if no available courts yet
+                                val newCourt: Court = realm.createObject()
+                                newCourt.courts++
+                            }
+                        }
+                        val queueManager = QueueManager(realm, parentFragment?.context)
+                        queueManager.create(playerList)
+                        queueManager.manageCourts()
+                    }
+                    Toast.makeText(parentFragment?.context, "Queue created", Toast.LENGTH_SHORT).show()
+                    actionMode?.finish()
+                }
+            }
+            return true
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode?) {
+            deactivateActionMode()
             actionMode = null
         }
     }
