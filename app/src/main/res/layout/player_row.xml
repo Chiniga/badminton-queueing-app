@@ -64,7 +64,7 @@
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/done_edit_player"
         android:visibility="gone"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/ic_done_green" />
 
     <TextView
         android:id="@+id/textViewOptions"

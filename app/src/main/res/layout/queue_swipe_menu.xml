@@ -13,7 +13,7 @@
         android:backgroundTint="#3561E5"
         android:contentDescription="@string/done_queue"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
+        app:srcCompat="@drawable/ic_done_big" />
 
     <ImageButton
         android:id="@+id/btnDeleteQueue"
@@ -22,6 +22,6 @@
         android:layout_weight="1"
         android:backgroundTint="#E53935"
         android:contentDescription="@string/delete_queue"
-        app:srcCompat="@drawable/ic_delete" />
+        app:srcCompat="@drawable/ic_delete_big" />
 
 </LinearLayout>
