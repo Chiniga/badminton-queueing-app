@@ -18,8 +18,8 @@
         tools:layout="@layout/fragment_players" />
 
     <fragment
-        android:id="@+id/navigation_courts"
-        android:name="com.roda.paqueue.ui.courts.CourtsFragment"
-        android:label="@string/title_courts"
-        tools:layout="@layout/fragment_courts" />
+        android:id="@+id/navigation_settings"
+        android:name="com.roda.paqueue.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

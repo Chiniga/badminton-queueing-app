@@ -1,4 +1,4 @@
-package com.roda.paqueue.ui.courts
+package com.roda.paqueue.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.roda.paqueue.R
 
-class CourtsFragment : Fragment() {
+class SettingsFragment : Fragment() {
 
-    private lateinit var courtsViewModel: CourtsViewModel
+    private lateinit var settingsViewModel: SettingsViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        courtsViewModel =
-                ViewModelProviders.of(this).get(CourtsViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_courts, container, false)
+        settingsViewModel =
+                ViewModelProviders.of(this).get(SettingsViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_settings, container, false)
         val textView: TextView = root.findViewById(R.id.text_notifications)
-        courtsViewModel.text.observe(viewLifecycleOwner, Observer {
+        settingsViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root
