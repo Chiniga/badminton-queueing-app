@@ -12,15 +12,6 @@
         android:id="@+id/menuGroupPlayer"
         android:visible="true">
         <item
-            android:id="@+id/delete_player"
-            android:icon="@drawable/ic_trash_black"
-            android:title="@string/delete_player"
-            app:showAsAction="ifRoom" />
-        <item
-            android:id="@+id/create_queue"
-            android:title="@string/create_queue"
-            app:showAsAction="ifRoom" />
-        <item
             android:id="@+id/search_player"
             android:icon="@drawable/ic_notifications_black_24dp"
             android:title="@string/search_player"

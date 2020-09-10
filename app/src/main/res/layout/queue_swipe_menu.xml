@@ -22,6 +22,6 @@
         android:layout_weight="1"
         android:backgroundTint="#E53935"
         android:contentDescription="@string/delete_queue"
-        app:srcCompat="@drawable/ic_trash_white" />
+        app:srcCompat="@drawable/ic_delete" />
 
 </LinearLayout>
