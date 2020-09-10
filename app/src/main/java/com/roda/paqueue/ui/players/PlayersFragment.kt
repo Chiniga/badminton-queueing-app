@@ -54,7 +54,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             }
         })
 
-        val btnAddPlayer: ImageButton = root.findViewById(R.id.imgBtnAddPlayer)
+        val btnAddPlayer: Button = root.findViewById(R.id.btnAddPlayer)
         btnAddPlayer.setOnClickListener {
             val playerName = root.findViewById<EditText>(R.id.editTextPlayerName)
             val playerLevel = root.findViewById<RatingBar>(R.id.ratingBar)
