@@ -167,7 +167,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             inflater?.inflate(R.menu.player_delete_menu, menu)
 
             mode?.title = "Delete Mode"
-            mode?.subtitle = ""
+            mode?.subtitle = "Delete multiple players at once"
             actionMode = mode
 
             return true
@@ -201,8 +201,8 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             inflater?.inflate(R.menu.player_create_queue_menu, menu)
             createQueueMenu = menu
 
-            mode?.title = "Set Mode"
-            mode?.subtitle = "Create custom game"
+            mode?.title = "Custom Game Mode"
+            mode?.subtitle = "Select players to create custom game"
             actionMode = mode
 
             return true
