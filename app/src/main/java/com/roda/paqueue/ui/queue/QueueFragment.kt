@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.roda.paqueue.MainActivity
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
@@ -36,10 +39,10 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
         recyclerView = root.findViewById(R.id.rvQueues)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
+
         val textViewTextNumCourts = root.findViewById<TextView>(R.id.textViewNumCourts)
         val btnSubNumCourts = root.findViewById<Button>(R.id.btnSubNumCourts)
         val btnAddNumCourts = root.findViewById<Button>(R.id.btnAddNumCourts)
-
         btnSubNumCourts.setOnClickListener {
             Realm.getDefaultInstance().use { realm ->
                 realm.executeTransaction {
@@ -107,6 +110,30 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                 val queueManager = QueueManager(realm, this.context)
                 if (queueManager.generate()) queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
             }
+        }
+
+        val layoutAddQueue: ConstraintLayout = root.findViewById(R.id.layoutAddQueue)
+        val imgBtnHideInput: ImageButton = root.findViewById(R.id.imgBtnQueueHideInput)
+        val imgBtnShowInput: ImageButton = root.findViewById(R.id.imgBtnQueueShowInput)
+        imgBtnHideInput.setOnClickListener {
+            layoutAddQueue.visibility = View.GONE
+            imgBtnHideInput.visibility = View.INVISIBLE
+            imgBtnShowInput.visibility = View.VISIBLE
+
+            (activity as MainActivity).queueInputShown = false
+        }
+        imgBtnShowInput.setOnClickListener {
+            layoutAddQueue.visibility = View.VISIBLE
+            imgBtnShowInput.visibility = View.INVISIBLE
+            imgBtnHideInput.visibility = View.VISIBLE
+
+            (activity as MainActivity).queueInputShown = true
+        }
+
+        if(!(activity as MainActivity).queueInputShown) {
+            layoutAddQueue.visibility = View.GONE
+            imgBtnHideInput.visibility = View.INVISIBLE
+            imgBtnShowInput.visibility = View.VISIBLE
         }
         return root
     }

@@ -5,11 +5,13 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.roda.paqueue.MainActivity
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.R
 import com.roda.paqueue.models.Court
@@ -77,6 +79,30 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     playerLevel.rating = 0.0f
                 }
             }
+        }
+
+        val layoutAddPlayer: ConstraintLayout = root.findViewById(R.id.layoutAddPlayer)
+        val imgBtnHideInput: ImageButton = root.findViewById(R.id.imgBtnPlayerHideInput)
+        val imgBtnShowInput: ImageButton = root.findViewById(R.id.imgBtnPlayerShowInput)
+        imgBtnHideInput.setOnClickListener {
+            layoutAddPlayer.visibility = View.GONE
+            imgBtnHideInput.visibility = View.INVISIBLE
+            imgBtnShowInput.visibility = View.VISIBLE
+
+            (activity as MainActivity).playersInputShown = false
+        }
+        imgBtnShowInput.setOnClickListener {
+            layoutAddPlayer.visibility = View.VISIBLE
+            imgBtnShowInput.visibility = View.INVISIBLE
+            imgBtnHideInput.visibility = View.VISIBLE
+
+            (activity as MainActivity).playersInputShown = true
+        }
+
+        if(!(activity as MainActivity).playersInputShown) {
+            layoutAddPlayer.visibility = View.GONE
+            imgBtnHideInput.visibility = View.INVISIBLE
+            imgBtnShowInput.visibility = View.VISIBLE
         }
         return root
     }

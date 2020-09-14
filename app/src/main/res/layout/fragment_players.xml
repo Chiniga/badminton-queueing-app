@@ -12,15 +12,39 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="32dp"
         android:paddingStart="0dp"
         android:paddingEnd="0dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@id/layoutAddPlayer"
+        app:layout_constraintBottom_toTopOf="@+id/imgBtnPlayerHideInput"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="1.0">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageButton
+        android:id="@+id/imgBtnPlayerHideInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        android:contentDescription="@string/hide_input"
+        android:src="@drawable/ic_arrow_down"
+        app:layout_constraintBottom_toTopOf="@+id/layoutAddPlayer"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imgBtnPlayerShowInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        android:contentDescription="@string/show_input"
+        android:src="@drawable/ic_arrow_up"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/layoutAddPlayer"
+        app:layout_constraintEnd_toEndOf="@+id/imgBtnPlayerHideInput"
+        tools:visibility="invisible" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutAddPlayer"
@@ -44,8 +68,8 @@
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/player_name"
-                android:inputType="text"
-                android:imeOptions="actionDone"/>
+                android:imeOptions="actionDone"
+                android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <me.zhanghai.android.materialratingbar.MaterialRatingBar
@@ -62,13 +86,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:backgroundTint="#FFFFFF"
-            android:textColor="@color/colorPrimary"
             android:contentDescription="@string/add_player"
-            android:text="@string/add_player"
             android:elevation="1dp"
+            android:text="@string/add_player"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

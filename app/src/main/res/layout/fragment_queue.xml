@@ -19,6 +19,28 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <ImageButton
+        android:id="@+id/imgBtnQueueShowInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        android:contentDescription="@string/show_input"
+        android:src="@drawable/ic_arrow_up"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/layoutAddQueue"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="invisible" />
+
+    <ImageButton
+        android:id="@+id/imgBtnQueueHideInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        android:contentDescription="@string/hide_input"
+        android:src="@drawable/ic_arrow_down"
+        app:layout_constraintBottom_toTopOf="@+id/layoutAddQueue"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutAddQueue"
         android:layout_width="match_parent"

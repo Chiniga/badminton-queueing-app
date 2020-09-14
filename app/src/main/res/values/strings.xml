@@ -4,6 +4,8 @@
     <string name="title_players">Players</string>
     <string name="title_settings">Settings</string>
     <string name="player_name">Name</string>
+    <string name="hide_input">Hide Input Fields</string>
+    <string name="show_input">Show Input Fields</string>
 
     <string name="add_player">Add Player</string>
     <string name="delete_player">Delete Player</string>

@@ -7,11 +7,13 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.roda.paqueue.models.DbMigration
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
 class MainActivity : AppCompatActivity() {
+
+    var playersInputShown = true
+    var queueInputShown = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
