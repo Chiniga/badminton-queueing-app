@@ -57,7 +57,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
             removePlayer(player)
         }
 
-        holder.textViewOptions.setOnClickListener {
+        holder.imgBtnOptions.setOnClickListener {
             val player = playerSortedList.get(holder.adapterPosition)
             val popup = PopupMenu(it.context, it)
             popup.inflate(R.menu.player_row_menu)
@@ -110,7 +110,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
             val newPlayerLevel = holder.ratingBarLevel.rating
             if (player.isValid(mContext, newPlayerName.toString(), newPlayerLevel, player.id)) {
                 holder.textViewPlayerName.visibility = View.VISIBLE
-                holder.textViewOptions.visibility = View.VISIBLE
+                holder.imgBtnOptions.visibility = View.VISIBLE
                 holder.textViewPlayerGames.visibility = View.VISIBLE
                 holder.ratingBarLevel.setIsIndicator(true)
                 holder.textInputLayout.visibility = View.GONE
@@ -192,7 +192,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         var textViewPlayerGames: TextView = itemView.findViewById(R.id.textViewPlayerGames)
         var ratingBarLevel: RatingBar = itemView.findViewById(R.id.ratingBarLevel)
         var btnDeletePlayer: ImageButton = itemView.findViewById(R.id.btnDeletePlayer)
-        var textViewOptions: TextView = itemView.findViewById(R.id.textViewOptions)
+        var imgBtnOptions: ImageButton = itemView.findViewById(R.id.imgBtnOptions)
         var imgBtnDoneEditing: ImageButton = itemView.findViewById(R.id.btnDoneEditing)
         var textInputLayout: TextInputLayout = itemView.findViewById(R.id.textInputLayout)
         var editTextEditPlayer: EditText = itemView.findViewById(R.id.editTextEditPlayerName)
@@ -222,7 +222,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
         fun enableEdit(player: Player) {
             textViewPlayerName.visibility = View.GONE
-            textViewOptions.visibility = View.GONE
+            imgBtnOptions.visibility = View.GONE
             textViewPlayerGames.visibility = View.GONE
             ratingBarLevel.setIsIndicator(false)
             textInputLayout.visibility = View.VISIBLE

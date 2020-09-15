@@ -19,12 +19,11 @@
 
     <TextView
         android:id="@+id/textViewPlayerGames"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="center"
         android:layout_weight="1"
-        android:paddingStart="10dp"
-        android:paddingEnd="0dp"
+        android:gravity="center"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -61,20 +60,20 @@
         android:id="@+id/btnDoneEditing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/done_edit_player"
         android:visibility="gone"
         app:srcCompat="@drawable/ic_done_green" />
 
-    <TextView
-        android:id="@+id/textViewOptions"
-        android:layout_width="wrap_content"
+    <ImageButton
+        android:id="@+id/imgBtnOptions"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="@string/options_icon"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_light" />
+        android:layout_weight="1"
+        android:backgroundTint="#00FFFFFF"
+        android:contentDescription="@string/options"
+        app:srcCompat="@drawable/ic_more" />
 
 </LinearLayout>
