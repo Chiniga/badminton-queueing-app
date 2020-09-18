@@ -25,6 +25,7 @@
     <string name="zero">0</string>
 
     <string name="num_courts">Courts</string>
+    <string name="shuffle">Shuffle</string>
     <string name="start_queue">Start Queue</string>
     <string name="delete_queue">Delete Queue</string>
     <string name="done_queue">Done Queue</string>

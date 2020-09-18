@@ -41,9 +41,9 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
         recyclerView.adapter = adapter
 
         val textViewTextNumCourts = root.findViewById<TextView>(R.id.textViewNumCourts)
-        val btnSubNumCourts = root.findViewById<Button>(R.id.btnSubNumCourts)
-        val btnAddNumCourts = root.findViewById<Button>(R.id.btnAddNumCourts)
-        btnSubNumCourts.setOnClickListener {
+        val imgBtnSubNumCourts = root.findViewById<ImageButton>(R.id.imgBtnSubNumCourts)
+        val imgBtnAddNumCourts = root.findViewById<ImageButton>(R.id.imgBtnAddNumCourts)
+        imgBtnSubNumCourts.setOnClickListener {
             Realm.getDefaultInstance().use { realm ->
                 realm.executeTransaction {
                     val court = realm.where<Court>().findFirst()
@@ -56,7 +56,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
             }
         }
 
-        btnAddNumCourts.setOnClickListener {
+        imgBtnAddNumCourts.setOnClickListener {
             Realm.getDefaultInstance().use { realm ->
                 var success = false
                 realm.executeTransaction {
