@@ -21,6 +21,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
 
     private var listener: OnClickListener = onClickListener
     private var mContext: Context? = null
+    private var shufflePlayers: Boolean = false
 
     init {
         mContext = context
@@ -61,6 +62,10 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
         holder.sml.closeEndMenuWithoutAnimation()
     }
 
+    fun setShuffle(bool: Boolean) {
+        shufflePlayers = bool
+    }
+
     fun clearList() {
         Realm.getDefaultInstance().use { realm ->
             val queues = realm.where<Queue>().findAll()
@@ -91,7 +96,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
             }
             if (!clearAll) {
                 // replace with IDLE queue item
-                val queueManager = QueueManager(realm, mContext)
+                val queueManager = QueueManager(realm, mContext, shufflePlayers)
                 queueManager.manageCourts()
             }
         }

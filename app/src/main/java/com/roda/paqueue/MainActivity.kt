@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
 
     var playersInputShown = true
     var queueInputShown = true
+    var shufflePlayers = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

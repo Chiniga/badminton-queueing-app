@@ -10,7 +10,7 @@ import io.realm.kotlin.where
 import java.util.*
 import kotlin.collections.ArrayList
 
-class QueueManager(private val realm: Realm, private val mContext: Context?) {
+class QueueManager(private val realm: Realm, private val mContext: Context?, private val shufflePlayers: Boolean?) {
 
     var stopGenerating = false
 
@@ -30,7 +30,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         val playerList = players?: getPlayers()
         if (playerList.size < QueueConstants.PLAYERS_PER_COURT) {
             // no more balanced players available to complete 1 game
-            Toast.makeText(mContext, "Idle players are incompatible. Unable to generate anymore games.", Toast.LENGTH_LONG).show()
+            Toast.makeText(mContext, "Idle players are incompatible. Add more players or clear more games.", Toast.LENGTH_LONG).show()
             stopGenerating = true
             realm.cancelTransaction()
             return false
@@ -84,7 +84,6 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
 
     private fun getPlayers(): ArrayList<Player> {
         val list = ArrayList<Player>()
-        val zeroGames = 0
         // based on calculations when summing up player levels,
         // the numbers 7 and 9 are the most incompatible or unideal player level combinations
         // ex. 2-3-1-1 | 2-3-2-2 | 3-3-2-1
@@ -95,18 +94,15 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
         //        if total == 10, then game should not have level 1 player
         // ex. (acceptable) 2-3-2-3 | (unacceptable) 3-3-3-1
         val specialIncompatibleTotal = arrayOf(6, 10)
-        val addedLatePlayers = realm.where<Player>().equalTo("is_resting", false).equalTo("num_games", zeroGames).count().toInt()
         val players = realm.where<Player>().equalTo("is_resting", false).isEmpty("queues").sort("queues_games").findAll()
         val playerProxyList = ArrayList<Player>()
-        val rand = arrayOf(2,3,4,5,7).random()
         var levelTotal = 0
         var hasLevelOne = false
         var hasLevelThree = false
         playerProxyList.addAll(players)
 
-        // only shuffle players if no new players have been added late
-        // also add randomizer to control shuffling of players
-        if ((addedLatePlayers == 0 && rand % 2 == 0) || addedLatePlayers == players.size) playerProxyList.shuffle()
+        // shuffle players if shuffling is enabled
+        if (shufflePlayers != null && shufflePlayers) playerProxyList.shuffle()
 
         for (player in playerProxyList) {
             if (list.size == QueueConstants.PLAYERS_PER_COURT) break
@@ -125,7 +121,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
                 if (player.level.toInt() == 1) hasLevelOne = true
             }
         }
-        list.shuffle()
+
         return list
     }
 }

@@ -5,10 +5,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -79,7 +76,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                 }
                 val queues = realm.where<Queue>().count().toInt()
                 if (queues > 0 && success) {
-                    val queueManager = QueueManager(realm, this.context)
+                    val queueManager = QueueManager(realm, this.context, (activity as MainActivity).shufflePlayers)
                     queueManager.manageCourts()
                 }
             }
@@ -90,6 +87,17 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
             if (court != null) {
                 textViewTextNumCourts.text = court.courts.toString()
             }
+        }
+
+        val toggleShuffle = root.findViewById<ToggleButton>(R.id.toggleShuffle)
+        if((activity as MainActivity).shufflePlayers) {
+            toggleShuffle.isChecked = true
+        }
+        toggleShuffle.setOnCheckedChangeListener { _, isChecked ->
+            (activity as MainActivity).shufflePlayers = isChecked
+            adapter.setShuffle((activity as MainActivity).shufflePlayers)
+            val isShuffleActive = if(isChecked) "Activated" else "Deactivated"
+            Toast.makeText(this.context, "Shuffle $isShuffleActive", Toast.LENGTH_SHORT).show()
         }
 
         val btnGenQueue = root.findViewById<Button>(R.id.btnGenQueue)
@@ -107,7 +115,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                     Toast.makeText(this.context, "You do not have enough players for $courtsMsg", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                val queueManager = QueueManager(realm, this.context)
+                val queueManager = QueueManager(realm, this.context, (activity as MainActivity).shufflePlayers)
                 if (queueManager.generate()) queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
             }
         }
