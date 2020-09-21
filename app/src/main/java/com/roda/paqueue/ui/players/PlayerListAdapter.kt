@@ -40,7 +40,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.player_horizontal_menu_layout, parent, false)
-        return PlayerViewHolder(mContext, view, listener)
+        return PlayerViewHolder(view, listener)
     }
 
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
@@ -186,7 +186,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         playerSortedList.updateItemAt(index, player)
     }
 
-    class PlayerViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
+    class PlayerViewHolder(itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var textViewPlayerGames: TextView = itemView.findViewById(R.id.textViewPlayerGames)
@@ -197,8 +197,6 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
         var textInputLayout: TextInputLayout = itemView.findViewById(R.id.textInputLayout)
         var editTextEditPlayer: EditText = itemView.findViewById(R.id.editTextEditPlayerName)
         var sml: SwipeHorizontalMenuLayout = itemView.findViewById(R.id.sml)
-
-        private var mContext: Context? = context
 
         fun bind() {
             itemView.setOnClickListener(this)

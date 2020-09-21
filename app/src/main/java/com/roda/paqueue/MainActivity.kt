@@ -7,10 +7,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.roda.paqueue.ui.players.PlayersFragment
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PlayersFragment.OnPlayerCountChangeListener {
 
     var playersInputShown = true
     var queueInputShown = true
@@ -34,5 +35,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_queue, R.id.navigation_players, R.id.navigation_settings))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+
+    override fun onPlayerCountChange(title: String) {
+        supportActionBar?.title = title
     }
 }
