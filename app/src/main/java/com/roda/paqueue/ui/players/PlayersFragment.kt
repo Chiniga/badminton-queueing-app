@@ -56,6 +56,8 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             if(players.isNotEmpty()) {
                 adapter.addPlayers(players)
                 onPlayerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
+            } else {
+                onPlayerCountChangeListener?.onPlayerCountChange("Players")
             }
         })
 
