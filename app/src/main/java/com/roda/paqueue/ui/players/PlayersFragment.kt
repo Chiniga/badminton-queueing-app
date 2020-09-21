@@ -1,5 +1,6 @@
 package com.roda.paqueue.ui.players
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -27,6 +28,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PlayerListAdapter
+    private var onPlayerCountChangeListener: OnPlayerCountChangeListener? = null
     private var actionMode: ActionMode? = null
     private var playerMenu: Menu? = null
     private var createQueueMenu: Menu? = null
@@ -53,6 +55,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             // display players
             if(players.isNotEmpty()) {
                 adapter.addPlayers(players)
+                onPlayerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
             }
         })
 
@@ -118,6 +121,16 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         inflater.inflate(R.menu.player_menu, menu)
 
         playerMenu = menu
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onPlayerCountChangeListener = (activity as OnPlayerCountChangeListener)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        onPlayerCountChangeListener = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -265,5 +278,9 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             deactivateActionMode()
             actionMode = null
         }
+    }
+
+    interface OnPlayerCountChangeListener {
+        fun onPlayerCountChange(title: String)
     }
 }
