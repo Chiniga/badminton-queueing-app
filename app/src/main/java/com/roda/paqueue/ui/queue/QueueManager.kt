@@ -79,7 +79,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
             idleQueues.isEmpty() &&
             playersAvailable >= QueueConstants.PLAYERS_PER_COURT
         ) {
-            generate()
+            // generate()
         }
     }
 
