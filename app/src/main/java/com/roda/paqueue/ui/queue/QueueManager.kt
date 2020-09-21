@@ -27,7 +27,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
 
     fun create(players: ArrayList<Player>? = null): Boolean {
         realm.beginTransaction()
-        val playerList = players?: getPlayers()
+        var playerList = players?: getPlayers()
         if (playerList.size < QueueConstants.PLAYERS_PER_COURT) {
             // no more balanced players available to complete 1 game
             Toast.makeText(mContext, "Idle players are incompatible. Add more players or clear more games.", Toast.LENGTH_LONG).show()
@@ -35,6 +35,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
             realm.cancelTransaction()
             return false
         }
+        playerList = arrangePlayers(playerList)
         val queue = realm.createObject(Queue::class.java, UUID.randomUUID().toString())
         val lastQueue = realm.where<Queue>().count().toInt()
         // add players to queue
@@ -119,6 +120,48 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
 
                 if (player.level.toInt() == 3) hasLevelThree = true
                 if (player.level.toInt() == 1) hasLevelOne = true
+            }
+        }
+
+        return list
+    }
+
+    private fun arrangePlayers(list: ArrayList<Player>): ArrayList<Player> {
+        val foundLevelThree = list.find { it.level == 3.0f } != null
+        val foundLevelOne = list.find { it.level == 1.0f } != null
+        var isSorted = false
+        // check level 1 and 3 players first since they MUST be partners
+        for (player in list) {
+            if ((player.level == 1.0f && foundLevelThree) ||
+                (player.level == 3.0f && foundLevelOne)) {
+                val findLevel = if(player.level == 3.0f && foundLevelOne) 1.0f else 3.0f
+                val movePlayer = list.find { it.level == findLevel }
+                if (movePlayer != null) {
+                    list.remove(movePlayer)
+                    list.remove(player)
+                    list.add(movePlayer)
+                    list.add(player)
+                    isSorted = true
+                }
+                break
+            }
+        }
+
+        if (!isSorted) {
+            // check for level 2 player with possible level 1 or level 3 partner
+            for (player in list) {
+                if ((player.level == 2.0f && foundLevelThree) ||
+                    (player.level == 2.0f && foundLevelOne)) {
+                    val findLevel = if(foundLevelOne) 1.0f else 3.0f
+                    val movePlayer = list.find { it.level == findLevel }
+                    if (movePlayer != null) {
+                        list.remove(movePlayer)
+                        list.remove(player)
+                        list.add(movePlayer)
+                        list.add(player)
+                    }
+                    break
+                }
             }
         }
 
