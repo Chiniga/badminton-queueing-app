@@ -10,7 +10,7 @@ import io.realm.kotlin.where
 import java.util.*
 import kotlin.collections.ArrayList
 
-class QueueManager(private val realm: Realm, private val mContext: Context?, private val shufflePlayers: Boolean?) {
+class QueueManager(private val realm: Realm, private val mContext: Context?, private var shufflePlayers: Boolean?) {
 
     var stopGenerating = false
 
@@ -96,16 +96,16 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
         // ex. (acceptable) 2-3-2-3 | (unacceptable) 3-3-3-1
         val specialIncompatibleTotal = arrayOf(6, 10)
         val players = realm.where<Player>().equalTo("is_resting", false).isEmpty("queues").sort("queues_games").findAll()
-        val playerProxyList = ArrayList<Player>()
+        val playerList = ArrayList<Player>()
         var levelTotal = 0
         var hasLevelOne = false
         var hasLevelThree = false
-        playerProxyList.addAll(players)
+        playerList.addAll(players)
 
         // shuffle players if shuffling is enabled
-        if (shufflePlayers != null && shufflePlayers) playerProxyList.shuffle()
+        if (shufflePlayers != null && shufflePlayers as Boolean) playerList.shuffle()
 
-        for (player in playerProxyList) {
+        for (player in playerList) {
             if (list.size == QueueConstants.PLAYERS_PER_COURT) break
 
             val levelAdd = levelTotal + player.level.toInt()
@@ -121,6 +121,13 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
                 if (player.level.toInt() == 3) hasLevelThree = true
                 if (player.level.toInt() == 1) hasLevelOne = true
             }
+        }
+
+        if (list.size == 3 && players.size > QueueConstants.PLAYERS_PER_COURT) {
+            // if player combinations cannot be found but available players are more than 4
+            // force player shuffling and re-call method
+            shufflePlayers = true
+            return getPlayers()
         }
 
         return list
