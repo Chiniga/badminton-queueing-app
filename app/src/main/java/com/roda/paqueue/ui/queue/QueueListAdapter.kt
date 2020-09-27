@@ -84,11 +84,8 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
                 if (!isFinished) {
                     // subtract queue_count
                     queue?.players?.forEach { player ->
-                        // only subtract queue_count if game is IDLE
-                        if (queue.status == QueueConstants.STATUS_IDLE) {
-                            player.queue_count--
-                            player.queues_games--
-                        }
+                        player.queue_count--
+                        player.queues_games--
                         player.queues.remove(queue)
                     }
                 }

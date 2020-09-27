@@ -12,7 +12,7 @@ import kotlin.collections.ArrayList
 
 class QueueManager(private val realm: Realm, private val mContext: Context?, private var shufflePlayers: Boolean?) {
 
-    var stopGenerating = false
+    private var stopGenerating = false
 
     fun generate(): Boolean {
         var success = false
