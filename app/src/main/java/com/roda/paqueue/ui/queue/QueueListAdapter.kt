@@ -46,12 +46,10 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
 
         holder.finishQueue.setOnClickListener {
             finishQueue(getItem(holder.adapterPosition))
-            Toast.makeText(mContext, "Game finished", Toast.LENGTH_SHORT).show()
         }
 
         holder.deleteQueue.setOnClickListener {
             removeQueue(getItem(holder.adapterPosition), false)
-            Toast.makeText(mContext, "Game removed", Toast.LENGTH_SHORT).show()
         }
     }
 

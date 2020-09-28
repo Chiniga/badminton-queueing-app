@@ -79,7 +79,6 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                     realm.executeTransaction { r ->
                         r.insert(player)
                     }
-                    Toast.makeText(this.context, playerName.text.toString() + " has been added", Toast.LENGTH_SHORT).show()
                     playerName.setText("")
                     playerLevel.rating = 0.0f
                 }
@@ -269,7 +268,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                         queueManager.create(playerList)
                         queueManager.manageCourts()
                     }
-                    Toast.makeText(parentFragment?.context, "Queue created", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(parentFragment?.context, "Custom Game created", Toast.LENGTH_SHORT).show()
                     actionMode?.finish()
                 }
             }

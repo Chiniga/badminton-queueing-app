@@ -96,8 +96,6 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
         toggleShuffle.setOnCheckedChangeListener { _, isChecked ->
             (activity as MainActivity).shufflePlayers = isChecked
             adapter.setShuffle((activity as MainActivity).shufflePlayers)
-            val isShuffleActive = if(isChecked) "Activated" else "Deactivated"
-            Toast.makeText(this.context, "Shuffle $isShuffleActive", Toast.LENGTH_SHORT).show()
         }
 
         val btnGenQueue = root.findViewById<Button>(R.id.btnGenQueue)

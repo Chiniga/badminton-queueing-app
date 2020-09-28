@@ -85,7 +85,6 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
                             }
                         }
                         mContext?.getColor(R.color.blueBg)?.let { blue -> holder.itemView.setBackgroundColor(blue) }
-                        Toast.makeText(mContext, player.name + " is resting", Toast.LENGTH_SHORT).show()
                     }
                     R.id.itmReadyPlayer -> {
                         Realm.getDefaultInstance().use { realm ->
@@ -94,7 +93,6 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
                             }
                         }
                         holder.itemView.setBackgroundColor(Color.TRANSPARENT)
-                        Toast.makeText(mContext, player.name + " is ready to play", Toast.LENGTH_SHORT).show()
                     }
                 }
                 true
@@ -177,8 +175,6 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
             realm.executeTransaction {
                 player?.deleteFromRealm()
             }
-
-            Toast.makeText(mContext, "Delete successful", Toast.LENGTH_SHORT).show()
         }
     }
 
