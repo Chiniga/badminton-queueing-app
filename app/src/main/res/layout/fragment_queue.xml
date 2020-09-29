@@ -58,16 +58,14 @@
             android:labelFor="@id/textViewNumCourts"
             android:text="@string/num_courts"
             app:layout_constraintBottom_toTopOf="@id/textViewNumCourts"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.13"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/imgBtnSubNumCourts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#00FFFFFF"
+            android:contentDescription="@string/subtract_courts"
             android:src="@drawable/ic_subtract"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -89,6 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:backgroundTint="#00FFFFFF"
+            android:contentDescription="@string/add_courts"
             android:src="@drawable/ic_add"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textViewNumCourts" />
@@ -102,7 +101,8 @@
             android:textOff="@string/shuffle"
             android:textOn="@string/shuffle"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnGenQueue" />
+            app:layout_constraintEnd_toStartOf="@+id/btnGenQueue"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnAddNumCourts" />
 
         <Button
             android:id="@+id/btnGenQueue"

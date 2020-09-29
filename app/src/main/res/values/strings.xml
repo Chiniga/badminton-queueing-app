@@ -20,6 +20,8 @@
     <string name="reset_games">Reset Games</string>
 
     <string name="zero">0</string>
+    <string name="subtract_courts">Subtract Courts</string>
+    <string name="add_courts">Add Courts</string>
 
     <string name="num_courts">Courts</string>
     <string name="shuffle">Shuffle</string>
