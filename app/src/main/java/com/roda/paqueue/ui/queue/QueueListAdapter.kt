@@ -17,9 +17,10 @@ import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import io.realm.kotlin.where
 
-class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
+class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQueueSizeListener: OnQueueSizeListener, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
 
-    private var listener: OnClickListener = onClickListener
+    private var clickListener: OnClickListener = onClickListener
+    private var queueSizeListener: OnQueueSizeListener = onQueueSizeListener
     private var mContext: Context? = null
     private var shufflePlayers: Boolean = false
 
@@ -29,7 +30,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QueueViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.queue_horizontal_menu_layout, parent, false)
-        return QueueViewHolder(mContext, view, listener)
+        return QueueViewHolder(view, clickListener)
     }
 
     override fun onBindViewHolder(holder: QueueViewHolder, position: Int) {
@@ -94,6 +95,13 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
                 val queueManager = QueueManager(realm, mContext, shufflePlayers)
                 queueManager.manageCourts()
             }
+
+            val checkQueue = realm.where<Queue>().count()
+            if (checkQueue > 0) {
+                queueSizeListener.onActiveQueue()
+            } else {
+                queueSizeListener.onEmptyQueue()
+            }
         }
     }
 
@@ -111,21 +119,20 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
         }
     }
 
-    class QueueViewHolder(context: Context?, itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-        var playerOne: TextView = itemView.findViewById(R.id.playerOne)
-        var playerTwo: TextView = itemView.findViewById(R.id.playerTwo)
-        var playerThree: TextView = itemView.findViewById(R.id.playerThree)
-        var playerFour: TextView = itemView.findViewById(R.id.playerFour)
-        var ratingBarPlayerOne: RatingBar = itemView.findViewById(R.id.ratingBarPlayerOneLevel)
-        var ratingBarPlayerTwo: RatingBar = itemView.findViewById(R.id.ratingBarPlayerTwoLevel)
-        var ratingBarPlayerThree: RatingBar = itemView.findViewById(R.id.ratingBarPlayerThreeLevel)
-        var ratingBarPlayerFour: RatingBar = itemView.findViewById(R.id.ratingBarPlayerFourLevel)
+    class QueueViewHolder(itemView: View, private var onClickListener: OnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
+        private var playerOne: TextView = itemView.findViewById(R.id.playerOne)
+        private var playerTwo: TextView = itemView.findViewById(R.id.playerTwo)
+        private var playerThree: TextView = itemView.findViewById(R.id.playerThree)
+        private var playerFour: TextView = itemView.findViewById(R.id.playerFour)
+        private var ratingBarPlayerOne: RatingBar = itemView.findViewById(R.id.ratingBarPlayerOneLevel)
+        private var ratingBarPlayerTwo: RatingBar = itemView.findViewById(R.id.ratingBarPlayerTwoLevel)
+        private var ratingBarPlayerThree: RatingBar = itemView.findViewById(R.id.ratingBarPlayerThreeLevel)
+        private var ratingBarPlayerFour: RatingBar = itemView.findViewById(R.id.ratingBarPlayerFourLevel)
         var courtNumber: TextView = itemView.findViewById(R.id.courtNumber)
         var layoutQueueItem: ConstraintLayout = itemView.findViewById(R.id.layoutQueueItem)
         var finishQueue: ImageButton = itemView.findViewById(R.id.btnFinishQueue)
         var deleteQueue: ImageButton = itemView.findViewById(R.id.btnDeleteQueue)
         var sml: SwipeHorizontalMenuLayout = itemView.findViewById(R.id.sml)
-        private var mContext: Context? = context
 
         fun bind() {
             itemView.setOnClickListener(this)
@@ -152,6 +159,11 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, queu
             ratingBarPlayerFour.rating = queue.players[3]!!.level
             courtNumber.text = if(queue.status == QueueConstants.STATUS_ACTIVE) queue.court_number.toString() else ""
         }
+    }
+
+    interface OnQueueSizeListener {
+        fun onEmptyQueue()
+        fun onActiveQueue()
     }
 
     interface OnClickListener {

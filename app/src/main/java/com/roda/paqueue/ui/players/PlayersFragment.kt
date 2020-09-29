@@ -23,7 +23,7 @@ import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import kotlin.collections.ArrayList
 
-class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
+class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerListAdapter.OnEditListener {
 
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
@@ -36,6 +36,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     private var itemViewArrayList: ArrayList<View?> = ArrayList()
     private var isDeleteModeActive: Boolean = false
     private var isQueueModeActive: Boolean = false
+    private var isEditModeActive: Boolean = false
     private val TAG = "PlayersFragment"
 
     override fun onCreateView(
@@ -47,17 +48,22 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
                 ViewModelProvider(this).get(PlayersViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_players, container, false)
         registerForContextMenu(root)
-        adapter = PlayerListAdapter(this.context,this)
+        adapter = PlayerListAdapter(this.context,this, this)
+        val noPlayersText = root.findViewById<TextView>(R.id.textViewNoPlayers)
         recyclerView = root.findViewById(R.id.rvPlayers)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
-        playersViewModel.getPlayers().observe(viewLifecycleOwner, Observer { players ->
+        playersViewModel.getPlayers().observe(viewLifecycleOwner, { players ->
             // display players
             if(players.isNotEmpty()) {
                 adapter.addPlayers(players)
                 onPlayerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
+                noPlayersText.visibility = View.GONE
+                playerMenu?.findItem(R.id.create_queue)?.isVisible = players.size >= 4
             } else {
                 onPlayerCountChangeListener?.onPlayerCountChange("Players")
+                playerMenu?.findItem(R.id.create_queue)?.isVisible = false
+                noPlayersText.visibility = View.VISIBLE
             }
         })
 
@@ -121,6 +127,13 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.player_menu, menu)
 
+        Realm.getDefaultInstance().use { realm ->
+            val hasPlayers = realm.where<Player>().count()
+            if (hasPlayers >= 4) {
+                menu.findItem(R.id.create_queue)?.isVisible = true
+            }
+        }
+
         playerMenu = menu
     }
 
@@ -172,7 +185,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
     }
 
     override fun onItemLongClick(position: Int, itemView: View?) {
-        if (isQueueModeActive) return
+        if (isQueueModeActive || isEditModeActive) return
 
         if (!isDeleteModeActive) {
             // activate delete mode
@@ -189,6 +202,14 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener {
             // deactivate delete mode
             actionMode?.finish()
         }
+    }
+
+    override fun onEditModeActive() {
+        isEditModeActive = true
+    }
+
+    override fun onEditModeDone() {
+        isEditModeActive = false
     }
 
     private fun deactivateActionMode() {

@@ -5,6 +5,7 @@
         android:id="@+id/create_queue"
         android:icon="@drawable/ic_create_queue"
         android:title="@string/create_queue"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
 </menu>

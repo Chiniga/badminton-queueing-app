@@ -19,10 +19,11 @@ import io.realm.Realm
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 
-class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
+class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAdapter.OnQueueSizeListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: QueueListAdapter
+    private lateinit var noQueueText: TextView
     private var queueMenu: Menu? = null
     private var TAG = "QueueFragment"
 
@@ -32,7 +33,8 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
             savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_queue, container, false)
-        adapter = QueueListAdapter(this.context,this, Realm.getDefaultInstance().where<Queue>().sort("court_number").findAllAsync())
+        noQueueText = root.findViewById(R.id.textViewNoQueue)
+        adapter = QueueListAdapter(this.context,this, this, Realm.getDefaultInstance().where<Queue>().sort("court_number").findAllAsync())
         recyclerView = root.findViewById(R.id.rvQueues)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
@@ -114,7 +116,10 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                     return@setOnClickListener
                 }
                 val queueManager = QueueManager(realm, this.context, (activity as MainActivity).shufflePlayers)
-                if (queueManager.generate()) queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
+                if (queueManager.generate()) {
+                    queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
+                    noQueueText.visibility = View.GONE
+                }
             }
         }
 
@@ -158,6 +163,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
             val hasQueue = realm.where<Queue>().count()
             if (hasQueue > 0) {
                 menu.findItem(R.id.clear_queue)?.isVisible = true
+                noQueueText.visibility = View.GONE
             }
         }
 
@@ -182,6 +188,16 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
         Log.d("test", "onItemLongClick: clicked")
     }
 
+    override fun onEmptyQueue() {
+        noQueueText.visibility = View.VISIBLE
+        queueMenu?.findItem(R.id.clear_queue)?.isVisible = false
+    }
+
+    override fun onActiveQueue() {
+        noQueueText.visibility = View.GONE
+        queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
+    }
+
     private fun showDialog() {
         lateinit var dialog: AlertDialog
         val builder = AlertDialog.Builder(this.context)
@@ -194,6 +210,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener {
                 DialogInterface.BUTTON_POSITIVE -> {
                     adapter.clearList()
                     queueMenu?.findItem(R.id.clear_queue)?.isVisible = false
+                    noQueueText.visibility = View.VISIBLE
                 }
             }
         }
