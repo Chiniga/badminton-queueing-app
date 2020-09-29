@@ -7,6 +7,7 @@
     <string name="hide_input">Hide Input Fields</string>
     <string name="show_input">Show Input Fields</string>
 
+    <string name="no_players">No Players available</string>
     <string name="add_player">Add Player</string>
     <string name="delete_player">Delete Player</string>
     <string name="options">Options</string>
@@ -19,10 +20,10 @@
 
     <string name="reset_games">Reset Games</string>
 
+    <string name="no_queue">No Queue list available</string>
     <string name="zero">0</string>
     <string name="subtract_courts">Subtract Courts</string>
     <string name="add_courts">Add Courts</string>
-
     <string name="num_courts">Courts</string>
     <string name="shuffle">Shuffle</string>
     <string name="start_queue">Start Queue</string>

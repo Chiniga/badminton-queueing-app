@@ -7,6 +7,17 @@
     tools:context=".ui.players.PlayersFragment"
     android:fillViewport="true">
 
+    <TextView
+        android:id="@+id/textViewNoPlayers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_players"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/rvPlayers"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPlayers"
         android:layout_width="0dp"
