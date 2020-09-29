@@ -20,10 +20,11 @@ import io.realm.Realm
 import io.realm.kotlin.where
 import java.util.*
 
-class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder>() {
+class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onEditListener: OnEditListener) : RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder>() {
 
     private val playerSortedList: SortedList<Player>
-    private var listener: OnClickListener
+    private var clickListener: OnClickListener
+    private var editListener: OnEditListener
     private var mContext: Context? = null
 
     init {
@@ -34,13 +35,14 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
 
             override fun areItemsTheSame(item1: Player, item2: Player): Boolean = item1 == item2
         })
-        listener = onClickListener
+        clickListener = onClickListener
+        editListener = onEditListener
         mContext = context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.player_horizontal_menu_layout, parent, false)
-        return PlayerViewHolder(view, listener)
+        return PlayerViewHolder(view, clickListener)
     }
 
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
@@ -77,6 +79,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
                         val layoutAddPlayer =
                             holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
                         layoutAddPlayer.visibility = View.GONE
+                        editListener.onEditModeActive()
                     }
                     R.id.itmRestPlayer -> {
                         Realm.getDefaultInstance().use { realm ->
@@ -127,6 +130,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
                 val layoutAddPlayer =
                     holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
                 layoutAddPlayer.visibility = View.VISIBLE
+                editListener.onEditModeDone()
             }
         }
     }
@@ -223,6 +227,11 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener) : R
             imgBtnDoneEditing.visibility = View.VISIBLE
             editTextEditPlayer.setText(player.name)
         }
+    }
+
+    interface OnEditListener {
+        fun onEditModeActive()
+        fun onEditModeDone()
     }
 
     interface OnClickListener {
