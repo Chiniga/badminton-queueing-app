@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
@@ -26,6 +27,7 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onE
     private var clickListener: OnClickListener
     private var editListener: OnEditListener
     private var mContext: Context? = null
+    private var inputWasVisible: Boolean = false
 
     init {
         playerSortedList = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
@@ -78,7 +80,16 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onE
                         holder.enableEdit(playerSortedList.get(holder.adapterPosition))
                         val layoutAddPlayer =
                             holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
-                        layoutAddPlayer.visibility = View.GONE
+                        val hideLayoutButton =
+                            holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerHideInput)
+                        val showLayoutButton =
+                            holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerShowInput)
+                        if (layoutAddPlayer.isVisible) {
+                            inputWasVisible = true
+                            layoutAddPlayer.visibility = View.GONE
+                            hideLayoutButton.visibility = View.INVISIBLE
+                            showLayoutButton.visibility = View.VISIBLE
+                        }
                         editListener.onEditModeActive()
                     }
                     R.id.itmRestPlayer -> {
@@ -127,9 +138,18 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onE
 
                 Toast.makeText(mContext, "$newPlayerName has been modified", Toast.LENGTH_SHORT).show()
 
-                val layoutAddPlayer =
-                    holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
-                layoutAddPlayer.visibility = View.VISIBLE
+                if (inputWasVisible) {
+                    val layoutAddPlayer =
+                        holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
+                    val hideLayoutButton =
+                        holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerHideInput)
+                    val showLayoutButton =
+                        holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerShowInput)
+                    layoutAddPlayer.visibility = View.VISIBLE
+                    hideLayoutButton.visibility = View.VISIBLE
+                    showLayoutButton.visibility = View.INVISIBLE
+                    inputWasVisible = false
+                }
                 editListener.onEditModeDone()
             }
         }
