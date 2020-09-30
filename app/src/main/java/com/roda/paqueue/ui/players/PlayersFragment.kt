@@ -145,6 +145,9 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
     override fun onDetach() {
         super.onDetach()
         onPlayerCountChangeListener = null
+        if (actionMode != null) {
+            actionMode?.finish()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
