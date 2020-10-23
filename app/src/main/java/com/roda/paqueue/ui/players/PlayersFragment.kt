@@ -6,9 +6,9 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
 import android.widget.*
+import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -59,13 +59,24 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
                 adapter.addPlayers(players)
                 onPlayerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
                 noPlayersText.visibility = View.GONE
-                playerMenu?.findItem(R.id.create_queue)?.isVisible = players.size >= 4
+                playerMenu?.findItem(R.id.create_queue)?.isVisible = players.size >= QueueConstants.PLAYERS_PER_COURT
             } else {
                 onPlayerCountChangeListener?.onPlayerCountChange("Players")
                 playerMenu?.findItem(R.id.create_queue)?.isVisible = false
                 noPlayersText.visibility = View.VISIBLE
             }
         })
+
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (isEditModeActive) {
+                // exit edit mode
+                adapter.exitEditMode()
+            } else {
+                // remove callback and do normal back press
+                this.remove()
+                requireActivity().onBackPressed()
+            }
+        }
 
         val btnAddPlayer: Button = root.findViewById(R.id.btnAddPlayer)
         btnAddPlayer.setOnClickListener {
@@ -129,7 +140,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
 
         Realm.getDefaultInstance().use { realm ->
             val hasPlayers = realm.where<Player>().count()
-            if (hasPlayers >= 4) {
+            if (hasPlayers >= QueueConstants.PLAYERS_PER_COURT) {
                 menu.findItem(R.id.create_queue)?.isVisible = true
             }
         }
@@ -165,14 +176,21 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
 
     override fun onItemClick(position: Int, itemView: View?) {
         if (isDeleteModeActive || isQueueModeActive) {
+            // do nothing if player is resting and queue mode is active
+            if (isQueueModeActive && adapter.getPlayer(position).is_resting) return
+
             val color: Int? = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
-            if (color == 0) {
+            if (color == 0 || color == 1864913094) {
                 val newColor = if(isDeleteModeActive) R.color.redBg else R.color.greenBg
                 itemView?.setBackgroundColor(requireActivity().getColor(newColor))
                 itemViewArrayList.add(itemView)
                 playerList.add(adapter.getPlayer(position))
             } else {
-                itemView?.setBackgroundColor(Color.TRANSPARENT)
+                if(adapter.getPlayer(position).is_resting) {
+                    itemView?.setBackgroundColor(requireActivity().getColor(R.color.blueBg))
+                } else {
+                    itemView?.setBackgroundColor(Color.TRANSPARENT)
+                }
                 itemViewArrayList.remove(itemView)
                 playerList.remove(adapter.getPlayer(position))
             }
@@ -218,10 +236,14 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
     private fun deactivateActionMode() {
         isDeleteModeActive = false
         isQueueModeActive = false
-        playerList = ArrayList()
-        itemViewArrayList.forEach { item ->
-            item?.setBackgroundColor(Color.TRANSPARENT)
+        itemViewArrayList.forEachIndexed { index, item ->
+            if(playerList[index].is_resting) {
+                item?.setBackgroundColor(requireActivity().getColor(R.color.blueBg))
+            } else {
+                item?.setBackgroundColor(Color.TRANSPARENT)
+            }
         }
+        playerList = ArrayList()
         itemViewArrayList = ArrayList()
     }
 

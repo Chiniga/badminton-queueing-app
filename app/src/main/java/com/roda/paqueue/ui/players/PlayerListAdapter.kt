@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
@@ -26,6 +27,8 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onE
     private var clickListener: OnClickListener
     private var editListener: OnEditListener
     private var mContext: Context? = null
+    private var inputWasVisible: Boolean = false
+    private var editHolder: PlayerViewHolder? = null
 
     init {
         playerSortedList = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
@@ -78,8 +81,18 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onE
                         holder.enableEdit(playerSortedList.get(holder.adapterPosition))
                         val layoutAddPlayer =
                             holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
-                        layoutAddPlayer.visibility = View.GONE
+                        val hideLayoutButton =
+                            holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerHideInput)
+                        val showLayoutButton =
+                            holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerShowInput)
+                        if (layoutAddPlayer.isVisible) {
+                            inputWasVisible = true
+                            layoutAddPlayer.visibility = View.GONE
+                            hideLayoutButton.visibility = View.INVISIBLE
+                            showLayoutButton.visibility = View.VISIBLE
+                        }
                         editListener.onEditModeActive()
+                        editHolder = holder
                     }
                     R.id.itmRestPlayer -> {
                         Realm.getDefaultInstance().use { realm ->
@@ -127,9 +140,18 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onE
 
                 Toast.makeText(mContext, "$newPlayerName has been modified", Toast.LENGTH_SHORT).show()
 
-                val layoutAddPlayer =
-                    holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
-                layoutAddPlayer.visibility = View.VISIBLE
+                if (inputWasVisible) {
+                    val layoutAddPlayer =
+                        holder.itemView.rootView.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
+                    val hideLayoutButton =
+                        holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerHideInput)
+                    val showLayoutButton =
+                        holder.itemView.rootView.findViewById<ImageButton>(R.id.imgBtnPlayerShowInput)
+                    layoutAddPlayer.visibility = View.VISIBLE
+                    hideLayoutButton.visibility = View.VISIBLE
+                    showLayoutButton.visibility = View.INVISIBLE
+                    inputWasVisible = false
+                }
                 editListener.onEditModeDone()
             }
         }
@@ -180,6 +202,33 @@ class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onE
                 player?.deleteFromRealm()
             }
         }
+    }
+
+    fun exitEditMode() {
+        val player = editHolder?.adapterPosition?.let { playerSortedList.get(it) }
+        editHolder?.textViewPlayerName?.visibility = View.VISIBLE
+        editHolder?.imgBtnOptions?.visibility = View.VISIBLE
+        editHolder?.textViewPlayerGames?.visibility = View.VISIBLE
+        editHolder?.ratingBarLevel?.setIsIndicator(true)
+        editHolder?.textInputLayout?.visibility = View.GONE
+        editHolder?.imgBtnDoneEditing?.visibility = View.GONE
+
+        // reset player level in case it was changed
+        editHolder?.ratingBarLevel?.rating = player?.level!!
+
+        if (inputWasVisible) {
+            val layoutAddPlayer =
+                editHolder?.itemView?.rootView?.findViewById<ConstraintLayout>(R.id.layoutAddPlayer)
+            val hideLayoutButton =
+                editHolder?.itemView?.rootView?.findViewById<ImageButton>(R.id.imgBtnPlayerHideInput)
+            val showLayoutButton =
+                editHolder?.itemView?.rootView?.findViewById<ImageButton>(R.id.imgBtnPlayerShowInput)
+            layoutAddPlayer?.visibility = View.VISIBLE
+            hideLayoutButton?.visibility = View.VISIBLE
+            showLayoutButton?.visibility = View.INVISIBLE
+            inputWasVisible = false
+        }
+        editListener.onEditModeDone()
     }
 
     private fun editPlayer(player: Player, index: Int) {
