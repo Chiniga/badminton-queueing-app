@@ -59,7 +59,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
                 adapter.addPlayers(players)
                 onPlayerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
                 noPlayersText.visibility = View.GONE
-                playerMenu?.findItem(R.id.create_queue)?.isVisible = players.size >= 4
+                playerMenu?.findItem(R.id.create_queue)?.isVisible = players.size >= QueueConstants.PLAYERS_PER_COURT
             } else {
                 onPlayerCountChangeListener?.onPlayerCountChange("Players")
                 playerMenu?.findItem(R.id.create_queue)?.isVisible = false
@@ -140,7 +140,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
 
         Realm.getDefaultInstance().use { realm ->
             val hasPlayers = realm.where<Player>().count()
-            if (hasPlayers >= 4) {
+            if (hasPlayers >= QueueConstants.PLAYERS_PER_COURT) {
                 menu.findItem(R.id.create_queue)?.isVisible = true
             }
         }
