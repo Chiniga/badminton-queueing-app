@@ -18,6 +18,8 @@ open class Player (
     var num_games: Int = 0,
     var queue_count: Int = 0,
     var queues_games: Float = 0.0f,
+    var balls_used: Int = 0,
+    var is_paid: Boolean = false,
     var created_at: Date = Date(),
     var queues: RealmList<Queue> = RealmList()
 ): RealmObject() {
@@ -30,7 +32,7 @@ open class Player (
         }
 
         // check if name already exists
-        var playerExists: Player? = null
+        var playerExists: Player?
         Realm.getDefaultInstance().use { realm ->
             playerExists = realm.where<Player>().equalTo("name", name, Case.INSENSITIVE).findFirst()
         }
