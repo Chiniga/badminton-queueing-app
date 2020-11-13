@@ -18,8 +18,6 @@
     <string name="create_queue">Create Queue</string>
     <string name="create_set">Create Set</string>
 
-    <string name="reset_games">Reset Games</string>
-
     <string name="no_queue">No Queue list available</string>
     <string name="zero">0</string>
     <string name="subtract_courts">Subtract Courts</string>
@@ -29,4 +27,18 @@
     <string name="delete_queue">Delete Queue</string>
     <string name="done_queue">Done Queue</string>
     <string name="clear_queue">CLEAR QUEUE</string>
+
+    <string name="reset_games">Reset Games</string>
+    <string name="ball_calculator">Ball Calculator</string>
+    <string name="ball_cost">Ball cost per player</string>
+    <string name="ball_tracking">Ball tracking</string>
+    <string name="view_breakdown">View breakdown</string>
+    <string name="paid">PAID</string>
+    <string name="subtract_balls">Subtract Balls</string>
+    <string name="add_balls">Add Balls</string>
+    <string-array name="calc_options">
+        <item>Ball Calculation Method</item>
+        <item>Automatic (1 ball per game)</item>
+        <item>Manual</item>
+    </string-array>
 </resources>
