@@ -3,6 +3,8 @@
     android:id="@+id/listView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless"
     android:orientation="horizontal">
 
@@ -12,10 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="2"
-        android:paddingStart="16dp"
-        android:paddingEnd="0dp"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/textViewPlayerGames"
@@ -23,8 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textSize="18sp" />
 
     <ImageButton
         android:id="@+id/imgBtnSubNumBalls"
@@ -45,7 +43,7 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:text="@string/zero"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="gone" />
 
@@ -64,11 +62,11 @@
         android:id="@+id/textViewTotalCost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_gravity="center"
+        android:layout_marginStart="8dp"
         android:layout_weight="1"
         android:text="@string/zero"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <ToggleButton
