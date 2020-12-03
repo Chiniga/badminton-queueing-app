@@ -19,6 +19,7 @@ open class Player (
     var queue_count: Int = 0,
     var queues_games: Float = 0.0f,
     var balls_used: Int = 0,
+    var total_cost: Double = 0.00,
     var is_paid: Boolean = false,
     var created_at: Date = Date(),
     var queues: RealmList<Queue> = RealmList()
