@@ -20,10 +20,11 @@ import io.realm.Realm
 import io.realm.kotlin.where
 import java.util.*
 
-class PlayerCostListAdapter(context: Context?) : RecyclerView.Adapter<PlayerCostListAdapter.PlayerCostViewHolder>() {
+class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.Adapter<PlayerCostListAdapter.PlayerCostViewHolder>() {
 
     private val playerSortedList: SortedList<Player>
     private var mContext: Context? = null
+    private val mIsAuto = isAuto
 
     init {
         playerSortedList = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
@@ -44,6 +45,54 @@ class PlayerCostListAdapter(context: Context?) : RecyclerView.Adapter<PlayerCost
 
     override fun onBindViewHolder(holder: PlayerCostViewHolder, position: Int) {
         holder.setPlayer(playerSortedList.get(position))
+
+        holder.togglePaid.setOnCheckedChangeListener { _, isChecked ->
+            val player = playerSortedList.get(holder.adapterPosition)
+
+            Realm.getDefaultInstance().use { realm ->
+                realm.executeTransaction {
+                    player.is_paid = isChecked
+                }
+            }
+        }
+
+        if (mIsAuto) {
+            holder.imageViewAdd.visibility = View.GONE
+            holder.textViewNumBalls.visibility = View.GONE
+            holder.imageViewSub.visibility = View.GONE
+            holder.textViewPlayerGames.visibility = View.VISIBLE
+        } else {
+            holder.imageViewAdd.visibility = View.VISIBLE
+            holder.textViewNumBalls.visibility = View.VISIBLE
+            holder.imageViewSub.visibility = View.VISIBLE
+            holder.textViewPlayerGames.visibility = View.GONE
+        }
+
+        holder.imageViewAdd.setOnClickListener {
+            val player = playerSortedList.get(holder.adapterPosition)
+
+            Realm.getDefaultInstance().use { realm ->
+                realm.executeTransaction {
+                    player.balls_used++
+                    player.total_cost = player.balls_used * 5.00
+                }
+            }
+            editPlayer(holder.adapterPosition, player)
+        }
+
+        holder.imageViewSub.setOnClickListener {
+            val player = playerSortedList.get(holder.adapterPosition)
+
+            if (player.balls_used > 0) {
+                Realm.getDefaultInstance().use { realm ->
+                    realm.executeTransaction {
+                        player.balls_used--
+                        player.total_cost = player.balls_used * 5.00
+                    }
+                }
+                editPlayer(holder.adapterPosition, player)
+            }
+        }
     }
 
     override fun getItemCount() = playerSortedList.size()
@@ -54,7 +103,12 @@ class PlayerCostListAdapter(context: Context?) : RecyclerView.Adapter<PlayerCost
         playerSortedList.addAll(player)
     }
 
-    private fun editPlayer(player: Player, index: Int) {
+    fun updatePlayerCost(players: List<Player>) {
+        playerSortedList.clear()
+        addPlayers(players)
+    }
+
+    private fun editPlayer(index: Int, player: Player) {
         playerSortedList.updateItemAt(index, player)
     }
 
@@ -62,11 +116,18 @@ class PlayerCostListAdapter(context: Context?) : RecyclerView.Adapter<PlayerCost
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var textViewPlayerGames: TextView = itemView.findViewById(R.id.textViewPlayerGames)
+        var textViewTotalCost: TextView = itemView.findViewById(R.id.textViewTotalCost)
         var togglePaid: ToggleButton = itemView.findViewById(R.id.togglePaid)
+        var imageViewSub: ImageView = itemView.findViewById(R.id.imgBtnSubNumBalls)
+        var imageViewAdd: ImageView = itemView.findViewById(R.id.imgBtnAddNumBalls)
+        var textViewNumBalls: TextView = itemView.findViewById(R.id.textViewNumBalls)
 
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
             textViewPlayerGames.text = player.num_games.toString()
+            textViewTotalCost.text = player.total_cost.toString()
+            togglePaid.isChecked = player.is_paid
+            textViewNumBalls.text = player.balls_used.toString()
         }
     }
 }

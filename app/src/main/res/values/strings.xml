@@ -36,6 +36,8 @@
     <string name="paid">PAID</string>
     <string name="subtract_balls">Subtract Balls</string>
     <string name="add_balls">Add Balls</string>
+    <string name="total_cost">Total Cost</string>
+    <string name="balls_used">Balls Used</string>
     <string-array name="calc_options">
         <item>Ball Calculation Method</item>
         <item>Automatic (1 ball per game)</item>
