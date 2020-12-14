@@ -30,7 +30,7 @@ open class Player (
         }
 
         // check if name already exists
-        var playerExists: Player? = null
+        var playerExists: Player?
         Realm.getDefaultInstance().use { realm ->
             playerExists = realm.where<Player>().equalTo("name", name, Case.INSENSITIVE).findFirst()
         }
