@@ -28,7 +28,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PlayerListAdapter
-    private var onPlayerCountChangeListener: OnPlayerCountChangeListener? = null
+    private var playerCountChangeListener: PlayerCountChangeListener? = null
     private var actionMode: ActionMode? = null
     private var playerMenu: Menu? = null
     private var createQueueMenu: Menu? = null
@@ -57,11 +57,11 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
             // display players
             if(players.isNotEmpty()) {
                 adapter.addPlayers(players)
-                onPlayerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
+                playerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
                 noPlayersText.visibility = View.GONE
                 playerMenu?.findItem(R.id.create_queue)?.isVisible = players.size >= QueueConstants.PLAYERS_PER_COURT
             } else {
-                onPlayerCountChangeListener?.onPlayerCountChange("Players")
+                playerCountChangeListener?.onPlayerCountChange("Players")
                 playerMenu?.findItem(R.id.create_queue)?.isVisible = false
                 noPlayersText.visibility = View.VISIBLE
             }
@@ -150,12 +150,12 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        onPlayerCountChangeListener = (activity as OnPlayerCountChangeListener)
+        playerCountChangeListener = (activity as PlayerCountChangeListener)
     }
 
     override fun onDetach() {
         super.onDetach()
-        onPlayerCountChangeListener = null
+        playerCountChangeListener = null
         if (actionMode != null) {
             actionMode?.finish()
         }
@@ -179,7 +179,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
             // do nothing if player is resting and queue mode is active
             if (isQueueModeActive && adapter.getPlayer(position).is_resting) return
 
-            val color: Int? = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
+            val color: Int = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
             if (color == 0 || color == 1864913094) {
                 val newColor = if(isDeleteModeActive) R.color.redBg else R.color.greenBg
                 itemView?.setBackgroundColor(requireActivity().getColor(newColor))
@@ -327,7 +327,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         }
     }
 
-    interface OnPlayerCountChangeListener {
+    interface PlayerCountChangeListener {
         fun onPlayerCountChange(title: String)
     }
 }

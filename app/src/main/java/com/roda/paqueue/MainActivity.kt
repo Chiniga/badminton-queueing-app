@@ -11,11 +11,12 @@ import com.roda.paqueue.ui.players.PlayersFragment
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
-class MainActivity : AppCompatActivity(), PlayersFragment.OnPlayerCountChangeListener {
+class MainActivity : AppCompatActivity(), PlayersFragment.PlayerCountChangeListener {
 
     var playersInputShown = true
     var queueInputShown = true
     var shufflePlayers = false
+    var queueCounter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
