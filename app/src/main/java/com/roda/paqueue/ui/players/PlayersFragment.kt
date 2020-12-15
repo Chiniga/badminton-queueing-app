@@ -310,7 +310,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
                                 newCourt.courts++
                             }
                         }
-                        val queueManager = QueueManager(realm, parentFragment?.context, null)
+                        val queueManager = QueueManager(realm, parentFragment?.context)
                         queueManager.create(playerList)
                         queueManager.manageCourts()
                     }

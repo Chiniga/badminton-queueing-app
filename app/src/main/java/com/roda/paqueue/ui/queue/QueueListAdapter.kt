@@ -17,12 +17,12 @@ import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import io.realm.kotlin.where
 
-class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQueueSizeListener: OnQueueSizeListener, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
+class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQueueSizeListener: OnQueueSizeListener, queueManager: QueueManager, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
 
     private var clickListener: OnClickListener = onClickListener
     private var queueSizeListener: OnQueueSizeListener = onQueueSizeListener
     private var mContext: Context? = null
-    private var shufflePlayers: Boolean = false
+    private var mQueueManager: QueueManager = queueManager
 
     init {
         mContext = context
@@ -61,10 +61,6 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQu
         holder.sml.closeEndMenuWithoutAnimation()
     }
 
-    fun setShuffle(bool: Boolean) {
-        shufflePlayers = bool
-    }
-
     fun clearList() {
         Realm.getDefaultInstance().use { realm ->
             val queues = realm.where<Queue>().findAll()
@@ -92,8 +88,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQu
             }
             if (!clearAll) {
                 // replace with IDLE queue item
-                val queueManager = QueueManager(realm, mContext, shufflePlayers)
-                queueManager.manageCourts()
+                mQueueManager.manageCourts()
             }
 
             val checkQueue = realm.where<Queue>().count()

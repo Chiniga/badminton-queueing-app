@@ -24,6 +24,8 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: QueueListAdapter
     private lateinit var noQueueText: TextView
+    private lateinit var queueManager: QueueManager
+    private lateinit var realm: Realm
     private var queueMenu: Menu? = null
     private var TAG = "QueueFragment"
 
@@ -33,8 +35,10 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
             savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_queue, container, false)
+        realm = Realm.getDefaultInstance()
+        queueManager = QueueManager(realm, this.context)
         noQueueText = root.findViewById(R.id.textViewNoQueue)
-        adapter = QueueListAdapter(this.context,this, this, Realm.getDefaultInstance().where<Queue>().sort("court_number").findAllAsync())
+        adapter = QueueListAdapter(this.context,this, this, queueManager, Realm.getDefaultInstance().where<Queue>().sort("court_number").findAllAsync())
         recyclerView = root.findViewById(R.id.rvQueues)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
@@ -78,7 +82,6 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
                 }
                 val queues = realm.where<Queue>().count().toInt()
                 if (queues > 0 && success) {
-                    val queueManager = QueueManager(realm, this.context, (activity as MainActivity).shufflePlayers)
                     queueManager.manageCourts()
                 }
             }
@@ -91,13 +94,16 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
             }
         }
 
+        // set shuffle value on create
+        queueManager.setShuffle((activity as MainActivity).shufflePlayers)
+
         val toggleShuffle = root.findViewById<ToggleButton>(R.id.toggleShuffle)
         if((activity as MainActivity).shufflePlayers) {
             toggleShuffle.isChecked = true
         }
         toggleShuffle.setOnCheckedChangeListener { _, isChecked ->
             (activity as MainActivity).shufflePlayers = isChecked
-            adapter.setShuffle((activity as MainActivity).shufflePlayers)
+            queueManager.setShuffle(isChecked)
         }
 
         val btnGenQueue = root.findViewById<Button>(R.id.btnGenQueue)
@@ -115,7 +121,6 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
                     Toast.makeText(this.context, "You do not have enough players for $courtsMsg", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                val queueManager = QueueManager(realm, this.context, (activity as MainActivity).shufflePlayers)
                 if (queueManager.generate()) {
                     queueMenu?.findItem(R.id.clear_queue)?.isVisible = true
                     noQueueText.visibility = View.GONE
