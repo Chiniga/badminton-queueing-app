@@ -1,6 +1,7 @@
 package com.roda.paqueue.ui.queue
 
 import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +20,7 @@ import io.realm.Realm
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 
-class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAdapter.OnQueueSizeListener {
+class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAdapter.QueueSizeListener, QueueManager.CounterListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: QueueListAdapter
@@ -36,7 +37,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
     ): View? {
         val root = inflater.inflate(R.layout.fragment_queue, container, false)
         realm = Realm.getDefaultInstance()
-        queueManager = QueueManager(realm, this.context)
+        queueManager = QueueManager(realm, this.context, this)
         noQueueText = root.findViewById(R.id.textViewNoQueue)
         adapter = QueueListAdapter(this.context,this, this, queueManager, Realm.getDefaultInstance().where<Queue>().sort("court_number").findAllAsync())
         recyclerView = root.findViewById(R.id.rvQueues)
@@ -46,6 +47,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
         val textViewTextNumCourts = root.findViewById<TextView>(R.id.textViewNumCourts)
         val imgBtnSubNumCourts = root.findViewById<ImageButton>(R.id.imgBtnSubNumCourts)
         val imgBtnAddNumCourts = root.findViewById<ImageButton>(R.id.imgBtnAddNumCourts)
+        // remove courts
         imgBtnSubNumCourts.setOnClickListener {
             Realm.getDefaultInstance().use { realm ->
                 realm.executeTransaction {
@@ -59,6 +61,7 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
             }
         }
 
+        // add courts
         imgBtnAddNumCourts.setOnClickListener {
             Realm.getDefaultInstance().use { realm ->
                 var success = false
@@ -93,6 +96,9 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
                 textViewTextNumCourts.text = court.courts.toString()
             }
         }
+
+        // set queue counter
+        queueManager.setCounter((activity as MainActivity).queueCounter)
 
         // set shuffle value on create
         queueManager.setShuffle((activity as MainActivity).shufflePlayers)
@@ -225,5 +231,9 @@ class QueueFragment : Fragment(), QueueListAdapter.OnClickListener, QueueListAda
 
         dialog = builder.create()
         dialog.show()
+    }
+
+    override fun onCountChange(count: Int) {
+        (activity as MainActivity).queueCounter = count
     }
 }

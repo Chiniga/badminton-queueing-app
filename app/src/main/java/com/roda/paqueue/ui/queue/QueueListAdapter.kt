@@ -17,10 +17,10 @@ import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import io.realm.kotlin.where
 
-class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQueueSizeListener: OnQueueSizeListener, queueManager: QueueManager, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
+class QueueListAdapter(context: Context?, onClickListener: OnClickListener,
+                       private var queueSizeListener: QueueSizeListener, queueManager: QueueManager, queueList: RealmResults<Queue>) : RealmRecyclerViewAdapter<Queue, QueueListAdapter.QueueViewHolder>(queueList, true) {
 
     private var clickListener: OnClickListener = onClickListener
-    private var queueSizeListener: OnQueueSizeListener = onQueueSizeListener
     private var mContext: Context? = null
     private var mQueueManager: QueueManager = queueManager
 
@@ -91,7 +91,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQu
                 mQueueManager.manageCourts()
             }
 
-            val checkQueue = realm.where<Queue>().count()
+            val checkQueue = realm.where<Queue>().count().toInt()
             if (checkQueue > 0) {
                 queueSizeListener.onActiveQueue()
             } else {
@@ -156,7 +156,7 @@ class QueueListAdapter(context: Context?, onClickListener: OnClickListener, onQu
         }
     }
 
-    interface OnQueueSizeListener {
+    interface QueueSizeListener {
         fun onEmptyQueue()
         fun onActiveQueue()
     }
