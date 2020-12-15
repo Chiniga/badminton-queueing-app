@@ -87,7 +87,6 @@ class QueueManager(private val realm: Realm, private val mContext: Context?) {
 
     fun setShuffle(shuffle: Boolean) {
         shufflePlayers = shuffle
-        Log.d(TAG, "test setshuffle: $shufflePlayers")
     }
 
     private fun getPlayers(forceShuffle: Boolean = false): ArrayList<Player> {
