@@ -63,6 +63,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
         val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count().toInt()
         val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
             .sort("created_at").findAll()
+        var newActiveQueue = false
 
         if (activeQueues < courts.courts && idleQueues.isNotEmpty()) {
             for (court in 1..courts.courts) {
@@ -73,6 +74,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
                         val idleQueue = idleQueues.first()!!
                         idleQueue.status = QueueConstants.STATUS_ACTIVE
                         idleQueue.court_number = court
+                        newActiveQueue = true
                     }
                 }
             }
@@ -84,6 +86,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
         // generate new queue when old one is empty
         if (!stopGenerating &&
             activeQueues == 0 &&
+            !newActiveQueue &&
             idleQueues.isEmpty()
         ) {
             generate()
