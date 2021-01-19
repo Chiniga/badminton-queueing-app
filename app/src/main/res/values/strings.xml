@@ -19,9 +19,6 @@
     <string name="create_queue">Create Queue</string>
     <string name="create_set">Create Set</string>
 
-    <string name="reset_games">Reset Games</string>
-    <string name="queue_options_label">Queue Options</string>
-
     <string name="no_queue">No Queue list available</string>
     <string name="zero">0</string>
     <string name="subtract_courts">Subtract Courts</string>
@@ -31,4 +28,22 @@
     <string name="delete_queue">Delete Queue</string>
     <string name="done_queue">Done Queue</string>
     <string name="clear_queue">CLEAR QUEUE</string>
+
+    <string name="reset_games">Reset Games</string>
+    <string name="queue_options_label">Queue Options</string>
+    <string name="open_queue">Open</string>
+    <string name="by_level_queue">By Level</string>
+    <string name="mixed_queue">Mixed</string>
+    <string name="open_desc">
+        No restrictions to player matching.
+    <br>Players can potentially be matched with anyone as long as they are evenly matched with their opponents.</br>
+    </string>
+    <string name="by_level_desc">
+        <br>Players are grouped by their levels.</br>
+        If there are less than 4 players for a certain level, the "open" queueing style will be chosen by default.
+    </string>
+    <string name="mixed_desc">
+        A combination of "open" and "by level".
+
+    </string>
 </resources>
