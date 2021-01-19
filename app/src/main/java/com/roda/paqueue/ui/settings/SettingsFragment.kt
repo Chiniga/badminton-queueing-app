@@ -1,18 +1,16 @@
 package com.roda.paqueue.ui.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.roda.paqueue.QueueOptionsActivity
 import com.roda.paqueue.R
-import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
-import com.roda.paqueue.ui.queue.QueueManager
 import io.realm.Realm
-import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 
 class SettingsFragment : Fragment() {
@@ -27,10 +25,11 @@ class SettingsFragment : Fragment() {
         settingsViewModel =
                 ViewModelProvider(this).get(SettingsViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
-        val textView: TextView = root.findViewById(R.id.text_notifications)
-        settingsViewModel.text.observe(viewLifecycleOwner, {
-            textView.text = it
-        })
+        val textViewQueueOptions: TextView = root.findViewById(R.id.textViewQueueOptions)
+        textViewQueueOptions.setOnClickListener {
+            val intent = Intent(activity, QueueOptionsActivity::class.java)
+            startActivity(intent)
+        }
         return root
     }
 
