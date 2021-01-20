@@ -50,47 +50,103 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewByLevel" />
 
-    <TextView
-        android:id="@+id/textViewOpenDesc"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutQueueOptionDesc"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:justificationMode="inter_word"
-        android:text="@string/open_desc"
-        android:textAlignment="viewStart"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarQueueStyle" />
+        app:layout_constraintTop_toBottomOf="@+id/seekBarQueueStyle">
 
-    <TextView
-        android:id="@+id/textViewByLevelDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:justificationMode="inter_word"
-        android:text="@string/by_level_desc"
-        android:textAlignment="viewStart"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarQueueStyle" />
+        <TextView
+            android:id="@+id/textViewByLevelDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/by_level_desc"
+            android:textAlignment="viewStart"
+            android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/textViewMixedDesc"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/textViewMixedDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/mixed_desc"
+            android:textAlignment="viewStart"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/textViewOpenDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/open_desc"
+            android:textAlignment="viewStart" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutQueueSubOptions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:justificationMode="inter_word"
-        android:text="@string/mixed_desc"
-        android:textAlignment="viewStart"
-        android:visibility="gone"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarQueueStyle" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutQueueOptionDesc">
+
+        <TextView
+            android:id="@+id/textViewLevelStrictnessLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/strictness" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <RadioButton
+                android:id="@+id/radioStrict"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimaryDark"
+                android:text="@string/level_strict" />
+
+            <RadioButton
+                android:id="@+id/radioRelaxed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimaryDark"
+                android:text="@string/level_lax" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/layoutQueueMixedSubOptions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSaveQueueOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/save"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

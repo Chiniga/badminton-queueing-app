@@ -1,4 +1,6 @@
 <resources>
+    <string name="save">SAVE</string>
+
     <string name="app_name">PaQueue</string>
     <string name="title_queue">Queue</string>
     <string name="title_players">Players</string>
@@ -34,16 +36,10 @@
     <string name="open_queue">Open</string>
     <string name="by_level_queue">By Level</string>
     <string name="mixed_queue">Mixed</string>
-    <string name="open_desc">
-        No restrictions to player matching.
-    <br>Players can potentially be matched with anyone as long as they are evenly matched with their opponents.</br>
-    </string>
-    <string name="by_level_desc">
-        <br>Players are grouped by their levels.</br>
-        If there are less than 4 players for a certain level, the "open" queueing style will be chosen by default.
-    </string>
-    <string name="mixed_desc">
-        A combination of "open" and "by level".
-
-    </string>
+    <string name="open_desc">No restrictions to player matching.\nPlayers can potentially be matched with anyone as long as they are evenly matched with their opponents.</string>
+    <string name="by_level_desc">Players are grouped by their levels.\nIf there are less than 4 players for a certain level, the \"open\" queueing style will be chosen by default.</string>
+    <string name="mixed_desc">A combination of \"open\" and \"by level\".</string>
+    <string name="strictness">Level Strictness</string>
+    <string name="level_strict">Strict - players can only play with the same level</string>
+    <string name="level_lax">Lax - level 2 and 3 players can play with each other; level 1 players are separated</string>
 </resources>
