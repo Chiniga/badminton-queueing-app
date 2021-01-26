@@ -3,19 +3,20 @@ package com.roda.paqueue
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.SeekBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 
 class QueueOptionsActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, View.OnClickListener {
     private lateinit var queueStyleDescArray: Array<TextView>
+    private var layoutLevelStrictness: LinearLayout? = null
+    private var layoutFrequency: LinearLayout? = null
     private var prevProgress: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_queue_options)
 
+        layoutLevelStrictness = findViewById(R.id.layoutQueueSubOptions)
+        layoutFrequency = findViewById(R.id.layoutQueueMixedSubOptions)
         queueStyleDescArray = arrayOf(
             findViewById(R.id.textViewOpenDesc),
             findViewById(R.id.textViewByLevelDesc),
@@ -30,6 +31,19 @@ class QueueOptionsActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListene
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         queueStyleDescArray[prevProgress].visibility = View.GONE
         queueStyleDescArray[progress].visibility = View.VISIBLE
+        layoutLevelStrictness?.visibility = View.GONE
+        layoutFrequency?.visibility = View.GONE
+
+        if(progress != 0) {
+            // show additional settings if queue option is "By Level" or "Mixed"
+            layoutLevelStrictness?.visibility = View.VISIBLE
+
+            if(progress == 2) {
+                // show additional settings if queue option is "Mixed"
+                layoutFrequency?.visibility = View.VISIBLE
+            }
+        }
+
         prevProgress = progress
     }
 
