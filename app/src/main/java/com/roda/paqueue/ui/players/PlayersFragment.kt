@@ -28,7 +28,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
     private lateinit var playersViewModel: PlayersViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PlayerListAdapter
-    private var onPlayerCountChangeListener: OnPlayerCountChangeListener? = null
+    private var playerCountChangeListener: PlayerCountChangeListener? = null
     private var actionMode: ActionMode? = null
     private var playerMenu: Menu? = null
     private var createQueueMenu: Menu? = null
@@ -56,11 +56,11 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
             // display players
             if(players.isNotEmpty()) {
                 adapter.addPlayers(players)
-                onPlayerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
+                playerCountChangeListener?.onPlayerCountChange("Players (${players.size})")
                 noPlayersText.visibility = View.GONE
                 playerMenu?.findItem(R.id.create_queue)?.isVisible = players.size >= QueueConstants.PLAYERS_PER_COURT
             } else {
-                onPlayerCountChangeListener?.onPlayerCountChange("Players")
+                playerCountChangeListener?.onPlayerCountChange("Players")
                 playerMenu?.findItem(R.id.create_queue)?.isVisible = false
                 noPlayersText.visibility = View.VISIBLE
             }
@@ -149,12 +149,12 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        onPlayerCountChangeListener = (activity as OnPlayerCountChangeListener)
+        playerCountChangeListener = (activity as PlayerCountChangeListener)
     }
 
     override fun onDetach() {
         super.onDetach()
-        onPlayerCountChangeListener = null
+        playerCountChangeListener = null
         if (actionMode != null) {
             actionMode?.finish()
         }
@@ -267,7 +267,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when(item?.itemId) {
                 R.id.delete_player -> {
-                    playersItemViewHashMap.forEach { player, itemView ->
+                    playersItemViewHashMap.forEach { player, _ ->
                         adapter.removePlayer(player)
                     }
                     playersItemViewHashMap.clear()
@@ -333,7 +333,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         }
     }
 
-    interface OnPlayerCountChangeListener {
+    interface PlayerCountChangeListener {
         fun onPlayerCountChange(title: String)
     }
 }

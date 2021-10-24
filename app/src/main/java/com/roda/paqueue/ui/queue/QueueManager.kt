@@ -1,6 +1,8 @@
 package com.roda.paqueue.ui.queue
 
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
@@ -10,9 +12,11 @@ import io.realm.kotlin.where
 import java.util.*
 import kotlin.collections.ArrayList
 
-class QueueManager(private val realm: Realm, private val mContext: Context?, private var shufflePlayers: Boolean?) {
+class QueueManager(private val realm: Realm, private val mContext: Context?, private var counterListener: CounterListener?) {
 
     private var stopGenerating = false
+    private var shufflePlayers = false
+    private var queueCounter = 0
 
     fun generate(): Boolean {
         var success = false
@@ -21,6 +25,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
             if (availablePlayers < QueueConstants.PLAYERS_PER_COURT || !create()) break
             success = true
         }
+        if (success) queueCounter++
         manageCourts()
         return success
     }
@@ -75,62 +80,93 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
             }
         }
 
-        val playersAvailable = realm.where<Player>().isEmpty("queues").count().toInt()
+        queueCounter = if(queueCounter > 2) 0 else queueCounter
+        counterListener?.onCountChange(queueCounter)
+
+        // generate new queue when old one is empty
         if (!stopGenerating &&
             activeQueues == 0 &&
             !newActiveQueue &&
-            idleQueues.isEmpty() &&
-            playersAvailable >= QueueConstants.PLAYERS_PER_COURT
+            idleQueues.isEmpty()
         ) {
-            // generate()
+            generate()
         }
     }
 
-    private fun getPlayers(): ArrayList<Player> {
+    fun setShuffle(shuffle: Boolean) {
+        shufflePlayers = shuffle
+    }
+
+    fun setCounter(counter: Int) {
+        queueCounter = counter
+    }
+
+    private fun getPlayers(forceShuffle: Boolean = false): ArrayList<Player> {
         val list = ArrayList<Player>()
         // based on calculations when summing up player levels,
         // the numbers 7 and 9 are the most incompatible or unideal player level combinations
         // ex. 2-3-1-1 | 2-3-2-2 | 3-3-2-1
-        val incompatibleTotal = arrayOf(7, 9)
+        val incompatibleTotal = arrayOf(7.0f, 9.0f)
         // numbers 6 and 10 can be accepted with additional conditions
         // RULES: if total == 6, then game should not have level 3 player
         // ex. (acceptable) 2-2-1-1 | (unacceptable) 1-1-3-1
         //        if total == 10, then game should not have level 1 player
         // ex. (acceptable) 2-3-2-3 | (unacceptable) 3-3-3-1
-        val specialIncompatibleTotal = arrayOf(6, 10)
+        val specialIncompatibleTotal = arrayOf(6.0f, 10.0f)
         val players = realm.where<Player>().equalTo("is_resting", false).isEmpty("queues").sort("queues_games").findAll()
         val playerList = ArrayList<Player>()
-        var levelTotal = 0
+        var levelTotal = 0.0f
         var hasLevelOne = false
         var hasLevelThree = false
         playerList.addAll(players)
 
         // shuffle players if shuffling is enabled
-        if (shufflePlayers != null && shufflePlayers as Boolean) playerList.shuffle()
+        if (shufflePlayers || forceShuffle) playerList.shuffle()
 
-        for (player in playerList) {
-            if (list.size == QueueConstants.PLAYERS_PER_COURT) break
+        // check queue counter before generating games
+        // queueCounter 0: Open queueing mode (players are paired with anybody)
+        // queueCounter 1-2: Restricted mode (only levels 2 & 3 are paired)
+        // if forceShuffle is true, ignore queueCounter
+        if (queueCounter == 0 || forceShuffle) {
+            // normal queue
+            for (player in playerList) {
+                if (list.size == QueueConstants.PLAYERS_PER_COURT) break
 
-            val levelAdd = levelTotal + player.level.toInt()
-            val specialCondOne = levelAdd == 6 && !hasLevelThree && player.level.toInt() != 3
-            val specialCondTwo = levelAdd == 10 && !hasLevelOne && player.level.toInt() != 1
-            if (list.size < 3 ||
-                (!incompatibleTotal.contains(levelAdd) && !specialIncompatibleTotal.contains(levelAdd)) ||
-                specialCondOne || specialCondTwo
+                val levelAdd = levelTotal + player.level
+                val specialCondOne = levelAdd == 6.0f && !hasLevelThree && player.level != 3.0f
+                val specialCondTwo = levelAdd == 10.0f && !hasLevelOne && player.level != 1.0f
+                if (list.size < 3 ||
+                    (!incompatibleTotal.contains(levelAdd) && !specialIncompatibleTotal.contains(
+                        levelAdd
+                    )) ||
+                    specialCondOne || specialCondTwo
                 ) {
-                levelTotal += player.level.toInt()
-                list.add(player)
+                    levelTotal += player.level
+                    list.add(player)
 
-                if (player.level.toInt() == 3) hasLevelThree = true
-                if (player.level.toInt() == 1) hasLevelOne = true
+                    if (player.level == 3.0f) hasLevelThree = true
+                    if (player.level == 1.0f) hasLevelOne = true
+                }
+            }
+        } else {
+            // restrict level 1 players
+            var isLevelOneGame = false
+            for (player in playerList) {
+                if (list.size == QueueConstants.PLAYERS_PER_COURT) break
+                if (list.size == 0 && player.level == 1.0f) isLevelOneGame = true
+
+                if (isLevelOneGame && player.level == 1.0f) {
+                    list.add(player)
+                } else if (!isLevelOneGame && player.level != 1.0f) {
+                    list.add(player)
+                }
             }
         }
 
         if (list.size == 3 && players.size > QueueConstants.PLAYERS_PER_COURT) {
             // if player combinations cannot be found but available players are more than 4
             // force player shuffling and re-call method
-            shufflePlayers = true
-            return getPlayers()
+            return getPlayers(true)
         }
 
         return list
@@ -176,5 +212,9 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
         }
 
         return list
+    }
+
+    interface CounterListener {
+        fun onCountChange(count: Int)
     }
 }

@@ -10,8 +10,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.roda.paqueue.BallCalculatorActivity
 import com.roda.paqueue.R
+import com.roda.paqueue.models.Court
 import com.roda.paqueue.models.Player
+import com.roda.paqueue.ui.queue.QueueManager
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 
 class SettingsFragment : Fragment() {
