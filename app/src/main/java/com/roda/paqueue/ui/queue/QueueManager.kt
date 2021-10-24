@@ -55,9 +55,10 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
 
     fun manageCourts() {
         val courts = realm.where<Court>().findFirst()!!
-        val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count()
+        val activeQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_ACTIVE).count().toInt()
         val idleQueues = realm.where<Queue>().equalTo("status", QueueConstants.STATUS_IDLE)
             .sort("created_at").findAll()
+        var newActiveQueue = false
 
         if (activeQueues < courts.courts && idleQueues.isNotEmpty()) {
             for (court in 1..courts.courts) {
@@ -68,6 +69,7 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
                         val idleQueue = idleQueues.first()!!
                         idleQueue.status = QueueConstants.STATUS_ACTIVE
                         idleQueue.court_number = court
+                        newActiveQueue = true
                     }
                 }
             }
@@ -75,7 +77,8 @@ class QueueManager(private val realm: Realm, private val mContext: Context?, pri
 
         val playersAvailable = realm.where<Player>().isEmpty("queues").count().toInt()
         if (!stopGenerating &&
-            activeQueues < courts.courts &&
+            activeQueues == 0 &&
+            !newActiveQueue &&
             idleQueues.isEmpty() &&
             playersAvailable >= QueueConstants.PLAYERS_PER_COURT
         ) {
