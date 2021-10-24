@@ -37,9 +37,13 @@
     <string name="by_level_queue">By Level</string>
     <string name="mixed_queue">Mixed</string>
     <string name="open_desc">No restrictions to player matching.\nPlayers can potentially be matched with anyone as long as they are evenly matched with their opponents.</string>
-    <string name="by_level_desc">Players are grouped by their levels.\nIf there are less than 4 players for a certain level, the \"open\" queueing style will be chosen by default.</string>
-    <string name="mixed_desc">A combination of \"open\" and \"by level\".</string>
-    <string name="strictness">Level Strictness</string>
+    <string name="by_level_desc">Players are grouped by their levels.\nIf there are less than 4 players for a certain level, the \"Open\" queueing style will be chosen by default.</string>
+    <string name="mixed_desc">A combination of \"Open\" and \"By Level\".</string>
+    <string name="strictness">\"By Level\" Level Strictness</string>
     <string name="level_strict">Strict - players can only play with the same level</string>
     <string name="level_lax">Lax - level 2 and 3 players can play with each other; level 1 players are separated</string>
+    <string name="mixed_frequency">For a specified number of games,\nselect how many \"Open\" and \"By Level\" games should be set.</string>
+    <string name="specify_games">Please specify number of games:</string>
+    <string name="num_open_label">How many \"Open\" games per %n games?</string>
+    <string name="num_by_level_label">How many \"By Level\" games per %n games?</string>
 </resources>

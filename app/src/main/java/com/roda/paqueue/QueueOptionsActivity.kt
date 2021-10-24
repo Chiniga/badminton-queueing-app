@@ -4,17 +4,21 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.widget.doOnTextChanged
 
 class QueueOptionsActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, View.OnClickListener {
     private lateinit var queueStyleDescArray: Array<TextView>
+    private lateinit var textViewNumGames: EditText
     private var layoutLevelStrictness: LinearLayout? = null
     private var layoutFrequency: LinearLayout? = null
     private var prevProgress: Int = 0
+    private var numGames: Int = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_queue_options)
 
+        textViewNumGames = findViewById(R.id.editTextNumGames)
         layoutLevelStrictness = findViewById(R.id.layoutQueueSubOptions)
         layoutFrequency = findViewById(R.id.layoutQueueMixedSubOptions)
         queueStyleDescArray = arrayOf(
@@ -26,6 +30,10 @@ class QueueOptionsActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListene
         seekBar.setOnSeekBarChangeListener(this)
         val btnSaveQueueOptions = findViewById<Button>(R.id.btnSaveQueueOptions)
         btnSaveQueueOptions.setOnClickListener(this)
+        textViewNumGames.setText(numGames.toString())
+        textViewNumGames.doOnTextChanged { text, _, _, _ ->
+            numGames = text.toString().toInt()
+        }
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
