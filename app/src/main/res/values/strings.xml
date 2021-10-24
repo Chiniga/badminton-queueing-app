@@ -30,7 +30,7 @@
 
     <string name="reset_games">Reset Games</string>
     <string name="ball_calculator">Ball Calculator</string>
-    <string name="ball_cost">Ball cost per player</string>
+    <string name="ball_cost">Price per Ball</string>
     <string name="ball_tracking">Ball tracking</string>
     <string name="view_breakdown">View breakdown</string>
     <string name="paid">PAID</string>
@@ -39,7 +39,7 @@
     <string name="total_cost">Total Cost</string>
     <string name="balls_used">Balls Used</string>
     <string-array name="calc_options">
-        <item>Ball Calculation Method</item>
+        <item>-- SELECT BALL CALCULATION METHOD --</item>
         <item>Automatic (1 ball per game)</item>
         <item>Manual</item>
     </string-array>

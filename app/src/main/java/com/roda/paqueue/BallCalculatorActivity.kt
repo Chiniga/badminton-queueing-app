@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.roda.paqueue.models.Player
+import com.roda.paqueue.ui.queue.QueueConstants
 import io.realm.Realm
 import io.realm.kotlin.where
 
@@ -42,7 +43,7 @@ class BallCalculatorActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 calcOptionSelected = position
                 if (calcOptionSelected != 0 && ballCost != 0.00) {
-                    addCost()
+                    updateCost()
                 }
             }
 
@@ -54,8 +55,9 @@ class BallCalculatorActivity : AppCompatActivity() {
         val editTextBallCost = findViewById<TextInputEditText>(R.id.editTextBallCost)
         editTextBallCost.doOnTextChanged { text, _, _, _ ->
             ballCost = text.toString().toDouble()
+            playerCostListAdapter.updatePricePerBall(ballCost)
             if (calcOptionSelected != 0) {
-                addCost()
+                updateCost()
             }
         }
         Log.d("TAG", "onCreate: $savedInstanceState")
@@ -91,23 +93,16 @@ class BallCalculatorActivity : AppCompatActivity() {
         Log.d("TAG", "onRestoreInstanceState: $savedInstanceState")
     }
 
-    private fun addCost() {
-        when(calcOptionSelected) {
-            1 -> {
-                // automatic (1 game = 1 ball)
-                Realm.getDefaultInstance().use { realm ->
-                    val players = realm.where<Player>().findAll()
-                    players.forEach { player ->
-                        realm.executeTransaction {
-                            player.total_cost = player.num_games * ballCost
-                        }
-                    }
-                    playerCostListAdapter.updatePlayerCost(players)
+    private fun updateCost() {
+        Realm.getDefaultInstance().use { realm ->
+            val players = realm.where<Player>().findAll()
+            players.forEach { player ->
+                val multiplier = if(calcOptionSelected == 1) player.num_games else player.balls_used
+                realm.executeTransaction {
+                    player.total_cost = multiplier * ballCost / QueueConstants.PLAYERS_PER_COURT
                 }
             }
-            2 -> {
-                // manual
-            }
+            playerCostListAdapter.updatePlayerCost(players)
         }
     }
 }

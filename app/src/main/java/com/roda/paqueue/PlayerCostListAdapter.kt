@@ -2,6 +2,7 @@ package com.roda.paqueue
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,19 +23,19 @@ import java.util.*
 
 class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.Adapter<PlayerCostListAdapter.PlayerCostViewHolder>() {
 
-    private val playerSortedList: SortedList<Player>
+    private val playerSortedList: SortedList<Player> = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
+        override fun compare(p1: Player, p2: Player): Int = p1.name.toLowerCase(Locale.ROOT).compareTo(p2.name.toLowerCase(
+            Locale.ROOT))
+
+        override fun areContentsTheSame(oldItem: Player, newItem: Player): Boolean = oldItem.id == newItem.id
+
+        override fun areItemsTheSame(item1: Player, item2: Player): Boolean = item1 == item2
+    })
     private var mContext: Context? = null
+    private var pricePerBall: Double = 0.00
     private val mIsAuto = isAuto
 
     init {
-        playerSortedList = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
-            override fun compare(p1: Player, p2: Player): Int = p1.name.toLowerCase(Locale.ROOT).compareTo(p2.name.toLowerCase(
-                Locale.ROOT))
-
-            override fun areContentsTheSame(oldItem: Player, newItem: Player): Boolean = oldItem.id == newItem.id
-
-            override fun areItemsTheSame(item1: Player, item2: Player): Boolean = item1 == item2
-        })
         mContext = context
     }
 
@@ -70,11 +71,12 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
 
         holder.imageViewAdd.setOnClickListener {
             val player = playerSortedList.get(holder.adapterPosition)
+            Log.d("TAG", "pricePerBall: $pricePerBall")
 
             Realm.getDefaultInstance().use { realm ->
                 realm.executeTransaction {
                     player.balls_used++
-                    player.total_cost = player.balls_used * 5.00
+                    player.total_cost = player.balls_used * pricePerBall / QueueConstants.PLAYERS_PER_COURT
                 }
             }
             editPlayer(holder.adapterPosition, player)
@@ -87,7 +89,7 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
                 Realm.getDefaultInstance().use { realm ->
                     realm.executeTransaction {
                         player.balls_used--
-                        player.total_cost = player.balls_used * 5.00
+                        player.total_cost = player.balls_used * pricePerBall / QueueConstants.PLAYERS_PER_COURT
                     }
                 }
                 editPlayer(holder.adapterPosition, player)
@@ -106,6 +108,10 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
     fun updatePlayerCost(players: List<Player>) {
         playerSortedList.clear()
         addPlayers(players)
+    }
+
+    fun updatePricePerBall(price: Double) {
+        pricePerBall = price
     }
 
     private fun editPlayer(index: Int, player: Player) {
