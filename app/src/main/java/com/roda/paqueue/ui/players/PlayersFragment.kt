@@ -32,8 +32,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
     private var actionMode: ActionMode? = null
     private var playerMenu: Menu? = null
     private var createQueueMenu: Menu? = null
-    private var playerList: ArrayList<Player> = ArrayList()
-    private var itemViewArrayList: ArrayList<View?> = ArrayList()
+    private var playersItemViewHashMap: HashMap<Player, View?> = HashMap()
     private var isDeleteModeActive: Boolean = false
     private var isQueueModeActive: Boolean = false
     private var isEditModeActive: Boolean = false
@@ -177,29 +176,30 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
     override fun onItemClick(position: Int, itemView: View?) {
         if (isDeleteModeActive || isQueueModeActive) {
             // do nothing if player is resting and queue mode is active
-            if (isQueueModeActive && adapter.getPlayer(position).is_resting) return
+            if (isQueueModeActive && adapter.getPlayer(position).is_resting) {
+                Toast.makeText(this.context, "Cannot set. Player is resting", Toast.LENGTH_SHORT).show()
+                return
+            }
 
-            val color: Int? = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
+            val color: Int = (itemView?.background as ColorDrawable?)?.color ?: Color.TRANSPARENT
             if (color == 0 || color == 1864913094) {
                 val newColor = if(isDeleteModeActive) R.color.redBg else R.color.greenBg
                 itemView?.setBackgroundColor(requireActivity().getColor(newColor))
-                itemViewArrayList.add(itemView)
-                playerList.add(adapter.getPlayer(position))
+                playersItemViewHashMap.put(adapter.getPlayer(position), itemView)
             } else {
                 if(adapter.getPlayer(position).is_resting) {
                     itemView?.setBackgroundColor(requireActivity().getColor(R.color.blueBg))
                 } else {
                     itemView?.setBackgroundColor(Color.TRANSPARENT)
                 }
-                itemViewArrayList.remove(itemView)
-                playerList.remove(adapter.getPlayer(position))
+                playersItemViewHashMap.remove(adapter.getPlayer(position))
             }
 
             createQueueMenu?.findItem(R.id.done_create_queue)?.isVisible = false
-            if(isQueueModeActive && (playerList.size == QueueConstants.PLAYERS_PER_COURT)) {
+            if(isQueueModeActive && (playersItemViewHashMap.size == QueueConstants.PLAYERS_PER_COURT)) {
                 createQueueMenu?.findItem(R.id.done_create_queue)?.isVisible = true
             }
-            if (itemViewArrayList.isEmpty()) {
+            if (playersItemViewHashMap.isEmpty()) {
                 actionMode?.finish()
             }
         }
@@ -211,8 +211,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         if (!isDeleteModeActive) {
             // activate delete mode
             itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
-            itemViewArrayList.add(itemView)
-            playerList.add(adapter.getPlayer(position))
+            playersItemViewHashMap.put(adapter.getPlayer(position), itemView)
             isDeleteModeActive = true
 
             // activate ActionMode
@@ -236,15 +235,17 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
     private fun deactivateActionMode() {
         isDeleteModeActive = false
         isQueueModeActive = false
-        itemViewArrayList.forEachIndexed { index, item ->
-            if(playerList[index].is_resting) {
-                item?.setBackgroundColor(requireActivity().getColor(R.color.blueBg))
-            } else {
-                item?.setBackgroundColor(Color.TRANSPARENT)
+        if(playersItemViewHashMap.isNotEmpty()) {
+            // reset itemview original background colors
+            playersItemViewHashMap.forEach { player, itemView ->
+                if (player.is_resting) {
+                    itemView?.setBackgroundColor(requireActivity().getColor(R.color.blueBg))
+                } else {
+                    itemView?.setBackgroundColor(Color.TRANSPARENT)
+                }
             }
+            playersItemViewHashMap.clear()
         }
-        playerList = ArrayList()
-        itemViewArrayList = ArrayList()
     }
 
     inner class DeleteActionModeCallback: ActionMode.Callback {
@@ -266,9 +267,10 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when(item?.itemId) {
                 R.id.delete_player -> {
-                    playerList.forEach { player ->
+                    playersItemViewHashMap.forEach { player, itemView ->
                         adapter.removePlayer(player)
                     }
+                    playersItemViewHashMap.clear()
                     actionMode?.finish()
                 }
             }
@@ -309,6 +311,10 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
                                 val newCourt: Court = realm.createObject()
                                 newCourt.courts++
                             }
+                        }
+                        val playerList = ArrayList<Player>()
+                        playersItemViewHashMap.forEach { player, _ ->
+                            playerList.add(player)
                         }
                         val queueManager = QueueManager(realm, parentFragment?.context, null)
                         queueManager.create(playerList)
