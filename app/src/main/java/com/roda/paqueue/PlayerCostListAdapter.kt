@@ -26,7 +26,6 @@ class PlayerCostListAdapter(context: Context?, private var onCalcMethodChange: O
     })
     private var mContext: Context? = null
     private var pricePerBall: Double = 0.00
-    private lateinit var onCalculationMethodChange: OnCalculationMethodChangeListener
 
     init {
         mContext = context

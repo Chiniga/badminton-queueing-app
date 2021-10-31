@@ -9,9 +9,11 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import com.roda.paqueue.models.Balls
 import com.roda.paqueue.models.Player
 import com.roda.paqueue.ui.queue.QueueConstants
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 
 class BallCalculatorActivity : AppCompatActivity(), PlayerCostListAdapter.OnCalculationMethodChangeListener {
@@ -20,6 +22,10 @@ class BallCalculatorActivity : AppCompatActivity(), PlayerCostListAdapter.OnCalc
     private lateinit var recyclerView: RecyclerView
     private var ballCost: Double = 0.00
     private var calcOptionSelected: Int = 0
+    private object BallConstants {
+        const val AUTOMATIC: Int = 1
+        const val MANUAL: Int = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +35,6 @@ class BallCalculatorActivity : AppCompatActivity(), PlayerCostListAdapter.OnCalc
         recyclerView = findViewById(R.id.rvPlayerCost)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = playerCostListAdapter
-
-        Realm.getDefaultInstance().use { realm ->
-            val players = realm.where<Player>().findAll()
-            playerCostListAdapter.addPlayers(players)
-        }
 
         val spinnerStrings = resources.getStringArray(R.array.calc_options)
         val spinnerCalcOptions = findViewById<Spinner>(R.id.spinnerCalcOptions)
@@ -47,9 +48,7 @@ class BallCalculatorActivity : AppCompatActivity(), PlayerCostListAdapter.OnCalc
                 }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         val editTextBallCost = findViewById<TextInputEditText>(R.id.editTextBallCost)
@@ -60,59 +59,46 @@ class BallCalculatorActivity : AppCompatActivity(), PlayerCostListAdapter.OnCalc
                 updateCost()
             }
         }
-        Log.d("TAG", "onCreate: $savedInstanceState")
 
-        if (savedInstanceState != null) {
-            with(savedInstanceState) {
-                ballCost = getDouble("ballCost")
-                calcOptionSelected = getInt("calcOptionSelected")
-            }
+        Realm.getDefaultInstance().use { realm ->
+            val players = realm.where<Player>().findAll()
+            val balls = realm.where<Balls>().findFirst()
+            playerCostListAdapter.addPlayers(players)
 
-            editTextBallCost.setText(ballCost.toString())
-            spinnerCalcOptions.setSelection(calcOptionSelected)
+            balls?.cost?.toString()?.let { editTextBallCost.setText(it) }
+            balls?.calculation_method?.let { spinnerCalcOptions.setSelection(it) }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("TAG", "onStop: ")
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.run {
-            putDouble("ballCost", ballCost)
-            putInt("calcOptionSelected", calcOptionSelected)
-        }
-        Log.d("TAG", "onSaveInstanceState: $outState")
-
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        Log.d("TAG", "onRestoreInstanceState: $savedInstanceState")
     }
 
     private fun updateCost() {
         Realm.getDefaultInstance().use { realm ->
             val players = realm.where<Player>().findAll()
             players.forEach { player ->
-                val multiplier = if(calcOptionSelected == 1) player.num_games else player.balls_used
+                val multiplier = if(calcOptionSelected == BallConstants.AUTOMATIC) player.num_games else player.balls_used
                 realm.executeTransaction {
                     player.total_cost = multiplier * ballCost / QueueConstants.PLAYERS_PER_COURT
                 }
+            }
+
+            realm.executeTransaction {
+                var balls = realm.where<Balls>().findFirst()
+                if (balls == null) {
+                    balls = realm.createObject()
+                }
+                balls.cost = ballCost
+                balls.calculation_method = calcOptionSelected
             }
             playerCostListAdapter.updatePlayerCost(players)
         }
     }
 
     override fun onMethodChange(viewHolder: PlayerCostListAdapter.PlayerCostViewHolder) {
-        if (calcOptionSelected == 1) {
+        if (calcOptionSelected == BallConstants.AUTOMATIC) {
             viewHolder.imageViewAdd.visibility = View.GONE
             viewHolder.textViewNumBalls.visibility = View.GONE
             viewHolder.imageViewSub.visibility = View.GONE
             viewHolder.textViewPlayerGames.visibility = View.VISIBLE
-        } else {
+        } else if (calcOptionSelected == BallConstants.MANUAL) {
             viewHolder.imageViewAdd.visibility = View.VISIBLE
             viewHolder.textViewNumBalls.visibility = View.VISIBLE
             viewHolder.imageViewSub.visibility = View.VISIBLE
