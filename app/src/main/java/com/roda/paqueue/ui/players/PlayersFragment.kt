@@ -185,7 +185,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
             if (color == 0 || color == 1864913094) {
                 val newColor = if(isDeleteModeActive) R.color.redBg else R.color.greenBg
                 itemView?.setBackgroundColor(requireActivity().getColor(newColor))
-                playersItemViewHashMap.put(adapter.getPlayer(position), itemView)
+                playersItemViewHashMap[adapter.getPlayer(position)] = itemView
             } else {
                 if(adapter.getPlayer(position).is_resting) {
                     itemView?.setBackgroundColor(requireActivity().getColor(R.color.blueBg))
@@ -211,7 +211,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         if (!isDeleteModeActive) {
             // activate delete mode
             itemView?.setBackgroundColor(requireActivity().getColor(R.color.redBg))
-            playersItemViewHashMap.put(adapter.getPlayer(position), itemView)
+            playersItemViewHashMap[adapter.getPlayer(position)] = itemView
             isDeleteModeActive = true
 
             // activate ActionMode
@@ -237,7 +237,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         isQueueModeActive = false
         if(playersItemViewHashMap.isNotEmpty()) {
             // reset itemview original background colors
-            playersItemViewHashMap.forEach { player, itemView ->
+            playersItemViewHashMap.forEach { (player, itemView) ->
                 if (player.is_resting) {
                     itemView?.setBackgroundColor(requireActivity().getColor(R.color.blueBg))
                 } else {
@@ -267,7 +267,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when(item?.itemId) {
                 R.id.delete_player -> {
-                    playersItemViewHashMap.forEach { player, _ ->
+                    playersItemViewHashMap.forEach { (player, _) ->
                         adapter.removePlayer(player)
                     }
                     playersItemViewHashMap.clear()
@@ -313,7 +313,7 @@ class PlayersFragment : Fragment(), PlayerListAdapter.OnClickListener, PlayerLis
                             }
                         }
                         val playerList = ArrayList<Player>()
-                        playersItemViewHashMap.forEach { player, _ ->
+                        playersItemViewHashMap.forEach { (player, _) ->
                             playerList.add(player)
                         }
                         val queueManager = QueueManager(realm, parentFragment?.context, null)

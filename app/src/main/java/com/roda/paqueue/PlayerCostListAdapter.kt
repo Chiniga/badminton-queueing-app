@@ -1,27 +1,20 @@
 package com.roda.paqueue
 
 import android.content.Context
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
-import com.google.android.material.textfield.TextInputLayout
 import com.roda.paqueue.models.Player
-import com.roda.paqueue.models.Queue
 import com.roda.paqueue.ui.queue.QueueConstants
-import com.tubb.smrv.SwipeHorizontalMenuLayout
 import io.realm.Realm
-import io.realm.kotlin.where
 import java.util.*
 
-class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.Adapter<PlayerCostListAdapter.PlayerCostViewHolder>() {
+class PlayerCostListAdapter(context: Context?, private var onCalcMethodChange: OnCalculationMethodChangeListener) : RecyclerView.Adapter<PlayerCostListAdapter.PlayerCostViewHolder>() {
 
     private val playerSortedList: SortedList<Player> = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
         override fun compare(p1: Player, p2: Player): Int = p1.name.toLowerCase(Locale.ROOT).compareTo(p2.name.toLowerCase(
@@ -33,7 +26,7 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
     })
     private var mContext: Context? = null
     private var pricePerBall: Double = 0.00
-    private val mIsAuto = isAuto
+    private lateinit var onCalculationMethodChange: OnCalculationMethodChangeListener
 
     init {
         mContext = context
@@ -41,7 +34,7 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerCostViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.player_cost_row, parent, false)
-        return PlayerCostViewHolder(view)
+        return PlayerCostViewHolder(view, onCalcMethodChange)
     }
 
     override fun onBindViewHolder(holder: PlayerCostViewHolder, position: Int) {
@@ -55,18 +48,6 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
                     player.is_paid = isChecked
                 }
             }
-        }
-
-        if (mIsAuto) {
-            holder.imageViewAdd.visibility = View.GONE
-            holder.textViewNumBalls.visibility = View.GONE
-            holder.imageViewSub.visibility = View.GONE
-            holder.textViewPlayerGames.visibility = View.VISIBLE
-        } else {
-            holder.imageViewAdd.visibility = View.VISIBLE
-            holder.textViewNumBalls.visibility = View.VISIBLE
-            holder.imageViewSub.visibility = View.VISIBLE
-            holder.textViewPlayerGames.visibility = View.GONE
         }
 
         holder.imageViewAdd.setOnClickListener {
@@ -118,7 +99,7 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
         playerSortedList.updateItemAt(index, player)
     }
 
-    class PlayerCostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class PlayerCostViewHolder(itemView: View, onCalcMethodChange: OnCalculationMethodChangeListener) : RecyclerView.ViewHolder(itemView) {
 
         var textViewPlayerName: TextView = itemView.findViewById(R.id.textViewPlayerName)
         var textViewPlayerGames: TextView = itemView.findViewById(R.id.textViewPlayerGames)
@@ -128,6 +109,10 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
         var imageViewAdd: ImageView = itemView.findViewById(R.id.imgBtnAddNumBalls)
         var textViewNumBalls: TextView = itemView.findViewById(R.id.textViewNumBalls)
 
+        init {
+            onCalcMethodChange.onMethodChange(this)
+        }
+
         fun setPlayer(player: Player) {
             textViewPlayerName.text = player.name
             textViewPlayerGames.text = player.num_games.toString()
@@ -135,5 +120,9 @@ class PlayerCostListAdapter(context: Context?, isAuto: Boolean) : RecyclerView.A
             togglePaid.isChecked = player.is_paid
             textViewNumBalls.text = player.balls_used.toString()
         }
+    }
+
+    interface OnCalculationMethodChangeListener {
+        fun onMethodChange(viewHolder: PlayerCostViewHolder)
     }
 }

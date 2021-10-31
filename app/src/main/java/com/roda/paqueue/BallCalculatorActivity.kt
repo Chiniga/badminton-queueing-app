@@ -14,7 +14,7 @@ import com.roda.paqueue.ui.queue.QueueConstants
 import io.realm.Realm
 import io.realm.kotlin.where
 
-class BallCalculatorActivity : AppCompatActivity() {
+class BallCalculatorActivity : AppCompatActivity(), PlayerCostListAdapter.OnCalculationMethodChangeListener {
 
     private lateinit var playerCostListAdapter: PlayerCostListAdapter
     private lateinit var recyclerView: RecyclerView
@@ -25,7 +25,7 @@ class BallCalculatorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ball_calculator)
 
-        playerCostListAdapter = PlayerCostListAdapter(this, false)
+        playerCostListAdapter = PlayerCostListAdapter(this, this)
         recyclerView = findViewById(R.id.rvPlayerCost)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = playerCostListAdapter
@@ -103,6 +103,20 @@ class BallCalculatorActivity : AppCompatActivity() {
                 }
             }
             playerCostListAdapter.updatePlayerCost(players)
+        }
+    }
+
+    override fun onMethodChange(viewHolder: PlayerCostListAdapter.PlayerCostViewHolder) {
+        if (calcOptionSelected == 1) {
+            viewHolder.imageViewAdd.visibility = View.GONE
+            viewHolder.textViewNumBalls.visibility = View.GONE
+            viewHolder.imageViewSub.visibility = View.GONE
+            viewHolder.textViewPlayerGames.visibility = View.VISIBLE
+        } else {
+            viewHolder.imageViewAdd.visibility = View.VISIBLE
+            viewHolder.textViewNumBalls.visibility = View.VISIBLE
+            viewHolder.imageViewSub.visibility = View.VISIBLE
+            viewHolder.textViewPlayerGames.visibility = View.GONE
         }
     }
 }

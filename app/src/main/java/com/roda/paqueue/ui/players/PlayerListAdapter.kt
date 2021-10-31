@@ -23,23 +23,20 @@ import java.util.*
 
 class PlayerListAdapter(context: Context?, onClickListener: OnClickListener, onEditListener: OnEditListener) : RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder>() {
 
-    private val playerSortedList: SortedList<Player>
-    private var clickListener: OnClickListener
-    private var editListener: OnEditListener
+    private val playerSortedList: SortedList<Player> = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
+        override fun compare(p1: Player, p2: Player): Int = p1.name.toLowerCase(Locale.ROOT).compareTo(p2.name.toLowerCase(Locale.ROOT))
+
+        override fun areContentsTheSame(oldItem: Player, newItem: Player): Boolean = oldItem.id == newItem.id
+
+        override fun areItemsTheSame(item1: Player, item2: Player): Boolean = item1 == item2
+    })
+    private var clickListener: OnClickListener = onClickListener
+    private var editListener: OnEditListener = onEditListener
     private var mContext: Context? = null
     private var inputWasVisible: Boolean = false
     private var editHolder: PlayerViewHolder? = null
 
     init {
-        playerSortedList = SortedList(Player::class.java, object : SortedListAdapterCallback<Player>(this) {
-            override fun compare(p1: Player, p2: Player): Int = p1.name.toLowerCase(Locale.ROOT).compareTo(p2.name.toLowerCase(Locale.ROOT))
-
-            override fun areContentsTheSame(oldItem: Player, newItem: Player): Boolean = oldItem.id == newItem.id
-
-            override fun areItemsTheSame(item1: Player, item2: Player): Boolean = item1 == item2
-        })
-        clickListener = onClickListener
-        editListener = onEditListener
         mContext = context
     }
 
