@@ -65,8 +65,14 @@ class BallCalculatorActivity : AppCompatActivity(), PlayerCostListAdapter.OnCalc
             val balls = realm.where<Balls>().findFirst()
             playerCostListAdapter.addPlayers(players)
 
-            balls?.cost?.toString()?.let { editTextBallCost.setText(it) }
-            balls?.calculation_method?.let { spinnerCalcOptions.setSelection(it) }
+            balls?.cost?.toString()?.let {
+                editTextBallCost.setText(it)
+                ballCost = it.toDouble()
+            }
+            balls?.calculation_method?.let {
+                spinnerCalcOptions.setSelection(it)
+                calcOptionSelected = it
+            }
         }
     }
 

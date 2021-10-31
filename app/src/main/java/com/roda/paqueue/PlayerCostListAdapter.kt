@@ -51,7 +51,6 @@ class PlayerCostListAdapter(context: Context?, private var onCalcMethodChange: O
 
         holder.imageViewAdd.setOnClickListener {
             val player = playerSortedList.get(holder.adapterPosition)
-            Log.d("TAG", "pricePerBall: $pricePerBall")
 
             Realm.getDefaultInstance().use { realm ->
                 realm.executeTransaction {
@@ -75,11 +74,11 @@ class PlayerCostListAdapter(context: Context?, private var onCalcMethodChange: O
                 editPlayer(holder.adapterPosition, player)
             }
         }
+
+        onCalcMethodChange.onMethodChange(holder)
     }
 
     override fun getItemCount() = playerSortedList.size()
-
-    fun getPlayer(position: Int): Player = playerSortedList.get(position)
 
     fun addPlayers(player: List<Player>) {
         playerSortedList.addAll(player)
