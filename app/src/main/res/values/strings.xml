@@ -10,6 +10,7 @@
     <string name="no_players">No Players available</string>
     <string name="add_player">Add Player</string>
     <string name="delete_player">Delete Player</string>
+    <string name="games_label">Games</string>
     <string name="options">Options</string>
     <string name="edit_player">Edit</string>
     <string name="rest_player">Rest</string>

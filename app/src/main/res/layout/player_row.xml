@@ -1,32 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/listView"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackgroundBorderless"
-    android:orientation="horizontal">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/textViewPlayerName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_weight="1"
-        android:paddingStart="16dp"
-        android:paddingEnd="0dp"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewGamesLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:text="@string/games_label"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewPlayerName" />
 
     <TextView
         android:id="@+id/textViewPlayerGames"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginStart="16dp"
         android:layout_weight="1"
         android:gravity="center"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewGamesLabel"
+        app:layout_constraintTop_toBottomOf="@+id/textViewPlayerName" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
@@ -34,9 +52,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:paddingStart="16dp"
+        android:paddingStart="12dp"
         android:paddingEnd="0dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/textViewGamesLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextEditPlayerName"
@@ -53,28 +74,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
+        android:layout_marginEnd="16dp"
         android:isIndicator="true"
         android:numStars="3"
-        android:stepSize="1.0" />
+        android:stepSize="1.0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/btnDoneEditing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:layout_gravity="center"
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/done_edit_player"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ratingBarLevel"
         app:srcCompat="@drawable/ic_done_green" />
 
     <ImageButton
         android:id="@+id/imgBtnOptions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center|center_horizontal"
-        android:layout_weight="1"
+        android:layout_gravity="bottom|center_horizontal"
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/options"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ratingBarLevel"
         app:srcCompat="@drawable/ic_more" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
