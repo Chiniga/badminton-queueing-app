@@ -54,7 +54,6 @@
         android:paddingStart="12dp"
         android:paddingEnd="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/textViewGamesLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -84,8 +83,7 @@
         android:id="@+id/btnDoneEditing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom|center_horizontal"
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/done_edit_player"
         android:visibility="gone"
