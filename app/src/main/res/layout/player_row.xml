@@ -83,6 +83,7 @@
         android:id="@+id/btnDoneEditing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_gravity="bottom|center_horizontal"
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/done_edit_player"
